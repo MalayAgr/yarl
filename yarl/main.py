@@ -1,5 +1,4 @@
 import tcod
-from yarl.actions import EscapeAction, MovementAction
 from yarl.engine import Engine
 from yarl.entity import Entity
 from yarl.input_handlers import EventHandler
