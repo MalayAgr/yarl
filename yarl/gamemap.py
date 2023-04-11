@@ -6,9 +6,7 @@ from tcod.console import Console
 class GameMap:
     def __init__(self, width: int, height: int):
         self.width, self.height = width, height
-        self.tiles = np.full((width, height), fill_value=tiles.floor, order="F")
-
-        self.tiles[30:33, 22] = tiles.wall
+        self.tiles = np.full((width, height), fill_value=tiles.wall, order="F")
 
     def in_bounds(self, x: int, y: int) -> bool:
         """Return True if x and y are inside of the bounds of this map."""
