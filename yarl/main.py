@@ -1,12 +1,16 @@
 import tcod
 from yarl.engine import Engine
 from yarl.entity import Entity
+from yarl.gamemap import GameMap
 from yarl.input_handlers import EventHandler
 
 
 def main() -> None:
     screen_width = 100
     screen_height = 50
+
+    map_width = 100
+    map_height = 45
 
     player_x = int(screen_width / 2)
     player_y = int(screen_height / 2)
@@ -15,6 +19,8 @@ def main() -> None:
         "./assets/tileset.png", 32, 8, tcod.tileset.CHARMAP_TCOD
     )
 
+    game_map = GameMap(width=map_width, height=map_height)
+
     player = Entity(x=player_x, y=player_y, char="@", color=(255, 255, 255))
     npc = Entity(x=player_x - 5, y=player_y - 5, char="@", color=(255, 255, 0))
 
@@ -22,7 +28,7 @@ def main() -> None:
 
     event_handler = EventHandler()
 
-    engine = Engine(entities=entities, event_handler=event_handler, player=player)
+    engine = Engine(entities=entities, event_handler=event_handler, game_map=game_map, player=player)
 
     with tcod.context.new(
         columns=screen_width,
