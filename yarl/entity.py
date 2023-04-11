@@ -11,3 +11,6 @@ class Entity:
     def move(self, dx: int, dy: int) -> None:
         self.x += dx
         self.y += dy
+
+    def spawn(self, x, y) -> None:
+        self.x, self.y = x, y

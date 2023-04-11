@@ -35,21 +35,19 @@ class RectangularRoom:
 class MapGenerator:
     def __init__(
         self,
-        max_rooms: int,
         room_min_size: int,
-        room_max_size: int,
         map_width: int,
         map_height: int,
         depth: int,
         player: Entity,
+        full_rooms: bool = False,
     ) -> None:
-        self.max_room = max_rooms
         self.room_min_size = room_min_size
-        self.room_max_size = room_max_size
         self.map_width = map_width
         self.map_height = map_height
         self.depth = depth
         self.player = player
+        self.full_rooms = full_rooms
 
         self.rooms: list[RectangularRoom] = []
         self.game_map = GameMap(width=map_width, height=map_height)
@@ -72,17 +70,36 @@ class MapGenerator:
             self.create_room(node=node)
             return
 
-        last_child = node.children[-1]
-
         for child in node.children:
             self.traverse_bsp(child)
-
-            if child != last_child:
-                self.connect_rooms(node1=node, node2=child)
+            self.connect_rooms(node1=node, node2=child)
 
     def create_room(self, node: BSP) -> None:
+        min_x = node.x + 1
+        max_x = node.x + node.width - 1
+        min_y = node.y + 1
+        max_y = node.y + node.height - 1
+
+        if max_x == self.map_width - 1:
+            max_x -= 1
+        if max_y == self.map_height - 1:
+            max_y -= 1
+
+        if self.full_rooms is False:
+            min_x = tcod.random_get_int(None, min_x, max_x - self.room_min_size + 1)
+            min_y = tcod.random_get_int(None, min_y, max_y - self.room_min_size + 1)
+            max_x = tcod.random_get_int(None, min_x + self.room_min_size - 2, max_x)
+            max_y = tcod.random_get_int(None, min_y + self.room_min_size - 2, max_y)
+
+        node.x = min_x
+        node.y = min_y
+        node.width = max_x - min_x + 1
+        node.height = max_y - min_y + 1
+
         room = RectangularRoom(x=node.x, y=node.y, width=node.width, height=node.height)
+
         self.game_map.tiles[room.inner] = tiles.floor
+
         self.rooms.append(room)
 
     def tunnel_coordinates(
@@ -114,5 +131,8 @@ class MapGenerator:
         bsp = self.create_bsp_tree()
 
         self.traverse_bsp(bsp)
+
+        player_room = random.choice(self.rooms)
+        self.player.spawn(*player_room.center)
 
         return self.game_map
