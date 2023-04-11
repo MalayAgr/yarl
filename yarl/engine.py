@@ -22,6 +22,8 @@ class Engine:
         self.player = player
         self.game_map = game_map
 
+        self.game_map.update_fov(self.player)
+
     def handle_events(self, events: Iterable[Any]) -> None:
         for event in events:
             action = self.event_handler.dispatch(event)
@@ -31,11 +33,16 @@ class Engine:
 
             action.perform(engine=self, entity=self.player)
 
+            self.game_map.update_fov(self.player)
+
     def render(self, console: Console, context: Context) -> None:
         self.game_map.render(console=console)
 
         for entity in self.entities:
-            console.print(x=entity.x, y=entity.y, string=entity.char, fg=entity.color)
+            if self.game_map.visible[entity.x, entity.y]:
+                console.print(
+                    x=entity.x, y=entity.y, string=entity.char, fg=entity.color
+                )
 
         context.present(console)
         console.clear()
