@@ -75,26 +75,22 @@ class MapGenerator:
             self.connect_rooms(node1=node, node2=child)
 
     def create_room(self, node: BSP) -> None:
-        min_x = node.x + 1
-        max_x = node.x + node.width - 1
-        min_y = node.y + 1
-        max_y = node.y + node.height - 1
+        min_x, min_y = node.x, node.y
+        width, height = node.width, node.height
 
-        if max_x == self.map_width - 1:
-            max_x -= 1
-        if max_y == self.map_height - 1:
-            max_y -= 1
+        max_x, max_y = node.x + width, node.y + height
 
         if self.full_rooms is False:
-            min_x = tcod.random_get_int(None, min_x, max_x - self.room_min_size + 1)
-            min_y = tcod.random_get_int(None, min_y, max_y - self.room_min_size + 1)
-            max_x = tcod.random_get_int(None, min_x + self.room_min_size - 2, max_x)
-            max_y = tcod.random_get_int(None, min_y + self.room_min_size - 2, max_y)
+            width = random.randint(self.room_min_size, width)
+            height = random.randint(self.room_min_size, height)
+
+            min_x = random.randint(min_x, max_x - width)
+            min_y = random.randint(min_y, max_y - height)
 
         node.x = min_x
         node.y = min_y
-        node.width = max_x - min_x + 1
-        node.height = max_y - min_y + 1
+        node.width = width
+        node.height = height
 
         room = RectangularRoom(x=node.x, y=node.y, width=node.width, height=node.height)
 
