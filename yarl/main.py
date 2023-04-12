@@ -26,7 +26,7 @@ def main() -> None:
     entities = {player, npc}
 
     map_generator = MapGenerator(
-        room_min_size=6,
+        room_min_size=5,
         map_width=map_width,
         map_height=map_height,
         depth=10,
