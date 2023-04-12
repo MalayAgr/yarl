@@ -19,10 +19,14 @@ class RectangularRoom:
         self.x2 = x + width
         self.y2 = y + height
 
+    @classmethod
+    def fromnode(cls, node: BSP) -> RectangularRoom:
+        return cls(x=node.x, y=node.y, width=node.width, height=node.height)
+
     @property
     def center(self) -> tuple[int, int]:
-        center_x = int((self.x1 + self.x2) / 2)
-        center_y = int((self.y1 + self.y2) / 2)
+        center_x = (self.x1 + self.x2) // 2
+        center_y = (self.y1 + self.y2) // 2
 
         return center_x, center_y
 
@@ -83,29 +87,31 @@ class MapGenerator:
             self.traverse_bsp(child)
             self.connect_rooms(node1=node, node2=child)
 
-    def create_room(self, node: BSP) -> None:
-        min_x, min_y = node.x, node.y
-        width, height = node.width, node.height
-
-        max_x, max_y = node.x + width, node.y + height
-
+    def create_room(self, node: BSP) -> RectangularRoom:
         if self.full_rooms is False:
+            min_x, min_y = node.x, node.y
+            width, height = node.width, node.height
+
+            max_x, max_y = node.x + width, node.y + height
+
             width = random.randint(self.room_min_size, width)
             height = random.randint(self.room_min_size, height)
 
             min_x = random.randint(min_x, max_x - width)
             min_y = random.randint(min_y, max_y - height)
 
-        node.x = min_x
-        node.y = min_y
-        node.width = width
-        node.height = height
+            node.x = min_x
+            node.y = min_y
+            node.width = width
+            node.height = height
 
-        room = RectangularRoom(x=node.x, y=node.y, width=node.width, height=node.height)
+        room = RectangularRoom.fromnode(node=node)
 
         self.game_map.tiles[room.inner] = tiles.floor
 
         self.rooms.append(room)
+
+        return room
 
     def tunnel_coordinates(
         self, start: tuple[int, int], end: tuple[int, int]
@@ -115,19 +121,12 @@ class MapGenerator:
 
         corner_x, corner_y = (x2, y1) if random.random() < 0.5 else (x1, y2)
 
-        for x, y in tcod.los.bresenham((x1, y1), (corner_x, corner_y)):
-            yield x, y
-
-        for x, y in tcod.los.bresenham((corner_x, corner_y), (x2, y2)):
-            yield x, y
+        yield from tcod.los.bresenham((x1, y1), (corner_x, corner_y))
+        yield from tcod.los.bresenham((corner_x, corner_y), (x2, y2))
 
     def connect_rooms(self, node1: BSP, node2: BSP) -> None:
-        room1 = RectangularRoom(
-            x=node1.x, y=node1.y, width=node1.width, height=node1.height
-        )
-        room2 = RectangularRoom(
-            x=node2.x, y=node2.y, width=node2.width, height=node2.height
-        )
+        room1 = RectangularRoom.fromnode(node=node1)
+        room2 = RectangularRoom.fromnode(node=node2)
 
         for x, y in self.tunnel_coordinates(room1.center, room2.center):
             self.game_map.tiles[x, y] = tiles.floor
