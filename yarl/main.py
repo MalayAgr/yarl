@@ -3,7 +3,7 @@ from yarl.engine import Engine
 from yarl.entity import Entity
 from yarl.gamemap import GameMap
 from yarl.input_handlers import EventHandler
-from yarl.procgen import MapGenerator
+from yarl.mapgen import MapGenerator
 
 
 def main() -> None:
