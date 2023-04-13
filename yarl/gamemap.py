@@ -46,9 +46,7 @@ class GameMap:
     def get_blocking_entity(self, x: int, y: int) -> Entity | None:
         return self._entity_map.get((x, y), None)
 
-    def add_entity(self, entity: Entity, location: tuple[int, int] = (-1, -1)) -> None:
-        x, y = location
-
+    def add_entity(self, entity: Entity, x: int = -1, y: int = -1) -> None:
         x = x if x != -1 else entity.x
         y = y if y != -1 else entity.y
 
