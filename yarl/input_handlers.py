@@ -2,13 +2,13 @@ from __future__ import annotations
 
 import tcod.event
 from tcod.event import KeySym
-from yarl.actions import Action, EscapeAction, MovementAction
+from yarl.actions import Action, BumpAction, EscapeAction, MovementAction
 
 KEY_MAP: dict[KeySym, Action] = {
-    tcod.event.K_UP: MovementAction(dx=0, dy=-1),
-    tcod.event.K_DOWN: MovementAction(dx=0, dy=1),
-    tcod.event.K_LEFT: MovementAction(dx=-1, dy=0),
-    tcod.event.K_RIGHT: MovementAction(dx=1, dy=0),
+    tcod.event.K_UP: BumpAction(dx=0, dy=-1),
+    tcod.event.K_DOWN: BumpAction(dx=0, dy=1),
+    tcod.event.K_LEFT: BumpAction(dx=-1, dy=0),
+    tcod.event.K_RIGHT: BumpAction(dx=1, dy=0),
     tcod.event.K_ESCAPE: EscapeAction(),
 }
 
