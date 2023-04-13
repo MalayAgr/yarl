@@ -28,14 +28,16 @@ class MovementAction(Action):
         dest_x = entity.x + self.dx
         dest_y = entity.y + self.dy
 
-        if not engine.game_map.in_bounds(dest_x, dest_y):
+        game_map = engine.game_map
+
+        if not game_map.in_bounds(dest_x, dest_y):
             return
 
-        if not engine.game_map.tiles["walkable"][dest_x, dest_y]:
+        if not game_map.tiles["walkable"][dest_x, dest_y]:
             return
 
-        if engine.game_map.get_blocking_entity(x=dest_x, y=dest_y) is not None:
+        if game_map.get_blocking_entity(x=dest_x, y=dest_y) is not None:
             return
 
-        engine.game_map.update_entity_location(entity=entity, x=dest_x, y=dest_y)
+        game_map.update_entity_location(entity=entity, x=dest_x, y=dest_y)
         entity.move(dx=self.dx, dy=self.dy)
