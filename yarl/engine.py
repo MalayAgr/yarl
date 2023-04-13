@@ -12,12 +12,10 @@ from yarl.gamemap import GameMap
 class Engine:
     def __init__(
         self,
-        entities: set[Entity],
         event_handler: EventHandler,
         game_map: GameMap,
         player: Entity,
     ) -> None:
-        self.entities = entities
         self.event_handler = event_handler
         self.player = player
         self.game_map = game_map
@@ -37,12 +35,5 @@ class Engine:
 
     def render(self, console: Console, context: Context) -> None:
         self.game_map.render(console=console)
-
-        for entity in self.entities:
-            if self.game_map.visible[entity.x, entity.y]:
-                console.print(
-                    x=entity.x, y=entity.y, string=entity.char, fg=entity.color
-                )
-
         context.present(console)
         console.clear()

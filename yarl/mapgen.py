@@ -6,10 +6,9 @@ from typing import TYPE_CHECKING, Iterator
 import tcod
 import yarl.tile_types as tiles
 from tcod.bsp import BSP
+from yarl.entity import Entity, entity_factory
+from yarl.exceptions import CollisionWithEntityException
 from yarl.gamemap import GameMap
-
-if TYPE_CHECKING:
-    from yarl.entity import Entity
 
 
 class RectangularRoom:
@@ -155,6 +154,7 @@ class MapGenerator:
         map_height: int,
         room_min_size: int = 5,
         depth: int = 10,
+        max_enemies_per_room: int = 2,
         *,
         full_rooms: bool = False,
     ) -> None:
@@ -177,9 +177,11 @@ class MapGenerator:
         self.map_width = map_width
         self.map_height = map_height
         self.depth = depth
+        self.max_enemies_per_room = max_enemies_per_room
         self.full_rooms = full_rooms
 
         self.rooms: list[RectangularRoom] = []
+
         self.game_map = GameMap(width=map_width, height=map_height)
 
     def create_bsp_tree(self) -> BSP:
@@ -210,6 +212,20 @@ class MapGenerator:
         for child in node.children:
             self.traverse_bsp(child)
             self.connect_rooms(node1=node, node2=child)
+
+    def _place_objects(self, room: RectangularRoom) -> None:
+        number_of_enemies = random.randint(0, self.max_enemies_per_room)
+
+        for _ in range(number_of_enemies):
+            x = random.randint(room.x1 + 1, room.x2 - 1)
+            y = random.randint(room.y1 + 1, room.y2 - 1)
+
+            try:
+                entity = random.choice(entity_factory)
+                entity = Entity.fromentity(entity=entity)
+                self.game_map.add_entity(entity=entity, location=(x, y))
+            except CollisionWithEntityException:
+                pass
 
     def create_room(self, node: BSP) -> RectangularRoom:
         """Method to create a room and add it to the map from the given BSP node.
@@ -242,6 +258,8 @@ class MapGenerator:
         self.game_map.tiles[room.inner] = tiles.floor
 
         self.rooms.append(room)
+
+        self._place_objects(room=room)
 
         return room
 
@@ -281,7 +299,7 @@ class MapGenerator:
             self.game_map.tiles[x, y] = tiles.floor
 
     def generate_map(self, player: Entity | None = None) -> GameMap:
-        """Method to generate a map using BSP and optionally place a
+        """Method to generate a map using BSP and optionally place the
         player at the center of a random room in the generated map.
 
         Arguments
@@ -294,6 +312,6 @@ class MapGenerator:
 
         if player is not None:
             player_room = random.choice(self.rooms)
-            player.spawn(*player_room.center)
+            self.game_map.add_entity(entity=player, location=player_room.center)
 
         return self.game_map
