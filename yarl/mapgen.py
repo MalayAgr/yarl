@@ -213,7 +213,7 @@ class MapGenerator:
             self.traverse_bsp(child)
             self.connect_rooms(node1=node, node2=child)
 
-    def _place_objects(self, room: RectangularRoom) -> None:
+    def place_objects(self, room: RectangularRoom) -> None:
         number_of_enemies = random.randint(0, self.max_enemies_per_room)
 
         for _ in range(number_of_enemies):
@@ -259,7 +259,7 @@ class MapGenerator:
 
         self.rooms.append(room)
 
-        self._place_objects(room=room)
+        self.place_objects(room=room)
 
         return room
 
