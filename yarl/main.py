@@ -13,23 +13,18 @@ def main() -> None:
     map_width = 100
     map_height = 45
 
-    player_x = int(screen_width / 2)
-    player_y = int(screen_height / 2)
-
     tileset = tcod.tileset.load_tilesheet(
         "./assets/tileset.png", 32, 8, tcod.tileset.CHARMAP_TCOD
     )
 
-    player = Entity(x=player_x, y=player_y, char="@", color=(255, 255, 255))
-    npc = Entity(x=player_x - 5, y=player_y - 5, char="@", color=(255, 255, 0))
-
-    entities = {player, npc}
+    player = Entity(char="@", color=(255, 255, 255), name="Player")
 
     map_generator = MapGenerator(
         map_width=map_width,
         map_height=map_height,
         room_min_size=5,
         depth=10,
+        max_enemies_per_room=2,
         full_rooms=False,
     )
 
@@ -37,9 +32,7 @@ def main() -> None:
 
     event_handler = EventHandler()
 
-    engine = Engine(
-        entities=entities, event_handler=event_handler, game_map=game_map, player=player
-    )
+    engine = Engine(event_handler=event_handler, game_map=game_map, player=player)
 
     with tcod.context.new(
         columns=screen_width,
