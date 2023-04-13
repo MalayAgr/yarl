@@ -213,20 +213,6 @@ class MapGenerator:
             self.traverse_bsp(child)
             self.connect_rooms(node1=node, node2=child)
 
-    def place_objects(self, room: RectangularRoom) -> None:
-        number_of_enemies = random.randint(0, self.max_enemies_per_room)
-
-        for _ in range(number_of_enemies):
-            x = random.randint(room.x1 + 1, room.x2 - 1)
-            y = random.randint(room.y1 + 1, room.y2 - 1)
-
-            try:
-                entity = random.choice(entity_factory)
-                entity = Entity.fromentity(entity=entity)
-                self.game_map.add_entity(entity=entity, x=x, y=y)
-            except CollisionWithEntityException:
-                pass
-
     def create_room(self, node: BSP) -> RectangularRoom:
         """Method to create a room and add it to the map from the given BSP node.
         It also adds the room to the rooms attribute of the class and returns the room
@@ -258,8 +244,6 @@ class MapGenerator:
         self.game_map.tiles[room.inner] = tiles.floor
 
         self.rooms.append(room)
-
-        self.place_objects(room=room)
 
         return room
 
@@ -298,6 +282,20 @@ class MapGenerator:
         for x, y in self.tunnel_coordinates(room1.center, room2.center):
             self.game_map.tiles[x, y] = tiles.floor
 
+    def place_objects(self, room: RectangularRoom) -> None:
+        number_of_enemies = random.randint(0, self.max_enemies_per_room)
+
+        for _ in range(number_of_enemies):
+            x = random.randint(room.x1 + 1, room.x2 - 1)
+            y = random.randint(room.y1 + 1, room.y2 - 1)
+
+            try:
+                entity = random.choice(entity_factory)
+                entity = Entity.fromentity(entity=entity)
+                self.game_map.add_entity(entity=entity, x=x, y=y)
+            except CollisionWithEntityException:
+                pass
+
     def generate_map(self, player: Entity | None = None) -> GameMap:
         """Method to generate a map using BSP and optionally place the
         player at the center of a random room in the generated map.
@@ -310,9 +308,17 @@ class MapGenerator:
 
         self.traverse_bsp(bsp)
 
+        player_room = None
+
         if player is not None:
             player_room = random.choice(self.rooms)
             x, y = player_room.center
             self.game_map.add_entity(entity=player, x=x, y=y)
+
+        for room in self.rooms:
+            if room == player_room:
+                continue
+
+            self.place_objects(room=room)
 
         return self.game_map
