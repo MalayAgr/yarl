@@ -312,6 +312,7 @@ class MapGenerator:
 
         if player is not None:
             player_room = random.choice(self.rooms)
-            self.game_map.add_entity(entity=player, location=player_room.center)
+            x, y = player_room.center
+            self.game_map.add_entity(entity=player, x=x, y=y)
 
         return self.game_map
