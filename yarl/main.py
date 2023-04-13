@@ -26,15 +26,14 @@ def main() -> None:
     entities = {player, npc}
 
     map_generator = MapGenerator(
-        room_min_size=5,
         map_width=map_width,
         map_height=map_height,
+        room_min_size=5,
         depth=10,
-        player=player,
         full_rooms=False,
     )
 
-    game_map = map_generator.generate_map()
+    game_map = map_generator.generate_map(player=player)
 
     event_handler = EventHandler()
 
