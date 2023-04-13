@@ -37,4 +37,5 @@ class MovementAction(Action):
         if engine.game_map.get_blocking_entity(x=dest_x, y=dest_y) is not None:
             return
 
+        engine.game_map.update_entity_location(entity=entity, x=dest_x, y=dest_y)
         entity.move(dx=self.dx, dy=self.dy)
