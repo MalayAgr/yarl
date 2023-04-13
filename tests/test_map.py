@@ -19,14 +19,11 @@ def game_map() -> GameMap:
 
 @pytest.fixture
 def map_generator() -> MapGenerator:
-    player = Entity(x=0, y=0, char="@", color=(255, 255, 255))
-
     return MapGenerator(
         room_min_size=5,
         map_width=100,
         map_height=45,
         depth=10,
-        player=player,
         full_rooms=False,
     )
 
@@ -176,15 +173,15 @@ def test_connect_rooms_vertical(
 
 
 def test_generate_map(map_generator: MapGenerator, monkeypatch: MonkeyPatch) -> None:
-    game_map = map_generator.generate_map()
+    player = Entity(x=0, y=0, char="@", color=(255, 255, 255))
+
+    game_map = map_generator.generate_map(player=player)
 
     assert isinstance(game_map, GameMap)
 
     assert game_map.width == 100
     assert game_map.height == 45
     assert tiles.floor in game_map.tiles
-
-    player = map_generator.player
 
     assert (player.x, player.y) != (0, 0)
 
