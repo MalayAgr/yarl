@@ -223,7 +223,7 @@ class MapGenerator:
             try:
                 entity = random.choice(entity_factory)
                 entity = Entity.fromentity(entity=entity)
-                self.game_map.add_entity(entity=entity, location=(x, y))
+                self.game_map.add_entity(entity=entity, x=x, y=y)
             except CollisionWithEntityException:
                 pass
 
