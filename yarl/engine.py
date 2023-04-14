@@ -24,8 +24,11 @@ class Engine:
 
     def handle_enemy_turns(self) -> None:
         for entity in set(self.game_map.active_entities) - {self.player}:
-            if entity.ai:
-                entity.ai.perform(engine=self, entity=entity)
+            if entity.ai_cls is None:
+                continue
+
+            ai = entity.ai_cls()
+            ai.perform(engine=self, entity=entity)
 
     def handle_events(self, events: Iterable[Any]) -> None:
         for event in events:

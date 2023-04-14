@@ -37,10 +37,6 @@ class BaseAI(Action):
 
 
 class AttackingAI(BaseAI):
-    def __init__(self) -> None:
-        super().__init__()
-        self.path: deque[tuple[int, int]] = deque()
-
     def perform(self, engine: Engine, entity: ActiveEntity) -> None:
         target = engine.player
 
@@ -55,13 +51,16 @@ class AttackingAI(BaseAI):
             if distance <= 1:
                 return MeleeAction(dx=dx, dy=dy).perform(engine=engine, entity=entity)
 
-            self.path = self.get_path_to(
+            entity.path = self.get_path_to(
                 target.x, target.y, engine=engine, entity=entity
             )
 
-        if not self.path:
+        length = len(entity.path)
+
+        # Add a length limit so that enemies don't keep wandering around
+        if not entity.path or length > 25:
             return WaitAction().perform(engine=engine, entity=entity)
 
-        dest_x, dest_y = self.path.popleft()
+        dest_x, dest_y = entity.get_destination_from_path()
         action = MovementAction(dx=dest_x - entity.x, dy=dest_y - entity.y)
         action.perform(engine=engine, entity=entity)
