@@ -52,6 +52,7 @@ class GameMap:
     def update_entity_location(self, entity: Entity, x: int, y: int) -> None:
         self._entity_map.pop((entity.x, entity.y), None)
         self._entity_map[(x, y)] = entity
+        entity.move(dx=x - entity.x, dy=y - entity.y)
 
     def add_entity(self, entity: Entity, x: int = -1, y: int = -1) -> None:
         x = x if x != -1 else entity.x

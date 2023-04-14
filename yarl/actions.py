@@ -60,8 +60,6 @@ class MovementAction(DirectedAction):
 
         dest_x, dest_y = self.get_destination(entity=entity)
         engine.game_map.update_entity_location(entity=entity, x=dest_x, y=dest_y)
-        entity.move(dx=self.dx, dy=self.dy)
-
 
 class BumpAction(DirectedAction):
     def perform(self, engine: Engine, entity: Entity) -> None:
