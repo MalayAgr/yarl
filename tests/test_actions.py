@@ -2,7 +2,7 @@ from typing import Callable
 
 import tcod.event
 from tcod.event import KeyDown
-from yarl.actions import Action, EscapeAction, MovementAction
+from yarl.actions import BumpAction, EscapeAction
 from yarl.input_handlers import EventHandler
 
 MakeKeyDownEventType = Callable[[int, int, int], KeyDown]
@@ -33,7 +33,7 @@ def test_movement_action_up(
 
     action = event_handler.dispatch(event)
 
-    assert isinstance(action, MovementAction)
+    assert isinstance(action, BumpAction)
     assert action.dx == 0
     assert action.dy == -1
 
@@ -49,7 +49,7 @@ def test_movement_action_down(
 
     action = event_handler.dispatch(event)
 
-    assert isinstance(action, MovementAction)
+    assert isinstance(action, BumpAction)
     assert action.dx == 0
     assert action.dy == 1
 
@@ -65,7 +65,7 @@ def test_movement_action_left(
 
     action = event_handler.dispatch(event)
 
-    assert isinstance(action, MovementAction)
+    assert isinstance(action, BumpAction)
     assert action.dx == -1
     assert action.dy == 0
 
@@ -81,7 +81,7 @@ def test_movement_action_right(
 
     action = event_handler.dispatch(event)
 
-    assert isinstance(action, MovementAction)
+    assert isinstance(action, BumpAction)
     assert action.dx == 1
     assert action.dy == 0
 
