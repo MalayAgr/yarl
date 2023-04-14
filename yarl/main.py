@@ -1,9 +1,10 @@
 import tcod
 from yarl.engine import Engine
-from yarl.entity import Entity
+from yarl.entity import ActiveEntity, Entity
 from yarl.gamemap import GameMap
 from yarl.input_handlers import EventHandler
 from yarl.mapgen import MapGenerator
+from yarl.utils.ai import AttackingAI
 
 
 def main() -> None:
@@ -17,7 +18,15 @@ def main() -> None:
         "./assets/tileset.png", 32, 8, tcod.tileset.CHARMAP_TCOD
     )
 
-    player = Entity(char="@", color=(255, 255, 255), name="Player")
+    player = ActiveEntity(
+        char="@",
+        color=(255, 255, 255),
+        name="Player",
+        ai_cls=AttackingAI,
+        max_hp=30,
+        defense=2,
+        power=5,
+    )
 
     map_generator = MapGenerator(
         map_width=map_width,
