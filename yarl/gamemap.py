@@ -44,7 +44,10 @@ class GameMap:
         self.explored |= self.visible
 
     def get_blocking_entity(self, x: int, y: int) -> Entity | None:
-        return self._entity_map.get((x, y), None)
+        entity = self._entity_map.get((x, y), None)
+
+        if entity is not None:
+            return entity if entity.blocking is True else None
 
     def update_entity_location(self, entity: Entity, x: int, y: int) -> None:
         self._entity_map.pop((entity.x, entity.y), None)
