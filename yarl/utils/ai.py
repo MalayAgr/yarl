@@ -29,7 +29,7 @@ class BaseAI(Action):
         graph = tcod.path.SimpleGraph(cost=cost, cardinal=2, diagonal=3)
         pathfinder = tcod.path.Pathfinder(graph=graph)
 
-        pathfinder.add_root(index=(self.entity.x, self.entity.y))
+        pathfinder.add_root(index=(entity.x, entity.y))
 
         path = pathfinder.path_to(index=(dest_x, dest_y))[1:].tolist()
 
@@ -55,7 +55,9 @@ class AttackingAI(BaseAI):
             if distance <= 1:
                 return MeleeAction(dx=dx, dy=dy).perform(engine=engine, entity=entity)
 
-            self.path = self.get_path_to(target.x, target.y)
+            self.path = self.get_path_to(
+                target.x, target.y, engine=engine, entity=entity
+            )
 
         if not self.path:
             return WaitAction().perform(engine=engine, entity=entity)

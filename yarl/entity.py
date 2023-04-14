@@ -3,7 +3,7 @@ from __future__ import annotations
 import copy
 from typing import Type
 
-from yarl.utils.ai import BaseAI
+from yarl.utils.ai import AttackingAI, BaseAI
 from yarl.utils.fighter import Fighter
 
 
@@ -52,7 +52,7 @@ class ActiveEntity(Entity):
         *,
         blocking: bool = False,
     ) -> None:
-        super().__init__(x, y, char, color, name, blocking)
+        super().__init__(x=x, y=y, char=char, color=color, name=name, blocking=blocking)
 
         self.ai = ai_cls() if ai_cls is not None else ai_cls
         self.fighter = Fighter(entity=self, max_hp=max_hp, defense=defense, power=power)
@@ -63,6 +63,24 @@ class ActiveEntity(Entity):
 
 
 entity_factory = [
-    Entity(char="O", color=(63, 127, 63), name="Orc", blocking=True),
-    Entity(char="T", color=(0, 127, 0), name="Troll", blocking=True),
+    ActiveEntity(
+        char="O",
+        color=(63, 127, 63),
+        name="Orc",
+        ai_cls=AttackingAI,
+        max_hp=10,
+        defense=0,
+        power=3,
+        blocking=True,
+    ),
+    ActiveEntity(
+        char="T",
+        color=(0, 127, 0),
+        name="Troll",
+        ai_cls=AttackingAI,
+        max_hp=16,
+        defense=1,
+        power=4,
+        blocking=True,
+    ),
 ]
