@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from typing import Any, Iterable
 
-from input_handlers import EventHandler
 from tcod.console import Console
 from tcod.context import Context
 from yarl.entity import Entity
 from yarl.gamemap import GameMap
+from yarl.input_handlers import EventHandler
 
 
 class Engine:
