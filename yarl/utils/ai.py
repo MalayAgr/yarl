@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from collections import deque
 from typing import TYPE_CHECKING
 
@@ -55,11 +56,14 @@ class AttackingAI(BaseAI):
                 target.x, target.y, engine=engine, entity=entity
             )
 
-        length = len(entity.path)
-
-        # Add a length limit so that enemies don't keep wandering around
-        if not entity.path or length > 25:
-            return WaitAction().perform(engine=engine, entity=entity)
+        # Even if there is no path or the path is too long
+        # The entity should try to move towards the target
+        # By taking a normalized step
+        if not entity.path or len(entity.path) > 25:
+            distance = math.sqrt(dx**2 + dy**2)
+            dx = int(dx // distance)
+            dy = int(dy // distance)
+            return MovementAction(dx=dx, dy=dy).perform(engine=engine, entity=entity)
 
         dest_x, dest_y = entity.get_destination_from_path()
         action = MovementAction(dx=dest_x - entity.x, dy=dest_y - entity.y)
