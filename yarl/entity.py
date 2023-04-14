@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+from collections import deque
 from typing import Type
 
 from yarl.utils.ai import AttackingAI, BaseAI
@@ -54,12 +55,17 @@ class ActiveEntity(Entity):
     ) -> None:
         super().__init__(x=x, y=y, char=char, color=color, name=name, blocking=blocking)
 
-        self.ai = ai_cls() if ai_cls is not None else ai_cls
+        self.ai_cls = ai_cls
+        self.path: deque[tuple[int, int]] = deque()
         self.fighter = Fighter(entity=self, max_hp=max_hp, defense=defense, power=power)
 
     @property
     def is_alive(self) -> bool:
-        return bool(self.ai)
+        return self.ai_cls is not None
+
+    def get_destination_from_path(self) -> tuple[int, int] | None:
+        if self.path:
+            return self.path.popleft()
 
 
 entity_factory = [
