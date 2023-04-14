@@ -17,6 +17,11 @@ class EscapeAction(Action):
         raise SystemExit()
 
 
+class WaitAction(Action):
+    def perform(self, engine: Engine, entity: Entity) -> None:
+        pass
+
+
 class DirectedAction(Action):
     def __init__(self, dx: int, dy: int) -> None:
         super().__init__()
@@ -60,6 +65,7 @@ class MovementAction(DirectedAction):
 
         dest_x, dest_y = self.get_destination(entity=entity)
         engine.game_map.update_entity_location(entity=entity, x=dest_x, y=dest_y)
+
 
 class BumpAction(DirectedAction):
     def perform(self, engine: Engine, entity: Entity) -> None:
