@@ -24,13 +24,28 @@ class DirectedAction(Action):
         self.dx = dx
         self.dy = dy
 
+    def get_destination(self, entity: Entity) -> tuple[int, int]:
+        return entity.x + self.dx, entity.y + self.dy
+
+    def get_blocking_entity(self, entity: Entity, engine: Engine) -> Entity | None:
+        x, y = self.get_destination(entity=entity)
+        return engine.game_map.get_blocking_entity(x=x, y=y)
+
+    def can_move(self, entity: Entity, engine: Engine) -> bool:
+        dest_x, dest_y = self.get_destination(entity=entity)
+
+        game_map = engine.game_map
+
+        return (
+            game_map.in_bounds(x=dest_x, y=dest_y)
+            and game_map.tiles["walkable"][dest_x, dest_y]
+            and self.get_blocking_entity(entity=entity, engine=engine) is None
+        )
+
 
 class MeleeAction(DirectedAction):
     def perform(self, engine: Engine, entity: Entity) -> None:
-        dest_x = entity.x + self.dx
-        dest_y = entity.y + self.dy
-
-        target = engine.game_map.get_blocking_entity(x=dest_x, y=dest_y)
+        target = self.get_blocking_entity(engine=engine, entity=entity)
 
         if target is None:
             return
@@ -40,32 +55,20 @@ class MeleeAction(DirectedAction):
 
 class MovementAction(DirectedAction):
     def perform(self, engine: Engine, entity: Entity) -> None:
-        dest_x = entity.x + self.dx
-        dest_y = entity.y + self.dy
+        dest_x, dest_y = self.get_destination(entity=entity)
 
-        game_map = engine.game_map
-
-        if not game_map.in_bounds(dest_x, dest_y):
+        if not self.can_move(entity=entity, engine=engine):
             return
 
-        if not game_map.tiles["walkable"][dest_x, dest_y]:
-            return
-
-        if game_map.get_blocking_entity(x=dest_x, y=dest_y) is not None:
-            return
-
-        game_map.update_entity_location(entity=entity, x=dest_x, y=dest_y)
+        engine.game_map.update_entity_location(entity=entity, x=dest_x, y=dest_y)
         entity.move(dx=self.dx, dy=self.dy)
 
 
 class BumpAction(DirectedAction):
     def perform(self, engine: Engine, entity: Entity) -> None:
-        dest_x = entity.x + self.dx
-        dest_y = entity.y + self.dy
-
         action = (
             MeleeAction(dx=self.dx, dy=self.dy)
-            if engine.game_map.get_blocking_entity(dest_x, dest_y) is not None
+            if self.get_blocking_entity(entity=entity, engine=engine) is not None
             else MovementAction(dx=self.dx, dy=self.dy)
         )
 
