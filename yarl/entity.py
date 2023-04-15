@@ -50,10 +50,8 @@ class ActiveEntity(Entity):
         max_hp: int = 100,
         defense: int = 2,
         power: int = 5,
-        *,
-        blocking: bool = False,
     ) -> None:
-        super().__init__(x=x, y=y, char=char, color=color, name=name, blocking=blocking)
+        super().__init__(x=x, y=y, char=char, color=color, name=name, blocking=True)
 
         self.ai_cls = ai_cls
         self.path: deque[tuple[int, int]] = deque()
@@ -77,7 +75,6 @@ entity_factory = [
         max_hp=10,
         defense=0,
         power=3,
-        blocking=True,
     ),
     ActiveEntity(
         char="T",
@@ -87,6 +84,5 @@ entity_factory = [
         max_hp=16,
         defense=1,
         power=4,
-        blocking=True,
     ),
 ]
