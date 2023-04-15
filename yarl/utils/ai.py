@@ -61,8 +61,7 @@ class AttackingAI(BaseAI):
         # By taking a normalized step
         if not entity.path or len(entity.path) > 25:
             distance = math.sqrt(dx**2 + dy**2)
-            dx = int(dx // distance)
-            dy = int(dy // distance)
+            dx, dy = int(dx // distance), int(dy // distance)
             return MovementAction(dx=dx, dy=dy).perform(engine=engine, entity=entity)
 
         dest_x, dest_y = entity.get_destination_from_path()

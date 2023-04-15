@@ -64,7 +64,7 @@ class MovementAction(DirectedAction):
             return
 
         dest_x, dest_y = self.get_destination(entity=entity)
-        engine.game_map.update_entity_location(entity=entity, x=dest_x, y=dest_y)
+        engine.game_map.move_entity(entity=entity, x=dest_x, y=dest_y)
 
 
 class BumpAction(DirectedAction):
