@@ -3,14 +3,37 @@ import pytest
 import tcod
 import yarl.tile_types as tiles
 from tcod.map import compute_fov
-from yarl.entity import Entity
+from yarl.entity import ActiveEntity, Entity
 from yarl.exceptions import CollisionWithEntityException
 from yarl.gamemap import GameMap
+from yarl.utils.ai import AttackingAI
+
+
+@pytest.fixture
+def normal_entities() -> list[Entity]:
+    return [Entity(x=i, y=i) for i in range(10)]
+
+
+@pytest.fixture
+def active_entities() -> list[ActiveEntity]:
+    return [ActiveEntity(x=i, y=i, ai_cls=AttackingAI) for i in range(11, 20)]
+
+
+@pytest.fixture
+def entities(
+    normal_entities: list[Entity], active_entities: list[ActiveEntity]
+) -> list[Entity]:
+    return normal_entities + active_entities
 
 
 @pytest.fixture
 def game_map() -> GameMap:
     return GameMap(width=100, height=45, pov_radius=5)
+
+
+@pytest.fixture
+def game_map_with_entities(entities: list[Entity]) -> GameMap:
+    return GameMap(width=100, height=45, pov_radius=5, entities=entities)
 
 
 def test_initialization(game_map: GameMap) -> None:
@@ -26,6 +49,20 @@ def test_initialization(game_map: GameMap) -> None:
 
     assert np.all(game_map.explored == expected) == True
     assert np.all(game_map.visible == expected) == True
+
+
+def test_initialization_with_entities(
+    game_map_with_entities: GameMap, entities: list[Entity]
+) -> None:
+    assert all(entity in game_map_with_entities.entities for entity in entities)
+    assert all(
+        (entity.x, entity.y) in game_map_with_entities._entity_map
+        for entity in entities
+    )
+    assert all(
+        game_map_with_entities._entity_map[(entity.x, entity.y)] is entity
+        for entity in entities
+    )
 
 
 def test_inbounds(game_map: GameMap) -> None:
@@ -59,6 +96,33 @@ def test_update_fov(game_map: GameMap) -> None:
 
     assert np.all(game_map.visible == expected) == True
     assert np.all(game_map.explored == explored) == True
+
+
+def test_active_entities(
+    game_map_with_entities: GameMap, active_entities: list[ActiveEntity]
+) -> None:
+    entities = set(game_map_with_entities.active_entities)
+
+    assert all(entity in entities for entity in active_entities)
+
+
+def test_get_entity(game_map_with_entities: GameMap, entities: list[Entity]) -> None:
+    assert all(
+        game_map_with_entities.get_entity(x=entity.x, y=entity.y) is entity
+        for entity in entities
+    )
+
+
+def test_move_entity(game_map_with_entities: GameMap, entities: list[Entity]) -> None:
+    entity = entities[0]
+
+    game_map_with_entities.move_entity(entity=entity, x=50, y=22)
+
+    assert entity in game_map_with_entities.entities
+    assert (0, 0) not in game_map_with_entities._entity_map
+    assert (50, 22) in game_map_with_entities._entity_map
+    assert game_map_with_entities._entity_map[(50, 22)] is entity
+    assert entity.x == 50 and entity.y == 22
 
 
 def test_add_entity(game_map: GameMap) -> None:

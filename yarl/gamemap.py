@@ -58,10 +58,10 @@ class GameMap:
             if isinstance(entity, ActiveEntity) and entity.is_alive is True
         )
 
-    def get_entity_at_location(self, x: int, y: int) -> ActiveEntity | None:
+    def get_entity(self, x: int, y: int) -> Entity | None:
         return self._entity_map.get((x, y), None)
 
-    def update_entity_location(self, entity: Entity, x: int, y: int) -> None:
+    def move_entity(self, entity: Entity, x: int, y: int) -> None:
         self._entity_map.pop((entity.x, entity.y), None)
         self._entity_map[(x, y)] = entity
         entity.place(x=x, y=y)
