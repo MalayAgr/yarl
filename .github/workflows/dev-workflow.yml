@@ -38,4 +38,4 @@ jobs:
       - name: Test with pytest
         run: |
           source $VENV
-          pytest
+          pytest tests -v --cov=yarl/ --cov-report=xml:./coverage.xml --cov-report term-missing
