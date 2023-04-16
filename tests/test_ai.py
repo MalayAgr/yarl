@@ -8,7 +8,6 @@ import yarl.tile_types as tiles
 from yarl.engine import Engine
 from yarl.entity import ActiveEntity, Entity
 from yarl.gamemap import GameMap
-from yarl.input_handlers import EventHandler
 from yarl.utils.ai import AttackingAI, BaseAI
 
 
@@ -55,12 +54,7 @@ def ai() -> AttackingAI:
     return AttackingAI()
 
 
-def test_base_ai_get_path_to(
-    base_ai: BaseAI,
-    engine: Engine,
-    enemy: ActiveEntity,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
+def test_base_ai_get_path_to(base_ai: BaseAI, monkeypatch: pytest.MonkeyPatch) -> None:
     def mock_path_to(*args, **kwargs) -> np.ndarray:
         return np.array([[4, 4], [4, 3], [3, 2], [2, 1], [1, 1]])
 
