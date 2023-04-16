@@ -2,15 +2,10 @@ from __future__ import annotations
 
 import math
 from collections import deque
-from typing import TYPE_CHECKING
 
 import numpy as np
 import tcod
-from yarl.actions import Action, MeleeAction, MovementAction, WaitAction
-
-if TYPE_CHECKING:
-    from yarl.engine import Engine
-    from yarl.entity import ActiveEntity
+from yarl.actions import Action, MeleeAction, MovementAction
 
 
 class BaseAI(Action):
@@ -39,8 +34,7 @@ class BaseAI(Action):
 
 class AttackingAI(BaseAI):
     def perform(self) -> None:
-        engine = self.engine
-        entity = self.entity
+        engine, entity = self.engine, self.entity
 
         target = engine.player
 
