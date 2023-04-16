@@ -61,6 +61,10 @@ class GameMap:
     def get_entity(self, x: int, y: int) -> Entity | None:
         return self._entity_map.get((x, y), None)
 
+    def get_active_entity(self, x: int, y: int) -> ActiveEntity | None:
+        entity = self._entity_map.get((x, y), None)
+        return entity if isinstance(entity, ActiveEntity) else None
+
     def move_entity(self, entity: Entity, x: int, y: int) -> None:
         self._entity_map.pop((entity.x, entity.y), None)
         self._entity_map[(x, y)] = entity
