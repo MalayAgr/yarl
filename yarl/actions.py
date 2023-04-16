@@ -77,6 +77,7 @@ class MeleeAction(DirectedAction):
 
         if target is self.engine.player:
             print("You died!")
+            self.engine.handle_player_death()
         else:
             print(f"{target.name} has died!")
 
