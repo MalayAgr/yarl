@@ -63,6 +63,14 @@ class EventHandler(tcod.event.EventDispatch[Action]):
 
         self.engine = engine
 
+    def handle_events(self, events: Iterable[Any]) -> None:
+        raise NotImplementedError()
+
+    def ev_quit(self, event: tcod.event.Quit) -> Action | None:
+        raise SystemExit()
+
+
+class MainGameEventHandler(EventHandler):
     def handle_enemy_turns(self) -> None:
         game_map = self.engine.game_map
         player = self.engine.player
@@ -74,8 +82,8 @@ class EventHandler(tcod.event.EventDispatch[Action]):
             ai = entity.ai_cls(engine=self.engine, entity=entity)
             ai.perform()
 
-    def handle_events(self, events: Iterable[Any]) -> None:
-        for event in events:
+    def handle_events(self) -> None:
+        for event in tcod.event.wait():
             action = self.dispatch(event)
 
             if action is None:
@@ -85,10 +93,29 @@ class EventHandler(tcod.event.EventDispatch[Action]):
             self.handle_enemy_turns()
             self.engine.game_map.update_fov(self.engine.player)
 
-    def ev_quit(self, event: tcod.event.Quit) -> Action | None:
-        raise SystemExit()
-
     def ev_keydown(self, event: tcod.event.KeyDown) -> Action | None:
         key = event.sym
 
         return get_action(key=key, engine=self.engine, entity=self.engine.player)
+
+
+class GameOverEventHandler(EventHandler):
+    def handle_events(self) -> None:
+        for event in tcod.event.wait():
+            action = self.dispatch(event)
+
+            if action is None:
+                continue
+
+            action.perform()
+
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Action | None:
+        action: Action | None = None
+
+        key = event.sym
+
+        if key == tcod.event.K_ESCAPE:
+            action = EscapeAction(engine=self.engine, entity=self.engine.player)
+
+        # No valid key was pressed
+        return action
