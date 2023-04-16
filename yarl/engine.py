@@ -7,6 +7,8 @@ from tcod.context import Context
 from yarl.entity import ActiveEntity
 from yarl.gamemap import GameMap
 from yarl.input_handlers import GameOverEventHandler, MainGameEventHandler
+from yarl.interface import color
+from yarl.interface.message_log import MessageLog
 from yarl.interface.renderer import render_health_bar
 
 if TYPE_CHECKING:
@@ -22,14 +24,22 @@ class Engine:
         self.event_handler: EventHandler = MainGameEventHandler(engine=self)
         self.player = player
         self.game_map = game_map
+        self.message_log = MessageLog()
 
         self.game_map.update_fov(self.player)
+
+    def add_to_message_log(
+        self, text: str, fg: tuple[int, int, int] = color.WHITE, *, stack: bool = False
+    ) -> None:
+        self.message_log.add_message(text=text, fg=fg, stack=stack)
 
     def handle_player_death(self) -> None:
         self.event_handler = GameOverEventHandler(engine=self)
 
     def render(self, console: Console, context: Context) -> None:
         self.game_map.render(console=console)
+
+        self.message_log.render(console=console, x=21, y=45, width=40, height=5)
 
         render_health_bar(
             console=console,

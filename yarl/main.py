@@ -1,6 +1,7 @@
 import tcod
 from yarl.engine import Engine
 from yarl.entity import ActiveEntity
+from yarl.interface import color
 from yarl.mapgen import MapGenerator
 from yarl.utils.ai import AttackingAI
 
@@ -9,8 +10,8 @@ def main() -> None:
     screen_width = 100
     screen_height = 50
 
-    map_width = 100
-    map_height = 45
+    map_width = 80
+    map_height = 43
 
     tileset = tcod.tileset.load_tilesheet(
         "./assets/tileset.png", 32, 8, tcod.tileset.CHARMAP_TCOD
@@ -40,6 +41,11 @@ def main() -> None:
     game_map = map_generator.generate_map(player=player)
 
     engine = Engine(game_map=game_map, player=player)
+
+    engine.add_to_message_log(
+        text="Hello and welcome, adventurer, to yet another dungeon!",
+        fg=color.WELCOME_TEXT,
+    )
 
     with tcod.context.new(
         columns=screen_width,
