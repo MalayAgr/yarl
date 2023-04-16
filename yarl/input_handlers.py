@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, Iterable
 
 import tcod.event
 from tcod.event import KeySym
-from yarl.actions import Action, BumpAction, EscapeAction, MovementAction, WaitAction
+from yarl.actions import Action, BumpAction, EscapeAction, WaitAction
 
 if TYPE_CHECKING:
     from yarl.engine import Engine

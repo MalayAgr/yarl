@@ -1,8 +1,6 @@
 import tcod
 from yarl.engine import Engine
-from yarl.entity import ActiveEntity, Entity
-from yarl.gamemap import GameMap
-from yarl.input_handlers import EventHandler
+from yarl.entity import ActiveEntity
 from yarl.mapgen import MapGenerator
 from yarl.utils.ai import AttackingAI
 

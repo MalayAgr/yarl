@@ -4,7 +4,8 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from yarl.engine import Engine
-    from yarl.entity import Entity
+    from yarl.entity import ActiveEntity, Entity
+    from yarl.gamemap import GameMap
 
 
 class Action:
@@ -27,11 +28,15 @@ class WaitAction(Action):
 
 
 class DirectedAction(Action):
-    def __init__(self, engine: Engine, entity: Entity, dx: int, dy: int) -> None:
+    def __init__(self, engine: Engine, entity: ActiveEntity, dx: int, dy: int) -> None:
         super().__init__(engine, entity)
 
         self.dx = dx
         self.dy = dy
+
+    @property
+    def game_map(self) -> GameMap:
+        return self.engine.game_map
 
     @property
     def destination(self) -> tuple[int, int]:
@@ -40,17 +45,15 @@ class DirectedAction(Action):
     @property
     def blocking_entity(self) -> Entity | None:
         x, y = self.destination
-        return self.engine.game_map.get_blocking_entity(x=x, y=y)
+        return self.game_map.get_blocking_entity(x=x, y=y)
 
     @property
     def is_move_possible(self) -> bool:
         dest_x, dest_y = self.destination
 
-        game_map = self.engine.game_map
-
         return (
-            game_map.in_bounds(x=dest_x, y=dest_y)
-            and game_map.tiles["walkable"][dest_x, dest_y]
+            self.game_map.in_bounds(x=dest_x, y=dest_y)
+            and self.game_map.tiles["walkable"][dest_x, dest_y]
             and self.blocking_entity is None
         )
 
@@ -71,7 +74,7 @@ class MovementAction(DirectedAction):
             return
 
         dest_x, dest_y = self.destination
-        self.engine.game_map.move_entity(entity=self.entity, x=dest_x, y=dest_y)
+        self.game_map.move_entity(entity=self.entity, x=dest_x, y=dest_y)
 
 
 class BumpAction(DirectedAction):

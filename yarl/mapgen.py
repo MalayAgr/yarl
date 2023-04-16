@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import random
-from typing import TYPE_CHECKING, Iterator
+from typing import Iterator
 
 import tcod
 import yarl.tile_types as tiles

@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-from typing import Any, Iterable
-
 from tcod.console import Console
 from tcod.context import Context
-from yarl.entity import ActiveEntity, Entity
+from yarl.entity import ActiveEntity
 from yarl.gamemap import GameMap
 from yarl.input_handlers import EventHandler
 
