@@ -50,16 +50,47 @@ class ActiveEntity(Entity):
         max_hp: int = 100,
         defense: int = 2,
         power: int = 5,
+        speed: int = 8,
+        attack_speed: int = 10,
     ) -> None:
         super().__init__(x=x, y=y, char=char, color=color, name=name, blocking=True)
 
         self.ai_cls = ai_cls
         self.path: deque[tuple[int, int]] = deque()
-        self.fighter = Fighter(entity=self, max_hp=max_hp, defense=defense, power=power)
+        self.fighter = Fighter(
+            entity=self,
+            max_hp=max_hp,
+            defense=defense,
+            power=power,
+            attack_speed=attack_speed,
+        )
+        self.speed = speed
+        self.movement_wait = 0
+        self.attack_wait = 0
+
+    def move(self, dx: int, dy: int) -> None:
+        super().move(dx, dy)
+        self.movement_wait = self.speed
 
     @property
     def is_alive(self) -> bool:
         return self.ai_cls is not None
+
+    @property
+    def is_waiting_to_move(self) -> bool:
+        if self.movement_wait > 0:
+            self.movement_wait -= 1
+            return True
+
+        return False
+
+    @property
+    def is_waiting_to_attack(self) -> bool:
+        if self.attack_wait > 0:
+            self.attack_wait -= 1
+            return True
+
+        return False
 
     def get_destination_from_path(self) -> tuple[int, int] | None:
         if self.path:

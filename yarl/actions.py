@@ -53,51 +53,31 @@ class DirectedAction(Action):
         x, y = self.destination
         return self.game_map.get_active_entity(x=x, y=y)
 
-    @property
-    def is_move_possible(self) -> bool:
-        dest_x, dest_y = self.destination
-
-        return (
-            self.game_map.in_bounds(x=dest_x, y=dest_y)
-            and self.game_map.tiles["walkable"][dest_x, dest_y]
-            and self.blocking_entity is None
-        )
-
 
 class MeleeAction(DirectedAction):
     def perform(self) -> None:
-        entity = self.entity
         target = self.target
 
         if target is None:
             return
 
-        attack_desc = f"{entity.name.capitalize()} attacks {target.name}"
-
-        damage = entity.fighter.damage
-
-        if damage <= 0:
-            print(f"{attack_desc} but does no damage.")
-            return
-
-        print(f"{attack_desc} for {damage} hit points.")
-        target.fighter.hp -= damage
-
-        if target.is_alive:
-            return
-
-        if target is self.engine.player:
-            print("You have died!")
-        else:
-            print(f"{target.name.capitalize()} is dead!")
+        self.entity.fighter.attack(target=target, player=self.engine.player)
 
 
 class MovementAction(DirectedAction):
     def perform(self) -> None:
-        if not self.is_move_possible:
+        if self.entity.is_waiting_to_move:
             return
 
         dest_x, dest_y = self.destination
+
+        if not (
+            self.game_map.in_bounds(x=dest_x, y=dest_y)
+            and self.game_map.tiles["walkable"][dest_x, dest_y]
+            and self.blocking_entity is None
+        ):
+            return
+
         self.game_map.move_entity(entity=self.entity, x=dest_x, y=dest_y)
 
 

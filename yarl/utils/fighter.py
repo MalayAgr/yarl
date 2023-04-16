@@ -8,13 +8,19 @@ if TYPE_CHECKING:
 
 class Fighter:
     def __init__(
-        self, entity: ActiveEntity, max_hp: int, defense: int, power: int
+        self,
+        entity: ActiveEntity,
+        max_hp: int,
+        defense: int,
+        power: int,
+        attack_speed: int,
     ) -> None:
         self.entity = entity
         self.max_hp = max_hp
         self._hp = max_hp
         self.defense = defense
         self.power = power
+        self.attack_speed = attack_speed
 
     @property
     def hp(self) -> int:
@@ -27,9 +33,35 @@ class Fighter:
         if self._hp <= 0:
             self.die()
 
-    @property
-    def damage(self) -> int:
-        return self.power - self.defense
+    def attack(self, target: ActiveEntity, player: ActiveEntity) -> None:
+        entity = self.entity
+
+        if entity.is_waiting_to_attack:
+            return
+
+        attack_desc = f"{entity.name.capitalize()} attacks {target.name}"
+
+        damage = self.power - self.defense
+
+        if damage <= 0:
+            print(f"{attack_desc} but does no damage.")
+            return
+
+        print(f"{attack_desc} for {damage} hit points.")
+
+        target.fighter.hp -= damage
+        entity.attack_wait = self.attack_speed
+
+        if target.is_alive:
+            return
+
+        if target is player:
+            print("You have died!")
+        else:
+            print(f"{target.name.capitalize()} is dead!")
+
+    def take_damage(self, damage: int) -> None:
+        self.hp -= damage
 
     def die(self) -> None:
         self.entity.char = "%"
