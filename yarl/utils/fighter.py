@@ -33,32 +33,16 @@ class Fighter:
         if self._hp <= 0:
             self.die()
 
-    def attack(self, target: ActiveEntity, player: ActiveEntity) -> None:
+    def attack(self, target: ActiveEntity) -> tuple[bool, int]:
         entity = self.entity
-
-        if entity.is_waiting_to_attack:
-            return
-
-        attack_desc = f"{entity.name.capitalize()} attacks {target.name}"
 
         damage = self.power - self.defense
 
-        if damage <= 0:
-            print(f"{attack_desc} but does no damage.")
-            return
+        if damage > 0:
+            target.fighter.hp -= damage
 
-        print(f"{attack_desc} for {damage} hit points.")
-
-        target.fighter.hp -= damage
         entity.attack_wait = self.attack_speed
-
-        if target.is_alive:
-            return
-
-        if target is player:
-            print("You have died!")
-        else:
-            print(f"{target.name.capitalize()} is dead!")
+        return target.is_alive, damage
 
     def take_damage(self, damage: int) -> None:
         self.hp -= damage

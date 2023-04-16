@@ -56,12 +56,29 @@ class DirectedAction(Action):
 
 class MeleeAction(DirectedAction):
     def perform(self) -> None:
+        entity = self.entity
         target = self.target
 
-        if target is None:
+        if entity.is_waiting_to_attack or target is None:
             return
 
-        self.entity.fighter.attack(target=target, player=self.engine.player)
+        target_alive, damage = self.entity.fighter.attack(target=target)
+
+        attack_desc = f"{entity.name.capitalize()} attacks {target.name}"
+
+        if damage <= 0:
+            print(f"{attack_desc} but does no damage.")
+            return
+
+        print(f"{attack_desc} for {damage} hit points.")
+
+        if target_alive is True:
+            return
+
+        if target is self.engine.player:
+            print("You died!")
+        else:
+            print(f"{target.name} has died!")
 
 
 class MovementAction(DirectedAction):
