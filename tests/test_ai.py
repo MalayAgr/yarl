@@ -41,15 +41,13 @@ def game_map(player: ActiveEntity, enemy: ActiveEntity) -> GameMap:
 
 @pytest.fixture
 def engine(player: ActiveEntity, game_map: GameMap) -> Engine:
-    event_handler = EventHandler()
-
-    engine = Engine(event_handler=event_handler, game_map=game_map, player=player)
+    engine = Engine(game_map=game_map, player=player)
     return engine
 
 
 @pytest.fixture
-def base_ai() -> BaseAI:
-    return BaseAI()
+def base_ai(engine: Engine, enemy: ActiveEntity) -> BaseAI:
+    return BaseAI(engine=engine, entity=enemy)
 
 
 @pytest.fixture
@@ -68,7 +66,7 @@ def test_base_ai_get_path_to(
 
     monkeypatch.setattr(tcod.path.Pathfinder, "path_to", mock_path_to)
 
-    path = base_ai.get_path_to(dest_x=1, dest_y=1, engine=engine, entity=enemy)
+    path = base_ai.get_path_to(dest_x=1, dest_y=1)
 
     assert isinstance(path, deque)
     assert len(path) == 4
