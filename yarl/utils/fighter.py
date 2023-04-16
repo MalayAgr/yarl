@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from yarl.utils import RenderOrder
+
 if TYPE_CHECKING:
     from yarl.entity import ActiveEntity
 
@@ -52,4 +54,5 @@ class Fighter:
         self.entity.color = (191, 0, 0)
         self.entity.blocks_movement = False
         self.entity.ai_cls = None
+        self.entity.rendering_layer = RenderOrder.CORPSE
         self.entity.name = f"remains of {self.entity.name}"

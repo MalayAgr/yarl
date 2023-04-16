@@ -2,17 +2,11 @@ from __future__ import annotations
 
 import copy
 from collections import deque
-from enum import Enum, auto
 from typing import Type
 
+from yarl.utils import RenderOrder
 from yarl.utils.ai import AttackingAI, BaseAI
 from yarl.utils.fighter import Fighter
-
-
-class RenderingLayer(Enum):
-    FIRST = auto()
-    SECOND = auto()
-    THIRD = auto()
 
 
 class Entity:
@@ -25,7 +19,7 @@ class Entity:
         name: str = "<Unnamed>",
         *,
         blocking: bool = False,
-        rendering_layer: RenderingLayer = RenderingLayer.FIRST,
+        rendering_layer: RenderOrder = RenderOrder.CORPSE,
     ) -> None:
         self.x = x
         self.y = y
@@ -69,7 +63,7 @@ class ActiveEntity(Entity):
             color=color,
             name=name,
             blocking=True,
-            rendering_layer=RenderingLayer.THIRD,
+            rendering_layer=RenderOrder.ACTIVE_ENTITY,
         )
 
         self.ai_cls = ai_cls
