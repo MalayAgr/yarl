@@ -2,10 +2,17 @@ from __future__ import annotations
 
 import copy
 from collections import deque
+from enum import Enum, auto
 from typing import Type
 
 from yarl.utils.ai import AttackingAI, BaseAI
 from yarl.utils.fighter import Fighter
+
+
+class RenderingLayer(Enum):
+    FIRST = auto()
+    SECOND = auto()
+    THIRD = auto()
 
 
 class Entity:
@@ -18,6 +25,7 @@ class Entity:
         name: str = "<Unnamed>",
         *,
         blocking: bool = False,
+        rendering_layer: RenderingLayer = RenderingLayer.FIRST,
     ) -> None:
         self.x = x
         self.y = y
@@ -25,6 +33,7 @@ class Entity:
         self.color = color
         self.name = name
         self.blocking = blocking
+        self.rendering_layer = rendering_layer
 
     @classmethod
     def fromentity(cls, entity: Entity) -> Entity:
@@ -53,7 +62,15 @@ class ActiveEntity(Entity):
         speed: int = 8,
         attack_speed: int = 10,
     ) -> None:
-        super().__init__(x=x, y=y, char=char, color=color, name=name, blocking=True)
+        super().__init__(
+            x=x,
+            y=y,
+            char=char,
+            color=color,
+            name=name,
+            blocking=True,
+            rendering_layer=RenderingLayer.THIRD,
+        )
 
         self.ai_cls = ai_cls
         self.path: deque[tuple[int, int]] = deque()
@@ -78,19 +95,13 @@ class ActiveEntity(Entity):
 
     @property
     def is_waiting_to_move(self) -> bool:
-        if self.movement_wait > 0:
-            self.movement_wait -= 1
-            return True
-
-        return False
+        self.movement_wait = max(0, self.movement_wait - 1)
+        return self.movement_wait > 0
 
     @property
     def is_waiting_to_attack(self) -> bool:
-        if self.attack_wait > 0:
-            self.attack_wait -= 1
-            return True
-
-        return False
+        self.attack_wait = max(0, self.attack_wait - 1)
+        return self.attack_wait > 0
 
     def get_destination_from_path(self) -> tuple[int, int] | None:
         if self.path:
