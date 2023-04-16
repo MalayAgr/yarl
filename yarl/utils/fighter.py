@@ -41,7 +41,7 @@ class Fighter:
         damage = self.power - self.defense
 
         if damage > 0:
-            target.fighter.hp -= damage
+            target.fighter.take_damage(damage=damage)
 
         entity.attack_wait = self.attack_speed
         return target.is_alive, damage
@@ -52,7 +52,7 @@ class Fighter:
     def die(self) -> None:
         self.entity.char = "%"
         self.entity.color = (191, 0, 0)
-        self.entity.blocks_movement = False
+        self.entity.blocking = False
         self.entity.ai_cls = None
         self.entity.rendering_layer = RenderOrder.CORPSE
         self.entity.name = f"remains of {self.entity.name}"

@@ -7,6 +7,7 @@ from tcod.context import Context
 from yarl.entity import ActiveEntity
 from yarl.gamemap import GameMap
 from yarl.input_handlers import GameOverEventHandler, MainGameEventHandler
+from yarl.interface.renderer import render_health_bar
 
 if TYPE_CHECKING:
     from yarl.input_handlers import EventHandler
@@ -30,10 +31,11 @@ class Engine:
     def render(self, console: Console, context: Context) -> None:
         self.game_map.render(console=console)
 
-        console.print(
-            x=1,
-            y=47,
-            string=f"HP: {self.player.fighter.hp}/{self.player.fighter.max_hp}",
+        render_health_bar(
+            console=console,
+            current_hp=self.player.fighter.hp,
+            max_hp=self.player.fighter.max_hp,
+            total_width=20,
         )
 
         context.present(console)
