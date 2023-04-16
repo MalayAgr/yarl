@@ -25,6 +25,7 @@ def main() -> None:
         defense=2,
         power=5,
         speed=2,
+        attack_speed=8,
     )
 
     map_generator = MapGenerator(

@@ -2,13 +2,23 @@ from __future__ import annotations
 
 import math
 from collections import deque
+from typing import TYPE_CHECKING
 
 import numpy as np
 import tcod
 from yarl.actions import Action, MeleeAction, MovementAction
 
+if TYPE_CHECKING:
+    from yarl.engine import Engine
+    from yarl.entity import ActiveEntity
+
 
 class BaseAI(Action):
+    def __init__(self, engine: Engine, entity: ActiveEntity) -> None:
+        super().__init__(engine=engine, entity=entity)
+
+        self.entity: ActiveEntity
+
     def get_path_to(self, dest_x: int, dest_y: int) -> deque[tuple[int, int]]:
         engine = self.engine
 
