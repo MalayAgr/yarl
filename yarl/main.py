@@ -39,9 +39,7 @@ def main() -> None:
 
     game_map = map_generator.generate_map(player=player)
 
-    event_handler = EventHandler()
-
-    engine = Engine(event_handler=event_handler, game_map=game_map, player=player)
+    engine = Engine(game_map=game_map, player=player)
 
     with tcod.context.new(
         columns=screen_width,
@@ -57,7 +55,7 @@ def main() -> None:
 
             events = tcod.event.wait()
 
-            engine.handle_events(events)
+            engine.event_handler.handle_events(events)
 
 
 if __name__ == "__main__":
