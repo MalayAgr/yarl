@@ -29,8 +29,9 @@ class WaitAction(Action):
 
 class DirectedAction(Action):
     def __init__(self, engine: Engine, entity: ActiveEntity, dx: int, dy: int) -> None:
-        super().__init__(engine, entity)
+        super().__init__(engine=engine, entity=entity)
 
+        self.entity: ActiveEntity
         self.dx = dx
         self.dy = dy
 
@@ -48,6 +49,11 @@ class DirectedAction(Action):
         return self.game_map.get_blocking_entity(x=x, y=y)
 
     @property
+    def target(self) -> ActiveEntity | None:
+        x, y = self.destination
+        return self.game_map.get_active_entity(x=x, y=y)
+
+    @property
     def is_move_possible(self) -> bool:
         dest_x, dest_y = self.destination
 
@@ -60,12 +66,30 @@ class DirectedAction(Action):
 
 class MeleeAction(DirectedAction):
     def perform(self) -> None:
-        target = self.blocking_entity
+        entity = self.entity
+        target = self.target
 
         if target is None:
             return
 
-        print(f"You kick the {target.name}!")
+        attack_desc = f"{entity.name.capitalize()} attacks {target.name}"
+
+        damage = entity.fighter.damage
+
+        if damage <= 0:
+            print(f"{attack_desc} but does no damage.")
+            return
+
+        print(f"{attack_desc} for {damage} hit points.")
+        target.fighter.hp -= damage
+
+        if target.is_alive:
+            return
+
+        if target is self.engine.player:
+            print("You have died!")
+        else:
+            print(f"{target.name.capitalize()} is dead!")
 
 
 class MovementAction(DirectedAction):
