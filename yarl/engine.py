@@ -24,6 +24,7 @@ class Engine:
         self.event_handler: EventHandler = MainGameEventHandler(engine=self)
         self.player = player
         self.game_map = game_map
+        self.mouse_location: tuple[int, int] = (0, 0)
         self.message_log = MessageLog()
 
         self.update_fov()
@@ -50,3 +51,7 @@ class Engine:
             max_hp=self.player.fighter.max_hp,
             total_width=20,
         )
+
+        x, y = self.mouse_location
+        names = self.game_map.get_names_at_location(x=x, y=y)
+        console.print(x=x, y=y, string=names)

@@ -82,6 +82,16 @@ class GameMap:
         self.entities.add(entity)
         self._entity_map[(x, y)] = entity
 
+    def get_names_at_location(self, x: int, y: int) -> str:
+        if not self.in_bounds(x, y) or not self.visible[x, y]:
+            return ""
+
+        names = ", ".join(
+            entity.name for entity in self.entities if entity.x == x and entity.y == y
+        )
+
+        return names.capitalize()
+
     def render(self, console: Console) -> None:
         console.tiles_rgb[0 : self.width, 0 : self.height] = np.select(
             condlist=[self.visible, self.explored],
