@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING
 from tcod.console import Console
 from tcod.context import Context
 from yarl.entity import ActiveEntity
-from yarl.gamemap import GameMap
 from yarl.event_handlers import GameOverEventHandler, MainGameEventHandler
+from yarl.gamemap import GameMap
 from yarl.interface import color
 from yarl.interface.message_log import MessageLog
 from yarl.interface.renderer import render_health_bar
@@ -39,7 +39,7 @@ class Engine:
     def handle_player_death(self) -> None:
         self.event_handler = GameOverEventHandler(engine=self)
 
-    def render(self, console: Console, context: Context) -> None:
+    def render(self, console: Console) -> None:
         self.game_map.render(console=console)
 
         self.message_log.render(console=console, x=21, y=45, width=40, height=5)
@@ -50,6 +50,3 @@ class Engine:
             max_hp=self.player.fighter.max_hp,
             total_width=20,
         )
-
-        context.present(console)
-        console.clear()
