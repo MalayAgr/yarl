@@ -25,7 +25,7 @@ def main() -> None:
         max_hp=30,
         defense=2,
         power=5,
-        speed=2,
+        speed=0,
         attack_speed=8,
     )
 
