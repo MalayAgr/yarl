@@ -59,18 +59,23 @@ def get_action(key: KeySym, engine: Engine, entity: Entity) -> Action | None:
 
 
 class EventHandler(tcod.event.EventDispatch[Action]):
-    def __init__(self, engine: Engine) -> None:
+    def __init__(self, engine: Engine, timeout: float = 1) -> None:
         super().__init__()
 
         self.engine = engine
+        self.timeout = timeout
 
     def on_render(self, console: Console) -> None:
         self.engine.render(console=console)
 
     def handle_events(self, context: tcod.context.Context) -> None:
-        for event in tcod.event.wait(0.5):
+        for event in tcod.event.wait(self.timeout):
             context.convert_event(event)
             self.dispatch(event)
+
+    def ev_mousemotion(self, event: tcod.event.MouseMotion) -> None:
+        if self.engine.game_map.in_bounds(event.tile.x, event.tile.y):
+            self.engine.mouse_location = event.tile.x, event.tile.y
 
     def ev_quit(self, event: tcod.event.Quit) -> Action | None:
         raise SystemExit()
@@ -89,8 +94,14 @@ class MainGameEventHandler(EventHandler):
             ai.perform()
 
     def handle_events(self, context: tcod.context.Context) -> None:
-        for event in tcod.event.wait(timeout=0.5):
+        last_mouse_action: tcod.event.Event = None
+
+        for event in tcod.event.wait(timeout=self.timeout):
             context.convert_event(event=event)
+
+            if isinstance(event, tcod.event.MouseMotion):
+                last_mouse_action = event
+                continue
 
             action = self.dispatch(event)
 
@@ -100,8 +111,11 @@ class MainGameEventHandler(EventHandler):
             action.perform()
             self.engine.update_fov()
 
-        self.handle_enemy_turns()
-        self.engine.update_fov()
+        if last_mouse_action is not None:
+            self.dispatch(last_mouse_action)
+        else:
+            self.handle_enemy_turns()
+            self.engine.update_fov()
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Action | None:
         key = event.sym
@@ -111,7 +125,7 @@ class MainGameEventHandler(EventHandler):
 
 class GameOverEventHandler(EventHandler):
     def handle_events(self, context: tcod.context.Context) -> None:
-        for event in tcod.event.wait(timeout=0.5):
+        for event in tcod.event.wait(timeout=self.timeout):
             context.convert_event(event=event)
 
             action = self.dispatch(event)
