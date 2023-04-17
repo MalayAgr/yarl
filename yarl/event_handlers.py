@@ -43,13 +43,6 @@ MOVE_KEYS: dict[KeySym, Deviation] = {
 
 WAIT_KEYS: set[KeySym] = {tcod.event.K_KP_5}
 
-CURSOR_Y_KEYS = {
-    tcod.event.K_UP: -1,
-    tcod.event.K_DOWN: 1,
-    tcod.event.K_PAGEUP: -10,
-    tcod.event.K_PAGEDOWN: 10,
-}
-
 
 class EventHandler(tcod.event.EventDispatch[Action]):
     def __init__(self, engine: Engine, timeout: float = 1) -> None:
@@ -162,6 +155,14 @@ class GameOverEventHandler(EventHandler):
 class HistoryEventHandler(EventHandler):
     """Print the history on a larger window which can be navigated."""
 
+
+    CURSOR_Y_KEYS = {
+        tcod.event.K_UP: -1,
+        tcod.event.K_DOWN: 1,
+        tcod.event.K_PAGEUP: -10,
+        tcod.event.K_PAGEDOWN: 10,
+    }
+
     def __init__(self, engine: Engine):
         super().__init__(engine)
         self.log_length = len(engine.message_log.messages)
@@ -192,8 +193,9 @@ class HistoryEventHandler(EventHandler):
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> None:
         # Fancy conditional movement to make it feel right.
-        if event.sym in CURSOR_Y_KEYS:
-            adjust = CURSOR_Y_KEYS[event.sym]
+        if event.sym in self.CURSOR_Y_KEYS:
+            adjust = self.CURSOR_Y_KEYS[event.sym]
+
             if adjust < 0 and self.cursor == 0:
                 # Only move from the top to the bottom when you're on the edge.
                 self.cursor = self.log_length - 1
