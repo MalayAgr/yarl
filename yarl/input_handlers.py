@@ -90,10 +90,10 @@ class MainGameEventHandler(EventHandler):
                 continue
 
             action.perform()
-            self.engine.game_map.update_fov(self.engine.player)
+            self.engine.update_fov()
 
         self.handle_enemy_turns()
-        self.engine.game_map.update_fov(self.engine.player)
+        self.engine.update_fov()
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Action | None:
         key = event.sym
