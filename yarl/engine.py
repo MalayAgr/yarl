@@ -6,13 +6,13 @@ from tcod.console import Console
 from tcod.context import Context
 from yarl.entity import ActiveEntity
 from yarl.gamemap import GameMap
-from yarl.input_handlers import GameOverEventHandler, MainGameEventHandler
+from yarl.event_handlers import GameOverEventHandler, MainGameEventHandler
 from yarl.interface import color
 from yarl.interface.message_log import MessageLog
 from yarl.interface.renderer import render_health_bar
 
 if TYPE_CHECKING:
-    from yarl.input_handlers import EventHandler
+    from yarl.event_handlers import EventHandler
 
 
 class Engine:
