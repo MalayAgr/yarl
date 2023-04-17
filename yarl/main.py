@@ -57,6 +57,7 @@ def main() -> None:
         root_console = tcod.Console(width=screen_width, height=screen_height, order="F")
 
         while True:
+            root_console.clear()
             engine.render(console=root_console, context=context)
 
             engine.event_handler.handle_events()

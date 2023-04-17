@@ -145,7 +145,7 @@ def test_connect_rooms_vertical(
         assert map_generator.game_map.tiles[x, y] == tiles.floor
 
 
-def test_generate_map(map_generator: MapGenerator, monkeypatch: MonkeyPatch) -> None:
+def test_generate_map(map_generator: MapGenerator) -> None:
     player = Entity(x=0, y=0, char="@", color=(255, 255, 255))
 
     game_map = map_generator.generate_map(player=player)

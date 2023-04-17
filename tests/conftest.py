@@ -3,7 +3,7 @@ from typing import Callable
 import pytest
 import tcod.event
 from tcod.event import KeyDown
-from yarl.input_handlers import EventHandler
+from yarl.event_handlers import EventHandler
 
 
 @pytest.fixture(scope="session")
