@@ -83,6 +83,10 @@ class ActiveEntity(Entity):
         super().move(dx, dy)
         self.movement_wait = self.speed
 
+    def place(self, x: int, y: int) -> None:
+        super().place(x, y)
+        self.movement_wait = self.speed
+
     @property
     def is_alive(self) -> bool:
         return self.ai_cls is not None

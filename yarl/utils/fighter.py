@@ -55,4 +55,3 @@ class Fighter:
         self.entity.blocking = False
         self.entity.ai_cls = None
         self.entity.rendering_layer = RenderOrder.CORPSE
-        self.entity.name = f"remains of {self.entity.name}"

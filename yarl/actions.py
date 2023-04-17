@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from yarl.interface import color
+
 if TYPE_CHECKING:
     from yarl.engine import Engine
     from yarl.entity import ActiveEntity, Entity
@@ -56,30 +58,35 @@ class DirectedAction(Action):
 
 class MeleeAction(DirectedAction):
     def perform(self) -> None:
-        entity = self.entity
-        target = self.target
+        entity, target = self.entity, self.target
 
-        if entity.is_waiting_to_attack or target is None:
+        if entity.is_waiting_to_attack or not target:
             return
 
-        target_alive, damage = self.entity.fighter.attack(target=target)
+        target_alive, damage = entity.fighter.attack(target)
 
         attack_desc = f"{entity.name.capitalize()} attacks {target.name}"
+        attack_color = (
+            color.PLAYER_ATTACK if entity is self.engine.player else color.ENEMY_ATTACK
+        )
 
         if damage <= 0:
-            print(f"{attack_desc} but does no damage.")
-            return
-
-        print(f"{attack_desc} for {damage} hit points.")
-
-        if target_alive is True:
-            return
-
-        if target is self.engine.player:
-            print("You died!")
-            self.engine.handle_player_death()
+            self.engine.add_to_message_log(
+                f"{attack_desc} but does no damage.", fg=attack_color
+            )
         else:
-            print(f"{target.name} has died!")
+            self.engine.add_to_message_log(
+                f"{attack_desc} for {damage} hit points.", fg=attack_color
+            )
+
+        if not target_alive:
+            if target is self.engine.player:
+                self.engine.add_to_message_log(text="You died!", fg=color.PLAYER_DIE)
+                self.engine.handle_player_death()
+            else:
+                self.engine.add_to_message_log(
+                    text=f"{target.name} is dead!", fg=color.ENEMY_DIE
+                )
 
 
 class MovementAction(DirectedAction):
