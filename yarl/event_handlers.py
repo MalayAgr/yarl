@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Iterable
 
 import tcod.event
+from tcod import Console
 from tcod.event import KeySym
 from yarl.actions import Action, BumpAction, EscapeAction, WaitAction
 
@@ -63,8 +64,13 @@ class EventHandler(tcod.event.EventDispatch[Action]):
 
         self.engine = engine
 
-    def handle_events(self, events: Iterable[Any]) -> None:
-        raise NotImplementedError()
+    def on_render(self, console: Console) -> None:
+        self.engine.render(console=console)
+
+    def handle_events(self, context: tcod.context.Context) -> None:
+        for event in tcod.event.wait(0.5):
+            context.convert_event(event)
+            self.dispatch(event)
 
     def ev_quit(self, event: tcod.event.Quit) -> Action | None:
         raise SystemExit()
@@ -82,8 +88,10 @@ class MainGameEventHandler(EventHandler):
             ai = entity.ai_cls(engine=self.engine, entity=entity)
             ai.perform()
 
-    def handle_events(self) -> None:
+    def handle_events(self, context: tcod.context.Context) -> None:
         for event in tcod.event.wait(timeout=0.5):
+            context.convert_event(event=event)
+
             action = self.dispatch(event)
 
             if action is None:
@@ -102,8 +110,10 @@ class MainGameEventHandler(EventHandler):
 
 
 class GameOverEventHandler(EventHandler):
-    def handle_events(self) -> None:
-        for event in tcod.event.wait():
+    def handle_events(self, context: tcod.context.Context) -> None:
+        for event in tcod.event.wait(timeout=0.5):
+            context.convert_event(event=event)
+
             action = self.dispatch(event)
 
             if action is None:
