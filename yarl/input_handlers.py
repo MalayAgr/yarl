@@ -83,15 +83,17 @@ class MainGameEventHandler(EventHandler):
             ai.perform()
 
     def handle_events(self) -> None:
-        for event in tcod.event.wait():
+        for event in tcod.event.wait(timeout=0.5):
             action = self.dispatch(event)
 
             if action is None:
                 continue
 
             action.perform()
-            self.handle_enemy_turns()
             self.engine.game_map.update_fov(self.engine.player)
+
+        self.handle_enemy_turns()
+        self.engine.game_map.update_fov(self.engine.player)
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Action | None:
         key = event.sym
