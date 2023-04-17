@@ -44,11 +44,13 @@ class GameMap:
         )
         self.explored |= self.visible
 
-    def get_blocking_entity(self, x: int, y: int) -> Entity | None:
-        entity = self._entity_map.get((x, y), None)
+    def get_entity(self, x: int, y: int) -> Entity | None:
+        return self._entity_map.get((x, y), None)
 
-        if entity is not None:
-            return entity if entity.blocking is True else None
+    def get_blocking_entity(self, x: int, y: int) -> Entity | None:
+        entity = self.get_entity(x=x, y=y)
+
+        return entity if entity is not None and entity.blocking is True else None
 
     @property
     def active_entities(self) -> Iterable[ActiveEntity]:
@@ -58,11 +60,8 @@ class GameMap:
             if isinstance(entity, ActiveEntity) and entity.is_alive is True
         )
 
-    def get_entity(self, x: int, y: int) -> Entity | None:
-        return self._entity_map.get((x, y), None)
-
     def get_active_entity(self, x: int, y: int) -> ActiveEntity | None:
-        entity = self._entity_map.get((x, y), None)
+        entity = self.get_entity(x=x, y=y)
         return entity if isinstance(entity, ActiveEntity) else None
 
     def move_entity(self, entity: Entity, x: int, y: int) -> None:
