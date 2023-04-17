@@ -26,12 +26,15 @@ class Engine:
         self.game_map = game_map
         self.message_log = MessageLog()
 
-        self.game_map.update_fov(self.player)
+        self.update_fov()
 
     def add_to_message_log(
         self, text: str, fg: tuple[int, int, int] = color.WHITE, *, stack: bool = False
     ) -> None:
         self.message_log.add_message(text=text, fg=fg, stack=stack)
+
+    def update_fov(self) -> None:
+        self.game_map.update_fov(player=self.player)
 
     def handle_player_death(self) -> None:
         self.event_handler = GameOverEventHandler(engine=self)
