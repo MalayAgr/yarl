@@ -113,6 +113,19 @@ def test_get_entities(game_map_with_entities: GameMap, entities: list[Entity]) -
     )
 
 
+def test_get_active_entity(
+    game_map_with_entities: GameMap, active_entities: list[ActiveEntity]
+) -> None:
+    assert all(
+        game_map_with_entities.get_active_entity(x=entity.x, y=entity.y) is entity
+        for entity in active_entities
+    )
+
+
+def test_get_active_entity_no_entity(game_map: GameMap) -> None:
+    assert game_map.get_active_entity(x=50, y=22) is None
+
+
 def test_move_entity(game_map_with_entities: GameMap, entities: list[Entity]) -> None:
     entity = entities[0]
 
@@ -161,3 +174,34 @@ def test_add_entity_error(game_map: GameMap) -> None:
 
     with pytest.raises(CollisionWithEntityException) as _:
         game_map.add_entity(entity=entity, x=50, y=45)
+
+
+def test_get_names_at_location(game_map: GameMap) -> None:
+    entity1 = Entity(name="entity 1")
+    entity2 = Entity(name="entity 2")
+
+    game_map.visible[0, 0] = True
+
+    game_map.add_entity(entity=entity1, x=0, y=0)
+    game_map.add_entity(entity=entity2, x=0, y=0)
+
+    expected = ["Entity 1", "Entity 2"]
+
+    names = game_map.get_names_at_location(x=0, y=0)
+    result = names.split(", ")
+
+    assert all(name in result for name in expected)
+
+
+def test_get_names_at_location_invisible(game_map: GameMap) -> None:
+    entity = Entity(name="entity")
+
+    game_map.add_entity(entity=entity, x=0, y=0)
+
+    assert game_map.get_names_at_location(x=0, y=0) == ""
+
+
+def test_get_names_at_location_no_entities(game_map: GameMap) -> None:
+    game_map.visible[0, 0] = True
+
+    assert game_map.get_names_at_location(x=0, y=0) == ""
