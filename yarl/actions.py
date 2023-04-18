@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from yarl.exceptions import ImpossibleActionException
 from yarl.interface import color
 
 if TYPE_CHECKING:
@@ -101,7 +102,7 @@ class MovementAction(DirectedAction):
             and self.game_map.tiles["walkable"][dest_x, dest_y]
             and self.blocking_entity is None
         ):
-            return
+            raise ImpossibleActionException("That way is blocked.")
 
         self.game_map.move_entity(entity=self.entity, x=dest_x, y=dest_y)
 
