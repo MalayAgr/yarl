@@ -23,6 +23,7 @@ class Fighter:
         self.defense = defense
         self.power = power
         self.attack_speed = attack_speed
+        self.attack_wait = 0
 
     @property
     def hp(self) -> int:
@@ -35,15 +36,18 @@ class Fighter:
         if self._hp <= 0:
             self.die()
 
-    def attack(self, target: ActiveEntity) -> tuple[bool, int]:
-        entity = self.entity
+    @property
+    def is_waiting_to_attack(self) -> bool:
+        self.attack_wait = max(0, self.attack_wait - 1)
+        return self.attack_wait > 0
 
+    def attack(self, target: ActiveEntity) -> tuple[bool, int]:
         damage = self.power - self.defense
 
         if damage > 0:
             target.fighter.take_damage(damage=damage)
 
-        entity.attack_wait = self.attack_speed
+        self.attack_wait = self.attack_speed
         return target.is_alive, damage
 
     def heal(self, amount: int) -> int:
@@ -60,4 +64,4 @@ class Fighter:
         self.entity.color = (191, 0, 0)
         self.entity.blocking = False
         self.entity.ai_cls = None
-        self.entity.rendering_layer = RenderOrder.CORPSE
+        self.entity.render_order = RenderOrder.CORPSE

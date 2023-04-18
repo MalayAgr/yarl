@@ -123,7 +123,7 @@ class GameMap:
             default=tiles.SHROUD,
         )
 
-        for entity in sorted(self.entities, key=lambda x: x.rendering_layer.value):
+        for entity in sorted(self.entities, key=lambda x: x.render_order.value):
             if self.visible[entity.x, entity.y]:
                 console.print(
                     x=entity.x, y=entity.y, string=entity.char, fg=entity.color
