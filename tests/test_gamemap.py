@@ -60,7 +60,7 @@ def test_initialization_with_entities(
         for entity in entities
     )
     assert all(
-        game_map_with_entities._entity_map[(entity.x, entity.y)] is entity
+        entity in game_map_with_entities._entity_map[(entity.x, entity.y)]
         for entity in entities
     )
 
@@ -106,9 +106,9 @@ def test_active_entities(
     assert all(entity in entities for entity in active_entities)
 
 
-def test_get_entity(game_map_with_entities: GameMap, entities: list[Entity]) -> None:
+def test_get_entities(game_map_with_entities: GameMap, entities: list[Entity]) -> None:
     assert all(
-        game_map_with_entities.get_entity(x=entity.x, y=entity.y) is entity
+        entity in game_map_with_entities.get_entities(x=entity.x, y=entity.y)
         for entity in entities
     )
 
@@ -119,9 +119,9 @@ def test_move_entity(game_map_with_entities: GameMap, entities: list[Entity]) ->
     game_map_with_entities.move_entity(entity=entity, x=50, y=22)
 
     assert entity in game_map_with_entities.entities
-    assert (0, 0) not in game_map_with_entities._entity_map
+    assert len(game_map_with_entities._entity_map[(0, 0)]) == 0
     assert (50, 22) in game_map_with_entities._entity_map
-    assert game_map_with_entities._entity_map[(50, 22)] is entity
+    assert entity in game_map_with_entities._entity_map[(50, 22)]
     assert entity.x == 50 and entity.y == 22
 
 
@@ -143,7 +143,7 @@ def test_add_entity(game_map: GameMap) -> None:
     assert all(location in game_map._entity_map for location in locations)
 
     assert all(
-        game_map._entity_map[location] is entity
+        entity in game_map._entity_map[location]
         for location, entity in zip(locations, entities)
     )
 

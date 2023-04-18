@@ -164,3 +164,7 @@ def test_generate_map(map_generator: MapGenerator) -> None:
 
     assert player in game_map.entities
     assert (player.x, player.y) in game_map._entity_map
+
+    max_enemies = len(map_generator.rooms) * map_generator.max_enemies_per_room
+
+    assert len(game_map.entities) <= max_enemies + 1
