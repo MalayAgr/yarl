@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Iterable
+from collections import defaultdict
+from typing import TYPE_CHECKING, Iterable, Type
 
 import numpy as np
 import tcod
@@ -25,7 +26,10 @@ class GameMap:
         self.width, self.height = width, height
         self.pov_radius = pov_radius
         self.entities = set(entities)
-        self._entity_map = {(entity.x, entity.y): entity for entity in entities}
+        self._entity_map = defaultdict(set)
+
+        for entity in entities:
+            self._entity_map[(entity.x, entity.y)].add(entity)
 
         self.tiles = np.full((width, height), fill_value=tiles.wall, order="F")
         self.visible = np.full((width, height), fill_value=False, order="F")
@@ -44,13 +48,19 @@ class GameMap:
         )
         self.explored |= self.visible
 
-    def get_entity(self, x: int, y: int) -> Entity | None:
+    def get_entities(self, x: int, y: int) -> set[Entity] | None:
         return self._entity_map.get((x, y), None)
 
     def get_blocking_entity(self, x: int, y: int) -> Entity | None:
-        entity = self.get_entity(x=x, y=y)
+        entities = self.get_entities(x=x, y=y)
 
-        return entity if entity is not None and entity.blocking is True else None
+        if entities is None or len(entities) != 1:
+            return None
+
+        entity = entities.pop()
+        entities.add(entity)
+
+        return entity if entity.blocking is True else None
 
     @property
     def active_entities(self) -> Iterable[ActiveEntity]:
@@ -61,12 +71,23 @@ class GameMap:
         )
 
     def get_active_entity(self, x: int, y: int) -> ActiveEntity | None:
-        entity = self.get_entity(x=x, y=y)
+        entities = self.get_entities(x=x, y=y)
+
+        if entities is None or len(entities) != 1:
+            return None
+
+        entity = entities.pop()
+        entities.add(entity)
+
         return entity if isinstance(entity, ActiveEntity) else None
 
     def move_entity(self, entity: Entity, x: int, y: int) -> None:
-        self._entity_map.pop((entity.x, entity.y), None)
-        self._entity_map[(x, y)] = entity
+        entities = self.get_entities(x=entity.x, y=entity.y)
+
+        if entities is not None:
+            entities.discard(entity)
+
+        self._entity_map[(x, y)].add(entity)
         entity.place(x=x, y=y)
 
     def add_entity(self, entity: Entity, x: int = -1, y: int = -1) -> None:
@@ -80,15 +101,18 @@ class GameMap:
 
         entity.place(x=x, y=y)
         self.entities.add(entity)
-        self._entity_map[(x, y)] = entity
+        self._entity_map[(x, y)].add(entity)
 
     def get_names_at_location(self, x: int, y: int) -> str:
         if not self.in_bounds(x, y) or not self.visible[x, y]:
             return ""
 
-        names = ", ".join(
-            entity.name for entity in self.entities if entity.x == x and entity.y == y
-        )
+        entities = self.get_entities(x=x, y=y)
+
+        if entities is None:
+            return ""
+
+        names = ", ".join(entity.name for entity in entities)
 
         return names.capitalize()
 
