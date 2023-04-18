@@ -61,7 +61,7 @@ class MeleeAction(DirectedAction):
     def perform(self) -> None:
         entity, target = self.entity, self.target
 
-        if entity.is_waiting_to_attack or not target:
+        if entity.fighter.is_waiting_to_attack or not target:
             return
 
         target_alive, damage = entity.fighter.attack(target)
