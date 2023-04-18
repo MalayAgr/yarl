@@ -6,9 +6,10 @@ authors = ["Malay Agarwal <malay.agarwal261016@outlook.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = ">=3.10,<3.12"
 tcod = "^15.0.1"
 numpy = "^1.24.2"
+pyinstaller = "^5.10.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.2.2"
