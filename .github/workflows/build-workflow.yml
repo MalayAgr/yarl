@@ -98,6 +98,10 @@ jobs:
         with:
           artifacts: ${{ env.archive-name }}.*
           token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
+          generateReleaseNotes: true
+          omitBodyDuringUpdate: true
+          omitNameDuringUpdate: true
 
 
 
