@@ -110,7 +110,7 @@ class MainGameEventHandler(EventHandler):
             return EscapeAction(engine=engine, entity=entity)
 
         if key == tcod.event.K_v:
-            engine.event_handler = HistoryEventHandler(engine=engine)
+            engine.event_handler = HistoryEventHandler(engine=engine, old_event_handler=self)
             return
 
         if key in MOVE_KEYS:
@@ -162,10 +162,11 @@ class HistoryEventHandler(EventHandler):
         tcod.event.K_PAGEDOWN: 10,
     }
 
-    def __init__(self, engine: Engine):
+    def __init__(self, engine: Engine, old_event_handler: EventHandler):
         super().__init__(engine)
         self.log_length = len(engine.message_log.messages)
         self.cursor = self.log_length - 1
+        self.old_event_handler = old_event_handler
 
     def on_render(self, console: tcod.Console) -> None:
         super().on_render(console)  # Draw the main state as the background.
@@ -212,4 +213,4 @@ class HistoryEventHandler(EventHandler):
             self.cursor = self.log_length - 1  # Move directly to the last message.
 
         else:  # Any other key moves back to the main game state.
-            self.engine.event_handler = MainGameEventHandler(engine=self.engine)
+            self.engine.event_handler = self.old_event_handler
