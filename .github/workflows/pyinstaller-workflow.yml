@@ -1,0 +1,92 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+
+defaults:
+      run:
+        shell: bash
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11.2"
+          architecture: x64
+      - name: Install and configure Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.4.2
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+      - name: Install dependencies
+        run: poetry install --with dev
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      - name: Format code using black
+        run: |
+          source $VENV
+          black .
+      - name: Test with pytest
+        run: |
+          source $VENV
+          pytest -v --cov=yarl/ --cov-report term-missing
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+
+  executable:
+    needs: test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            platform-name: windows.x64
+          - os: macos-latest
+            platform-name: macos.x64
+          - os: ubuntu-latest
+            platform-name: linux.x64
+    env:
+      archive-name: yarl-${{ matrix.platform-name }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11.2"
+          architecture: x64
+      - name: Install and configure Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.4.2
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+      - name: Run PyInstaller
+        env:
+          PYTHONOPTIMIZE: 1
+          PYTHONHASHSEED: 42
+        run: |
+          pyinstaller build.spec
+      - name: List distribution files
+        run: |
+          find dist
+      # Archive the PyInstaller build using the appropriate tool for the platform.
+      - name: Tar files
+        if: runner.os != 'Windows'
+        run: |
+          tar --format=ustar -czvf ${{ env.archive-name }}.tar.gz dist/*/
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: ${{ env.archive-name }}.*
+
+
