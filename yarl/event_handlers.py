@@ -21,15 +21,15 @@ class Deviation:
 
 
 MOVE_KEYS: dict[KeySym, Deviation] = {
-    # Character keys
-    tcod.event.K_w: Deviation(dx=0, dy=-1),
-    tcod.event.K_s: Deviation(dx=0, dy=1),
-    tcod.event.K_a: Deviation(dx=-1, dy=0),
-    tcod.event.K_d: Deviation(dx=1, dy=0),
-    tcod.event.K_q: Deviation(dx=-1, dy=-1),
-    tcod.event.K_e: Deviation(dx=1, dy=-1),
-    tcod.event.K_c: Deviation(dx=1, dy=1),
-    tcod.event.K_z: Deviation(dx=-1, dy=1),
+    # Arrow keys
+    tcod.event.K_UP: Deviation(0, -1),
+    tcod.event.K_DOWN: Deviation(0, 1),
+    tcod.event.K_LEFT: Deviation(-1, 0),
+    tcod.event.K_RIGHT: Deviation(1, 0),
+    tcod.event.K_HOME: Deviation(-1, -1),
+    tcod.event.K_END: Deviation(-1, 1),
+    tcod.event.K_PAGEUP: Deviation(1, -1),
+    tcod.event.K_PAGEDOWN: Deviation(1, 1),
     # Numpad keys
     tcod.event.K_KP_8: Deviation(dx=0, dy=-1),
     tcod.event.K_KP_2: Deviation(dx=0, dy=1),
@@ -39,6 +39,15 @@ MOVE_KEYS: dict[KeySym, Deviation] = {
     tcod.event.K_KP_9: Deviation(dx=1, dy=-1),
     tcod.event.K_KP_3: Deviation(dx=1, dy=1),
     tcod.event.K_KP_1: Deviation(dx=-1, dy=1),
+    # Vi keys
+    tcod.event.K_h: Deviation(-1, 0),
+    tcod.event.K_j: Deviation(0, 1),
+    tcod.event.K_k: Deviation(0, -1),
+    tcod.event.K_l: Deviation(1, 0),
+    tcod.event.K_y: Deviation(-1, -1),
+    tcod.event.K_u: Deviation(1, -1),
+    tcod.event.K_b: Deviation(-1, 1),
+    tcod.event.K_n: Deviation(1, 1),
 }
 
 
@@ -110,7 +119,9 @@ class MainGameEventHandler(EventHandler):
             return EscapeAction(engine=engine, entity=entity)
 
         if key == tcod.event.K_v:
-            engine.event_handler = HistoryEventHandler(engine=engine, old_event_handler=self)
+            engine.event_handler = HistoryEventHandler(
+                engine=engine, old_event_handler=self
+            )
             return
 
         if key in MOVE_KEYS:
