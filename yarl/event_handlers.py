@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import time
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Iterable
 
@@ -45,17 +46,16 @@ WAIT_KEYS: set[KeySym] = {tcod.event.K_KP_5}
 
 
 class EventHandler(tcod.event.EventDispatch[Action]):
-    def __init__(self, engine: Engine, timeout: float = 1) -> None:
+    def __init__(self, engine: Engine) -> None:
         super().__init__()
 
         self.engine = engine
-        self.timeout = timeout
 
     def on_render(self, console: Console) -> None:
         self.engine.render(console=console)
 
     def handle_events(self, context: tcod.context.Context) -> None:
-        for event in tcod.event.wait(self.timeout):
+        for event in tcod.event.get():
             context.convert_event(event)
             self.dispatch(event)
 
@@ -68,6 +68,11 @@ class EventHandler(tcod.event.EventDispatch[Action]):
 
 
 class MainGameEventHandler(EventHandler):
+    def __init__(self, engine: Engine, turn_interval: int = 0.5) -> None:
+        super().__init__(engine=engine)
+        self.turn_interval = turn_interval
+        self.last_turn_time = time.monotonic()
+
     def handle_enemy_turns(self) -> None:
         game_map = self.engine.game_map
         player = self.engine.player
@@ -80,14 +85,8 @@ class MainGameEventHandler(EventHandler):
             ai.perform()
 
     def handle_events(self, context: tcod.context.Context) -> None:
-        last_mouse_action: tcod.event.Event = None
-
-        for event in tcod.event.wait(timeout=self.timeout):
+        for event in tcod.event.get():
             context.convert_event(event=event)
-
-            if isinstance(event, tcod.event.MouseMotion):
-                last_mouse_action = event
-                continue
 
             action = self.dispatch(event)
 
@@ -97,11 +96,12 @@ class MainGameEventHandler(EventHandler):
             action.perform()
             self.engine.update_fov()
 
-        if last_mouse_action is not None:
-            self.dispatch(last_mouse_action)
-        else:
+        current_time = time.monotonic()
+
+        if current_time - self.last_turn_time > self.turn_interval:
             self.handle_enemy_turns()
             self.engine.update_fov()
+            self.last_turn_time = current_time
 
     def get_action(self, key: KeySym) -> Action | None:
         engine, entity = self.engine, self.engine.player
@@ -130,7 +130,7 @@ class MainGameEventHandler(EventHandler):
 
 class GameOverEventHandler(EventHandler):
     def handle_events(self, context: tcod.context.Context) -> None:
-        for event in tcod.event.wait(timeout=self.timeout):
+        for event in tcod.event.get():
             context.convert_event(event=event)
 
             action = self.dispatch(event)
@@ -154,7 +154,6 @@ class GameOverEventHandler(EventHandler):
 
 class HistoryEventHandler(EventHandler):
     """Print the history on a larger window which can be navigated."""
-
 
     CURSOR_Y_KEYS = {
         tcod.event.K_UP: -1,
@@ -213,4 +212,4 @@ class HistoryEventHandler(EventHandler):
             self.cursor = self.log_length - 1  # Move directly to the last message.
 
         else:  # Any other key moves back to the main game state.
-            self.engine.event_handler = MainGameEventHandler(self.engine)
+            self.engine.event_handler = MainGameEventHandler(engine=self.engine)
