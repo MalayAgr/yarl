@@ -112,9 +112,9 @@ class GameMap:
         if entities is None:
             return ""
 
-        names = ", ".join(entity.name for entity in entities)
+        names = ", ".join(entity.name.capitalize() for entity in entities)
 
-        return names.capitalize()
+        return names
 
     def render(self, console: Console) -> None:
         console.tiles_rgb[0 : self.width, 0 : self.height] = np.select(
