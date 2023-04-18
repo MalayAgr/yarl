@@ -8,6 +8,8 @@ import tcod.event
 from tcod import Console
 from tcod.event import KeySym
 from yarl.actions import Action, BumpAction, EscapeAction, WaitAction
+from yarl.exceptions import ImpossibleActionException
+from yarl.interface import color
 
 if TYPE_CHECKING:
     from yarl.engine import Engine
@@ -63,6 +65,27 @@ class EventHandler(tcod.event.EventDispatch[Action]):
     def on_render(self, console: Console) -> None:
         self.engine.render(console=console)
 
+    def get_action(self, key: KeySym) -> Action | None:
+        engine, entity = self.engine, self.engine.player
+
+        if key == tcod.event.K_ESCAPE:
+            return EscapeAction(engine=engine, entity=entity)
+
+        if key == tcod.event.K_v:
+            engine.event_handler = HistoryEventHandler(
+                engine=engine, old_event_handler=self
+            )
+            return
+
+        if key in MOVE_KEYS:
+            deviation = MOVE_KEYS.get(key)
+            return BumpAction(
+                engine=engine, entity=entity, dx=deviation.dx, dy=deviation.dy
+            )
+
+        if key in WAIT_KEYS:
+            return WaitAction(engine=engine, entity=entity)
+
     def handle_events(self, context: tcod.context.Context) -> None:
         for event in tcod.event.get():
             context.convert_event(event)
@@ -91,7 +114,11 @@ class MainGameEventHandler(EventHandler):
                 continue
 
             ai = entity.ai_cls(engine=self.engine, entity=entity)
-            ai.perform()
+
+            try:
+                ai.perform()
+            except ImpossibleActionException as e:
+                pass
 
     def handle_events(self, context: tcod.context.Context) -> None:
         for event in tcod.event.get():
@@ -102,8 +129,7 @@ class MainGameEventHandler(EventHandler):
             if action is None:
                 continue
 
-            action.perform()
-            self.engine.update_fov()
+            self.handle_action(action=action)
 
         current_time = time.monotonic()
 
@@ -112,26 +138,16 @@ class MainGameEventHandler(EventHandler):
             self.engine.update_fov()
             self.last_turn_time = current_time
 
-    def get_action(self, key: KeySym) -> Action | None:
-        engine, entity = self.engine, self.engine.player
-
-        if key == tcod.event.K_ESCAPE:
-            return EscapeAction(engine=engine, entity=entity)
-
-        if key == tcod.event.K_v:
-            engine.event_handler = HistoryEventHandler(
-                engine=engine, old_event_handler=self
-            )
-            return
-
-        if key in MOVE_KEYS:
-            deviation = MOVE_KEYS.get(key)
-            return BumpAction(
-                engine=engine, entity=entity, dx=deviation.dx, dy=deviation.dy
-            )
-
-        if key in WAIT_KEYS:
-            return WaitAction(engine=engine, entity=entity)
+    def handle_action(self, action: Action) -> None:
+        try:
+            action.perform()
+            self.engine.update_fov()
+        except ImpossibleActionException as e:
+            self.engine.add_to_message_log(text=e.args[0], fg=color.IMPOSSIBLE)
+        finally:
+            self.handle_enemy_turns()
+            self.engine.update_fov()
+            self.last_turn_time = time.monotonic()
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Action | None:
         key = event.sym

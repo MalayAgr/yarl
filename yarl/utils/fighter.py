@@ -46,6 +46,12 @@ class Fighter:
         entity.attack_wait = self.attack_speed
         return target.is_alive, damage
 
+    def heal(self, amount: int) -> int:
+        new_hp = min(self.max_hp, amount + self.hp)
+        recovered = new_hp - self.hp
+        self.hp = new_hp
+        return recovered
+
     def take_damage(self, damage: int) -> None:
         self.hp -= damage
 
