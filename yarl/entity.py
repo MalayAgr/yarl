@@ -6,6 +6,7 @@ from typing import Type
 
 from yarl.utils import RenderOrder
 from yarl.utils.ai import AttackingAI, BaseAI
+from yarl.utils.consumable import Consumable
 from yarl.utils.fighter import Fighter
 
 
@@ -19,7 +20,7 @@ class Entity:
         name: str = "<Unnamed>",
         *,
         blocking: bool = False,
-        rendering_layer: RenderOrder = RenderOrder.CORPSE,
+        render_order: RenderOrder = RenderOrder.CORPSE,
     ) -> None:
         self.x = x
         self.y = y
@@ -27,7 +28,7 @@ class Entity:
         self.color = color
         self.name = name
         self.blocking = blocking
-        self.rendering_layer = rendering_layer
+        self.rendering_layer = render_order
 
     @classmethod
     def fromentity(cls, entity: Entity) -> Entity:
@@ -63,7 +64,7 @@ class ActiveEntity(Entity):
             color=color,
             name=name,
             blocking=True,
-            rendering_layer=RenderOrder.ACTIVE_ENTITY,
+            render_order=RenderOrder.ACTIVE_ENTITY,
         )
 
         self.ai_cls = ai_cls
@@ -104,6 +105,22 @@ class ActiveEntity(Entity):
     def get_destination_from_path(self) -> tuple[int, int] | None:
         if self.path:
             return self.path.popleft()
+
+
+class Item(Entity):
+    def __init__(
+        self,
+        x: int = 0,
+        y: int = 0,
+        char: str = "?",
+        color: tuple[int, int, int] = (255, 255, 255),
+        name: str = "<Unnamed>",
+    ) -> None:
+        super().__init__(
+            x, y, char, color, name, blocking=False, render_order=RenderOrder.ITEM
+        )
+
+        self.consumable = Consumable(item=self)
 
 
 entity_factory = [
