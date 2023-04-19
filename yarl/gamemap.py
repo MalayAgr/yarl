@@ -54,13 +54,12 @@ class GameMap:
     def get_blocking_entity(self, x: int, y: int) -> Entity | None:
         entities = self.get_entities(x=x, y=y)
 
-        if entities is None or len(entities) != 1:
+        if entities is None:
             return None
 
-        entity = entities.pop()
-        entities.add(entity)
-
-        return entity if entity.blocking is True else None
+        for entity in entities:
+            if entity.blocking is True:
+                return entity
 
     @property
     def active_entities(self) -> Iterable[ActiveEntity]:
