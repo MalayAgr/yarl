@@ -6,7 +6,7 @@ PROJECT_NAME = "yarl"
 a = Analysis(
     ["yarl/main.py"],
     binaries=[],
-    datas=[("assets", "assets")],  # Include all files in the 'assets' directory.
+    datas=[("yarl/assets", "assets")],  # Include all files in the 'assets' directory.
     hiddenimports=[],
     hookspath=[],
     runtime_hooks=[],
