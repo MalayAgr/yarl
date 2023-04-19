@@ -303,11 +303,9 @@ class MapGenerator:
             x = random.randint(room.x1 + 1, room.x2 - 1)
             y = random.randint(room.y1 + 1, room.y2 - 1)
 
-            entities = self.game_map.get_entities(x=x, y=y)
+            item = self.game_map.get_item(x=x, y=y)
 
-            if entities is not None and any(
-                isinstance(entity, Item) for entity in entities
-            ):
+            if item is not None:
                 continue
 
             try:
