@@ -1,20 +1,25 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Type
 
 from yarl.exceptions import ImpossibleActionException
 from yarl.interface import color
 
 if TYPE_CHECKING:
     from yarl.engine import Engine
-    from yarl.entity import ActiveEntity, Entity
+    from yarl.entity import ActiveEntity, Entity, Item
     from yarl.gamemap import GameMap
+    from yarl.utils.consumable import Consumable
 
 
 class Action:
     def __init__(self, engine: Engine, entity: Entity) -> None:
         self.engine = engine
         self.entity = entity
+
+    @property
+    def game_map(self) -> GameMap:
+        return self.engine.game_map
 
     def perform(self) -> None:
         raise NotImplementedError()
@@ -39,10 +44,6 @@ class DirectedAction(Action):
         self.dy = dy
 
     @property
-    def game_map(self) -> GameMap:
-        return self.engine.game_map
-
-    @property
     def destination(self) -> tuple[int, int]:
         return self.entity.x + self.dx, self.entity.y + self.dy
 
@@ -51,13 +52,13 @@ class DirectedAction(Action):
         x, y = self.destination
         return self.game_map.get_blocking_entity(x=x, y=y)
 
+
+class MeleeAction(DirectedAction):
     @property
     def target(self) -> ActiveEntity | None:
         x, y = self.destination
         return self.game_map.get_active_entity(x=x, y=y)
 
-
-class MeleeAction(DirectedAction):
     def perform(self) -> None:
         entity, target = self.entity, self.target
 
@@ -89,6 +90,8 @@ class MeleeAction(DirectedAction):
                     text=f"{target.name} is dead!", fg=color.ENEMY_DIE
                 )
 
+            target.name = f"remains of {target.name}"
+
 
 class MovementAction(DirectedAction):
     def perform(self) -> None:
@@ -118,3 +121,21 @@ class BumpAction(DirectedAction):
         )
 
         action.perform()
+
+
+class ItemAction(Action):
+    @property
+    def location(self) -> tuple[int, int]:
+        pass
+
+    @property
+    def item(self) -> Item | None:
+        return self.game_map.get_item(x=self.entity.x, y=self.entity.y)
+
+    def perform(self) -> None:
+        item = self.item
+
+        if self.item is None:
+            raise ImpossibleActionException("There is no item to consume.")
+
+        item.consumable.activate(consumer=self.entity, engine=self.engine)

@@ -6,7 +6,7 @@ from typing import Iterable, Type
 
 from yarl.utils import RenderOrder
 from yarl.utils.ai import AttackingAI, BaseAI
-from yarl.utils.consumable import Consumable
+from yarl.utils.consumable import Consumable, HealingPotion
 from yarl.utils.fighter import Fighter
 
 
@@ -115,20 +115,23 @@ class ActiveEntity(Entity):
 class Item(Entity):
     def __init__(
         self,
+        consumable_cls: Type[Consumable],
         x: int = 0,
         y: int = 0,
         char: str = "?",
         color: tuple[int, int, int] = (255, 255, 255),
         name: str = "<Unnamed>",
+        **kwargs,
     ) -> None:
         super().__init__(
             x, y, char, color, name, blocking=False, render_order=RenderOrder.ITEM
         )
 
-        self.consumable = Consumable(item=self)
+        self.consumable_cls = consumable_cls
+        self.consumable = consumable_cls(item=self, **kwargs)
 
 
-entity_factory = [
+ENTITY_FACTORY = [
     ActiveEntity(
         char="O",
         color=(63, 127, 63),
@@ -147,4 +150,14 @@ entity_factory = [
         defense=1,
         power=4,
     ),
+]
+
+
+ITEM_FACTORY = [
+    Item(
+        consumable_cls=HealingPotion,
+        color=(127, 0, 255),
+        name="Healing Potion",
+        amount=4,
+    )
 ]

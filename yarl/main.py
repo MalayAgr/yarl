@@ -35,6 +35,7 @@ def main() -> None:
         room_min_size=5,
         depth=10,
         max_enemies_per_room=2,
+        max_items_per_room=2,
         full_rooms=False,
     )
 

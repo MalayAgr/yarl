@@ -8,7 +8,7 @@ import tcod
 import yarl.tile_types as tiles
 from tcod.console import Console
 from tcod.map import compute_fov
-from yarl.entity import ActiveEntity
+from yarl.entity import ActiveEntity, Item
 from yarl.exceptions import CollisionWithEntityException
 
 if TYPE_CHECKING:
@@ -54,13 +54,12 @@ class GameMap:
     def get_blocking_entity(self, x: int, y: int) -> Entity | None:
         entities = self.get_entities(x=x, y=y)
 
-        if entities is None or len(entities) != 1:
+        if entities is None:
             return None
 
-        entity = entities.pop()
-        entities.add(entity)
-
-        return entity if entity.blocking is True else None
+        for entity in entities:
+            if entity.blocking is True:
+                return entity
 
     @property
     def active_entities(self) -> Iterable[ActiveEntity]:
@@ -70,16 +69,29 @@ class GameMap:
             if isinstance(entity, ActiveEntity) and entity.is_alive is True
         )
 
+    @property
+    def items(self) -> Iterable[Item]:
+        yield from (entity for entity in self.entities if isinstance(entity, Item))
+
+    def get_item(self, x: int, y: int) -> Item | None:
+        entities = self.get_entities(x=x, y=y)
+
+        if entities is None:
+            return None
+
+        for entity in entities:
+            if isinstance(entity, Item):
+                return entity
+
     def get_active_entity(self, x: int, y: int) -> ActiveEntity | None:
         entities = self.get_entities(x=x, y=y)
 
-        if entities is None or len(entities) != 1:
+        if entities is None:
             return None
 
-        entity = entities.pop()
-        entities.add(entity)
-
-        return entity if isinstance(entity, ActiveEntity) else None
+        for entity in entities:
+            if isinstance(entity, ActiveEntity):
+                return entity
 
     def move_entity(self, entity: Entity, x: int, y: int) -> None:
         entities = self.get_entities(x=entity.x, y=entity.y)

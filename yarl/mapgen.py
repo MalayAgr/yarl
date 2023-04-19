@@ -6,7 +6,7 @@ from typing import Iterator
 import tcod
 import yarl.tile_types as tiles
 from tcod.bsp import BSP
-from yarl.entity import Entity, entity_factory
+from yarl.entity import ENTITY_FACTORY, ITEM_FACTORY, Entity, Item
 from yarl.exceptions import CollisionWithEntityException
 from yarl.gamemap import GameMap
 
@@ -155,6 +155,7 @@ class MapGenerator:
         room_min_size: int = 5,
         depth: int = 10,
         max_enemies_per_room: int = 2,
+        max_items_per_room: int = 2,
         *,
         full_rooms: bool = False,
     ) -> None:
@@ -178,6 +179,7 @@ class MapGenerator:
         self.map_height = map_height
         self.depth = depth
         self.max_enemies_per_room = max_enemies_per_room
+        self.max_items_per_room = max_items_per_room
         self.full_rooms = full_rooms
 
         self.rooms: list[RectangularRoom] = []
@@ -284,13 +286,30 @@ class MapGenerator:
 
     def place_objects(self, room: RectangularRoom) -> None:
         number_of_enemies = random.randint(0, self.max_enemies_per_room)
+        number_of_items = random.randint(0, self.max_items_per_room)
 
         for _ in range(number_of_enemies):
             x = random.randint(room.x1 + 1, room.x2 - 1)
             y = random.randint(room.y1 + 1, room.y2 - 1)
 
             try:
-                entity = random.choice(entity_factory)
+                entity = random.choice(ENTITY_FACTORY)
+                entity = Entity.fromentity(entity=entity)
+                self.game_map.add_entity(entity=entity, x=x, y=y)
+            except CollisionWithEntityException:
+                pass
+
+        for _ in range(number_of_items):
+            x = random.randint(room.x1 + 1, room.x2 - 1)
+            y = random.randint(room.y1 + 1, room.y2 - 1)
+
+            item = self.game_map.get_item(x=x, y=y)
+
+            if item is not None:
+                continue
+
+            try:
+                entity = random.choice(ITEM_FACTORY)
                 entity = Entity.fromentity(entity=entity)
                 self.game_map.add_entity(entity=entity, x=x, y=y)
             except CollisionWithEntityException:
@@ -316,7 +335,7 @@ class MapGenerator:
             self.game_map.add_entity(entity=player, x=x, y=y)
 
         for room in self.rooms:
-            if room == player_room:
+            if room is player_room:
                 continue
 
             self.place_objects(room=room)

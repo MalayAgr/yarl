@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any, Iterable
 import tcod.event
 from tcod import Console
 from tcod.event import KeySym
-from yarl.actions import Action, BumpAction, EscapeAction, WaitAction
+from yarl.actions import Action, BumpAction, EscapeAction, ItemAction, WaitAction
 from yarl.exceptions import ImpossibleActionException
 from yarl.interface import color
 
@@ -76,6 +76,9 @@ class EventHandler(tcod.event.EventDispatch[Action]):
                 engine=engine, old_event_handler=self
             )
             return
+
+        if key == tcod.event.K_c:
+            return ItemAction(engine=engine, entity=entity)
 
         if key in MOVE_KEYS:
             deviation = MOVE_KEYS.get(key)
