@@ -49,11 +49,11 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: windows-latest
+          - os: windows-2019
             platform-name: windows.x64
-          - os: macos-latest
+          - os: macos-11
             platform-name: macos.x64
-          - os: ubuntu-latest
+          - os: ubuntu-20.04
             platform-name: linux.x64
     env:
       archive-name: yarl-${{ matrix.platform-name }}
