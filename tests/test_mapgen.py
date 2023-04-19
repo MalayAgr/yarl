@@ -25,6 +25,8 @@ def map_generator() -> MapGenerator:
         map_height=45,
         depth=10,
         full_rooms=False,
+        max_items_per_room=2,
+        max_enemies_per_room=2,
     )
 
 
@@ -165,4 +167,8 @@ class TestMapGenerator:
 
         max_enemies = len(map_generator.rooms) * map_generator.max_enemies_per_room
 
-        assert len(game_map.entities) <= max_enemies + 1
+        assert len(tuple(game_map.active_entities)) <= max_enemies + 1
+
+        max_items = len(map_generator.rooms) * map_generator.max_items_per_room
+
+        assert len(tuple(game_map.items)) <= max_items
