@@ -14,7 +14,7 @@ class Consumable:
     def __init__(self, item: Item):
         self.item = item
 
-    def activate(self, consumer: ActiveEntity) -> None:
+    def activate(self, consumer: ActiveEntity, engine: Engine) -> None:
         raise NotImplementedError()
 
 

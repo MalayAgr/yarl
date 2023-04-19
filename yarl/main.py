@@ -3,7 +3,7 @@ from yarl.engine import Engine
 from yarl.entity import ActiveEntity
 from yarl.interface import color
 from yarl.mapgen import MapGenerator
-from yarl.utils.ai import AttackingAI
+from yarl.components.ai import AttackingAI
 
 
 def main() -> None:

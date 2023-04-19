@@ -6,7 +6,7 @@ from tcod.map import compute_fov
 from yarl.entity import ActiveEntity, Entity
 from yarl.exceptions import CollisionWithEntityException
 from yarl.gamemap import GameMap
-from yarl.utils.ai import AttackingAI
+from yarl.components.ai import AttackingAI
 
 
 @pytest.fixture

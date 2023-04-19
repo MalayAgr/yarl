@@ -4,10 +4,10 @@ import copy
 from collections import deque
 from typing import Iterable, Type
 
-from yarl.utils import RenderOrder
-from yarl.utils.ai import AttackingAI, BaseAI
-from yarl.utils.consumable import Consumable, HealingPotion
-from yarl.utils.fighter import Fighter
+from yarl.components import RenderOrder
+from yarl.components.ai import AttackingAI, BaseAI
+from yarl.components.consumable import Consumable, HealingPotion
+from yarl.components.fighter import Fighter
 
 
 class Entity:

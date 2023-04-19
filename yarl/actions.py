@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from yarl.engine import Engine
     from yarl.entity import ActiveEntity, Entity, Item
     from yarl.gamemap import GameMap
-    from yarl.utils.consumable import Consumable
+    from yarl.components.consumable import Consumable
 
 
 class Action:
@@ -135,7 +135,7 @@ class ItemAction(Action):
     def perform(self) -> None:
         item = self.item
 
-        if self.item is None:
+        if item is None:
             raise ImpossibleActionException("There is no item to consume.")
 
         item.consumable.activate(consumer=self.entity, engine=self.engine)
