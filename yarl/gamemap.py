@@ -8,7 +8,7 @@ import tcod
 import yarl.tile_types as tiles
 from tcod.console import Console
 from tcod.map import compute_fov
-from yarl.entity import ActiveEntity
+from yarl.entity import ActiveEntity, Item
 from yarl.exceptions import CollisionWithEntityException
 
 if TYPE_CHECKING:
@@ -69,6 +69,10 @@ class GameMap:
             for entity in self.entities
             if isinstance(entity, ActiveEntity) and entity.is_alive is True
         )
+
+    @property
+    def items(self) -> Iterable[Item]:
+        yield from (entity for entity in self.entities if isinstance(entity, Item))
 
     def get_active_entity(self, x: int, y: int) -> ActiveEntity | None:
         entities = self.get_entities(x=x, y=y)
