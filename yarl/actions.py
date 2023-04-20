@@ -123,7 +123,9 @@ class BumpAction(DirectedAction):
 
 
 class ItemAction(Action):
-    def __init__(self, engine: Engine, entity: Entity, item: Item | None = None) -> None:
+    def __init__(
+        self, engine: Engine, entity: Entity, item: Item | None = None
+    ) -> None:
         super().__init__(engine, entity)
 
         self.entity: ActiveEntity
@@ -140,13 +142,7 @@ class ConsumeItemAction(ItemAction):
         if item is None:
             raise ImpossibleActionException("There is no item to consume.")
 
-        recovered = item.consumable.activate(consumer=self.entity)
-
-        if recovered == 0:
-            raise ImpossibleActionException("Your health is already full.")
-
-        text = f"You consume the {self.item.name}, and recover {recovered} amount of HP!"
-        self.engine.add_to_message_log(text=text, fg=color.HEALTH_RECOVERED)
+        item.consumable.activate(consumer=self.entity, engine=self.engine)
         self.remove_item_from_map(item=item)
 
 
