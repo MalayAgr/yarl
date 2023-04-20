@@ -98,7 +98,7 @@ class EventHandler(tcod.event.EventDispatch[Action]):
                     item=None if number_of_items == 0 else items[0],
                 )
 
-            engine.event_handler = ConsumeItemEventHandler(
+            engine.event_handler = SelectItemToConsumeEventHandler(
                 engine=engine, old_event_handler=self
             )
             return
@@ -297,7 +297,7 @@ class AskUserEventHandler(EventHandler):
         return self.on_exit()
 
 
-class ItemMenuEventHandler(AskUserEventHandler):
+class SelectItemEventHandler(AskUserEventHandler):
     title = "<Missing title>"
 
     def __init__(
@@ -358,8 +358,8 @@ class ItemMenuEventHandler(AskUserEventHandler):
         raise NotImplementedError()
 
 
-class ConsumeItemEventHandler(ItemMenuEventHandler):
-    title = "Select an item to consume"
+class SelectItemToConsumeEventHandler(SelectItemEventHandler):
+    title = "Select an item to consume."
 
     def __init__(self, engine: Engine, old_event_handler: EventHandler) -> None:
         x, y = engine.player.x, engine.player.y
