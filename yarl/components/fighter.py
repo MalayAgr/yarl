@@ -42,7 +42,7 @@ class Fighter:
         return self.attack_wait > 0
 
     def attack(self, target: ActiveEntity) -> tuple[bool, int]:
-        damage = self.power - self.defense
+        damage = max(0, self.power - target.fighter.defense)
 
         if damage > 0:
             target.fighter.take_damage(damage=damage)
