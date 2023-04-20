@@ -115,6 +115,15 @@ class GameMap:
         self.entities.add(entity)
         self._entity_map[(x, y)].add(entity)
 
+    def remove_entity(self, entity: Entity, x: int, y: int) -> None:
+        entities = self.get_entities(x=x, y=y)
+
+        if entities is None:
+            return
+
+        entities.discard(entity)
+        self.entities.discard(entity)
+
     def get_names_at_location(self, x: int, y: int) -> str:
         if not self.in_bounds(x, y) or not self.visible[x, y]:
             return ""

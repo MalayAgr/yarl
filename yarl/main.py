@@ -34,6 +34,7 @@ def main() -> None:
         power=5,
         speed=0,
         attack_speed=8,
+        inventory_capacity=26,
     )
 
     map_generator = MapGenerator(
