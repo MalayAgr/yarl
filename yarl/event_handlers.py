@@ -104,7 +104,21 @@ class EventHandler(tcod.event.EventDispatch[Action]):
             return
 
         if key == tcod.event.K_e:
-            return PickupAction(engine=engine, entity=entity)
+            items = engine.game_map.get_items(x=entity.x, y=entity.y)
+            items = list(items)
+
+            number_of_items = len(items)
+
+            if number_of_items <= 1:
+                return PickupAction(
+                    engine=engine,
+                    entity=entity,
+                    items=items,
+                )
+
+            engine.event_handler = SelectItemToPickupEventHandler(
+                engine=engine, old_event_handler=self
+            )
 
         if key in MOVE_KEYS:
             deviation = MOVE_KEYS.get(key)
@@ -413,12 +427,19 @@ class SelectItemToPickupEventHandler(SelectItemEventHandler):
 
         x, y = self.menu_location
 
-        console.print(x=x, y=y + 1 + len(self.items), string="(e) Pick up everything")
+        console.print(
+            x=x + 1, y=y + 1 + len(self.items), string="(e) Pick up everything"
+        )
 
     def ev_keydown(self, event: KeyDown) -> Action | None:
         key = event.sym
 
         if key == tcod.event.K_e:
-            return PickupAction(engine=self.engine, entity=self.engine.player, item=self.items)
+            return PickupAction(
+                engine=self.engine, entity=self.engine.player, items=self.items
+            )
 
         return super().ev_keydown(event)
+
+    def on_item_selected(self, item: Item) -> Action | None:
+        return PickupAction(engine=self.engine, entity=self.engine.player, items=[item])

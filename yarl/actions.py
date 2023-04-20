@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Type
+from typing import TYPE_CHECKING, Iterable, Type
 
 from yarl.exceptions import ImpossibleActionException
 from yarl.interface import color
@@ -124,18 +124,27 @@ class BumpAction(DirectedAction):
 
 class ItemAction(Action):
     def __init__(
-        self, engine: Engine, entity: Entity, item: Item | None = None
+        self, engine: Engine, entity: Entity, items: list[Item] | None = None
     ) -> None:
         super().__init__(engine, entity)
 
         self.entity: ActiveEntity
-        self.item = item
+
+        self.items = items or []
 
     def remove_item_from_map(self, item: Item) -> None:
         self.game_map.remove_entity(entity=item, x=self.entity.x, y=self.entity.y)
 
 
 class ConsumeItemAction(ItemAction):
+    def __init__(
+        self, engine: Engine, entity: Entity, item: Item | None = None
+    ) -> None:
+        super().__init__(
+            engine=engine, entity=entity, items=None if item is None else [item]
+        )
+        self.item = item
+
     def perform(self) -> None:
         item = self.item
 
@@ -148,9 +157,9 @@ class ConsumeItemAction(ItemAction):
 
 class PickupAction(ItemAction):
     def perform(self) -> None:
-        items = set(self.items)
+        items = self.items
 
-        if len(items) == 0:
+        if not items:
             raise ImpossibleActionException("There is no item to pick up.")
 
         inventory = self.entity.inventory
@@ -166,4 +175,4 @@ class PickupAction(ItemAction):
             if added is False:
                 raise ImpossibleActionException("Your inventory is full.")
 
-            self.engine.add_to_message_log(text=f"You picked up the item {items.name}")
+            self.engine.add_to_message_log(text=f"You picked up the item {items.name}.")
