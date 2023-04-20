@@ -96,11 +96,11 @@ class GameMap:
         self._entity_map[(x, y)].add(entity)
         entity.place(x=x, y=y)
 
-    def add_entity(self, entity: Entity, x: int = -1, y: int = -1) -> None:
+    def add_entity(self, entity: Entity, x: int = -1, y: int = -1, *, check_blocking: bool = True) -> None:
         x = x if x != -1 else entity.x
         y = y if y != -1 else entity.y
 
-        if self.get_blocking_entity(x, y) is not None:
+        if check_blocking is True and self.get_blocking_entity(x, y) is not None:
             raise CollisionWithEntityException(
                 f"An entity already exists at ({x}, {y})"
             )
