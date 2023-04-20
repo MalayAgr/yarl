@@ -73,7 +73,7 @@ class EventHandler(tcod.event.EventDispatch[Action]):
     def on_render(self, console: Console) -> None:
         self.engine.render(console=console)
 
-    def get_action(self, key: KeySym) -> Action | None:
+    def process_key(self, key: KeySym) -> Action | None:
         engine, entity = self.engine, self.engine.player
 
         if key == tcod.event.K_ESCAPE:
@@ -181,7 +181,7 @@ class MainGameEventHandler(EventHandler):
     def ev_keydown(self, event: KeyDown) -> Action | None:
         key = event.sym
 
-        return self.get_action(key=key)
+        return self.process_key(key=key)
 
 
 class GameOverEventHandler(EventHandler):
@@ -306,17 +306,27 @@ class SelectItemEventHandler(AskUserEventHandler):
         super().__init__(engine=engine, old_event_handler=old_event_handler)
         self.items = list(items)
 
+    @property
+    def menu_width(self) -> int:
+        return len(self.title) + 4
+
+    @property
+    def menu_height(self) -> int:
+        return max(len(self.items) + 2, 3)
+
+    @property
+    def menu_location(self) -> tuple[int, int]:
+        x = 40 if self.engine.player.x <= 40 else 0
+        y = 0
+        return x, y
+
     def on_render(self, console: Console) -> None:
         super().on_render(console=console)
 
-        if len(self.items) <= 1:
-            return
+        width = self.menu_width
+        height = self.menu_height
 
-        width = len(self.title) + 4
-        height = max(len(self.items) + 2, 3)
-
-        x = 40 if self.engine.player.x <= 40 else 0
-        y = 0
+        x, y = self.menu_location
 
         console.draw_frame(
             x=x,
@@ -374,3 +384,41 @@ class SelectItemToConsumeEventHandler(SelectItemEventHandler):
         return ConsumeItemAction(
             engine=self.engine, entity=self.engine.player, item=item
         )
+
+
+class SelectItemToPickupEventHandler(SelectItemEventHandler):
+    title = "Select an item to add to inventory."
+
+    def __init__(
+        self,
+        engine: Engine,
+        old_event_handler: EventHandler,
+    ) -> None:
+        x, y = engine.player.x, engine.player.y
+        super().__init__(
+            engine=engine,
+            old_event_handler=old_event_handler,
+            items=engine.game_map.get_items(x=x, y=y),
+        )
+
+    @property
+    def menu_height(self) -> int:
+        return max(len(self.items) + 3, 3)
+
+    def on_render(self, console: Console) -> None:
+        super().on_render(console)
+
+        if not self.items:
+            return
+
+        x, y = self.menu_location
+
+        console.print(x=x, y=y + 1 + len(self.items), string="(e) Pick up everything")
+
+    def ev_keydown(self, event: KeyDown) -> Action | None:
+        key = event.sym
+
+        if key == tcod.event.K_e:
+            return PickupAction(engine=self.engine, entity=self.engine.player, item=self.items)
+
+        return super().ev_keydown(event)
