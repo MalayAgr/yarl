@@ -12,6 +12,7 @@ from yarl.actions import (  # ConsumeItemAction,
     Action,
     BumpAction,
     ConsumeItemAction,
+    ConsumeItemFromInventoryAction,
     EscapeAction,
     PickupAction,
     WaitAction,
@@ -81,6 +82,12 @@ class EventHandler(tcod.event.EventDispatch[Action]):
 
         if key == tcod.event.K_v:
             engine.event_handler = HistoryEventHandler(
+                engine=engine, old_event_handler=self
+            )
+            return
+
+        if key == tcod.event.K_i:
+            engine.event_handler = InventoryEventHandler(
                 engine=engine, old_event_handler=self
             )
             return
@@ -443,3 +450,19 @@ class SelectItemToPickupEventHandler(SelectItemEventHandler):
 
     def on_item_selected(self, item: Item) -> Action | None:
         return PickupAction(engine=self.engine, entity=self.engine.player, items=[item])
+
+
+class InventoryEventHandler(SelectItemEventHandler):
+    title = "Select an item to use from the inventory."
+
+    def __init__(self, engine: Engine, old_event_handler: EventHandler) -> None:
+        super().__init__(
+            engine=engine,
+            old_event_handler=old_event_handler,
+            items=engine.player.inventory_items,
+        )
+
+    def on_item_selected(self, item: Item) -> Action | None:
+        return ConsumeItemFromInventoryAction(
+            engine=self.engine, entity=self.engine.player, item=item
+        )

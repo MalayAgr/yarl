@@ -176,3 +176,22 @@ class PickupAction(ItemAction):
                 raise ImpossibleActionException("Your inventory is full.")
 
             self.engine.add_to_message_log(text=f"You picked up the item {items.name}.")
+
+
+class ConsumeItemFromInventoryAction(ItemAction):
+    def __init__(self, engine: Engine, entity: Entity, item: Item | None) -> None:
+        super().__init__(engine, entity, items=None if item is None else [item])
+        self.item = item
+
+    def perform(self) -> None:
+        item = self.item
+
+        if item is None:
+            raise ImpossibleActionException("There is no item to consume.")
+
+        entity = self.entity
+
+        action = ConsumeItemAction(engine=self.engine, entity=entity, item=item)
+        action.perform()
+
+        entity.inventory.remove_item(item=item)

@@ -15,6 +15,9 @@ class Inventory:
         self.capacity = capacity
         self.items: list[Item] = []
 
+    def remove_item(self, item: Item) -> None:
+        self.items.remove(item)
+
     def add_item(self, item: Item) -> bool:
         if len(self.items) == self.capacity:
             return False
