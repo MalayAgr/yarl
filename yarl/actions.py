@@ -135,15 +135,15 @@ class ItemAction(Action):
         return set(items)
 
 
-class ConsumeItemAction(ItemAction):
-    def perform(self) -> None:
-        items = self.items
+# class ConsumeItemAction(ItemAction):
+#     def perform(self) -> None:
+#         items = self.items
 
-        if len(items) == 0:
-            raise ImpossibleActionException("There is no item to consume.")
+#         if len(items) == 0:
+#             raise ImpossibleActionException("There is no item to consume.")
 
-        items.consumable.activate(consumer=self.entity, engine=self.engine)
-        self.game_map.remove_entity(entity=items, x=self.entity.x, y=self.entity.y)
+#         # items.consumable.activate(consumer=self.entity, engine=self.engine)
+#         # self.game_map.remove_entity(entity=items, x=self.entity.x, y=self.entity.y)
 
 
 class PickupAction(ItemAction):

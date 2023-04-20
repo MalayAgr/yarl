@@ -7,10 +7,9 @@ from typing import TYPE_CHECKING, Any, Iterable
 import tcod.event
 from tcod import Console
 from tcod.event import KeySym
-from yarl.actions import (
+from yarl.actions import (  # ConsumeItemAction,
     Action,
     BumpAction,
-    ConsumeItemAction,
     EscapeAction,
     PickupAction,
     WaitAction,
@@ -84,8 +83,8 @@ class EventHandler(tcod.event.EventDispatch[Action]):
             )
             return
 
-        if key == tcod.event.K_c:
-            return ConsumeItemAction(engine=engine, entity=entity)
+        # if key == tcod.event.K_c:
+        #     return ConsumeItemAction(engine=engine, entity=entity)
 
         if key == tcod.event.K_e:
             return PickupAction(engine=engine, entity=entity)
