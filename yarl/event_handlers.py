@@ -91,11 +91,12 @@ class EventHandler(tcod.event.EventDispatch[Action]):
 
             number_of_items = len(items)
 
-            if number_of_items == 0:
-                return ConsumeItemAction(engine=engine, entity=entity, item=None)
-
-            if number_of_items == 1:
-                return ConsumeItemAction(engine=engine, entity=entity, item=items[0])
+            if number_of_items <= 1:
+                return ConsumeItemAction(
+                    engine=engine,
+                    entity=entity,
+                    item=None if number_of_items == 0 else items[0],
+                )
 
             engine.event_handler = ConsumeItemEventHandler(
                 engine=engine, old_event_handler=self
