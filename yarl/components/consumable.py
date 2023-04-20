@@ -2,11 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from yarl.exceptions import ImpossibleActionException
-from yarl.interface import color
-
 if TYPE_CHECKING:
-    from yarl.engine import Engine
     from yarl.entity import ActiveEntity, Item
 
 
@@ -14,7 +10,7 @@ class Consumable:
     def __init__(self, item: Item):
         self.item = item
 
-    def activate(self, consumer: ActiveEntity, engine: Engine) -> None:
+    def activate(self, consumer: ActiveEntity) -> None:
         raise NotImplementedError()
 
 
@@ -23,11 +19,6 @@ class HealingPotion(Consumable):
         super().__init__(item=item)
         self.amount = amount
 
-    def activate(self, consumer: ActiveEntity, engine: Engine) -> None:
+    def activate(self, consumer: ActiveEntity) -> None:
         recovered = consumer.fighter.heal(amount=self.amount)
-
-        if recovered > 0:
-            text = f"You consume the {self.item.name}, and recover {recovered} amount of HP!"
-            engine.add_to_message_log(text=text, fg=color.HEALTH_RECOVERED)
-        else:
-            raise ImpossibleActionException("Your health is already full.")
+        return recovered

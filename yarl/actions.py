@@ -6,7 +6,6 @@ from yarl.exceptions import ImpossibleActionException
 from yarl.interface import color
 
 if TYPE_CHECKING:
-    from yarl.components.consumable import Consumable
     from yarl.engine import Engine
     from yarl.entity import ActiveEntity, Entity, Item
     from yarl.gamemap import GameMap
@@ -124,26 +123,31 @@ class BumpAction(DirectedAction):
 
 
 class ItemAction(Action):
-    def __init__(self, engine: Engine, entity: Entity) -> None:
+    def __init__(self, engine: Engine, entity: Entity, item: Item | None = None) -> None:
         super().__init__(engine, entity)
 
         self.entity: ActiveEntity
+        self.item = item
 
-    @property
-    def items(self) -> set[Item]:
-        items = self.game_map.get_items(x=self.entity.x, y=self.entity.y)
-        return set(items)
+    def remove_item_from_map(self, item: Item) -> None:
+        self.game_map.remove_entity(entity=item, x=self.entity.x, y=self.entity.y)
 
 
-# class ConsumeItemAction(ItemAction):
-#     def perform(self) -> None:
-#         items = self.items
+class ConsumeItemAction(ItemAction):
+    def perform(self) -> None:
+        item = self.item
 
-#         if len(items) == 0:
-#             raise ImpossibleActionException("There is no item to consume.")
+        if item is None:
+            raise ImpossibleActionException("There is no item to consume.")
 
-#         # items.consumable.activate(consumer=self.entity, engine=self.engine)
-#         # self.game_map.remove_entity(entity=items, x=self.entity.x, y=self.entity.y)
+        recovered = item.consumable.activate(consumer=self.entity)
+
+        if recovered == 0:
+            raise ImpossibleActionException("Your health is already full.")
+
+        text = f"You consume the {self.item.name}, and recover {recovered} amount of HP!"
+        self.engine.add_to_message_log(text=text, fg=color.HEALTH_RECOVERED)
+        self.remove_item_from_map(item=item)
 
 
 class PickupAction(ItemAction):
