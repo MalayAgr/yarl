@@ -1,13 +1,12 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
-
-from yarl.exceptions import ImpossibleActionException
 from yarl.interface import color
+from yarl.exceptions import ImpossibleActionException
 
 if TYPE_CHECKING:
-    from yarl.engine import Engine
     from yarl.entity import ActiveEntity, Item
+    from yarl.engine import Engine
 
 
 class Consumable:

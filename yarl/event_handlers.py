@@ -11,6 +11,9 @@ from tcod.event import KeyDown, KeySym, MouseButtonDown, MouseMotion
 from yarl.actions import (  # ConsumeItemAction,
     Action,
     BumpAction,
+    ConsumeItemAction,
+    ConsumeItemFromInventoryAction,
+    DropItemFromInventoryAction,
     EscapeAction,
     PickupAction,
     WaitAction,
@@ -20,7 +23,7 @@ from yarl.interface import color
 
 if TYPE_CHECKING:
     from yarl.engine import Engine
-    from yarl.entity import Entity
+    from yarl.entity import Entity, Item
 
 
 @dataclass
@@ -72,7 +75,7 @@ class EventHandler(tcod.event.EventDispatch[Action]):
     def on_render(self, console: Console) -> None:
         self.engine.render(console=console)
 
-    def get_action(self, key: KeySym) -> Action | None:
+    def process_key(self, key: KeySym) -> Action | None:
         engine, entity = self.engine, self.engine.player
 
         if key == tcod.event.K_ESCAPE:
@@ -84,11 +87,52 @@ class EventHandler(tcod.event.EventDispatch[Action]):
             )
             return
 
-        # if key == tcod.event.K_c:
-        #     return ConsumeItemAction(engine=engine, entity=entity)
+        if key == tcod.event.K_i:
+            engine.event_handler = InventoryEventHandler(
+                engine=engine, old_event_handler=self
+            )
+            return
+
+        if key == tcod.event.K_d:
+            engine.event_handler = InventoryDropEventHandler(
+                engine=engine, old_event_handler=self
+            )
+            return
+
+        if key == tcod.event.K_c:
+            items = engine.game_map.get_items(x=entity.x, y=entity.y)
+            items = list(items)
+
+            number_of_items = len(items)
+
+            if number_of_items <= 1:
+                return ConsumeItemAction(
+                    engine=engine,
+                    entity=entity,
+                    item=None if number_of_items == 0 else items[0],
+                )
+
+            engine.event_handler = SelectItemToConsumeEventHandler(
+                engine=engine, old_event_handler=self
+            )
+            return
 
         if key == tcod.event.K_e:
-            return PickupAction(engine=engine, entity=entity)
+            items = engine.game_map.get_items(x=entity.x, y=entity.y)
+            items = list(items)
+
+            number_of_items = len(items)
+
+            if number_of_items <= 1:
+                return PickupAction(
+                    engine=engine,
+                    entity=entity,
+                    items=items,
+                )
+
+            engine.event_handler = SelectItemToPickupEventHandler(
+                engine=engine, old_event_handler=self
+            )
 
         if key in MOVE_KEYS:
             deviation = MOVE_KEYS.get(key)
@@ -165,7 +209,7 @@ class MainGameEventHandler(EventHandler):
     def ev_keydown(self, event: KeyDown) -> Action | None:
         key = event.sym
 
-        return self.get_action(key=key)
+        return self.process_key(key=key)
 
 
 class GameOverEventHandler(EventHandler):
@@ -266,8 +310,8 @@ class AskUserEventHandler(EventHandler):
         try:
             super().handle_action(action=action)
             self.engine.event_handler = self.old_event_handler
-        except ImpossibleActionException:
-            pass
+        except ImpossibleActionException as e:
+            self.engine.add_to_message_log(text=e.args[0], fg=color.IMPOSSIBLE)
 
     def ev_keydown(self, event: KeyDown) -> Action | None:
         key = event.sym
@@ -279,3 +323,198 @@ class AskUserEventHandler(EventHandler):
 
     def ev_mousebuttondown(self, event: MouseButtonDown) -> Action | None:
         return self.on_exit()
+
+
+class SelectItemEventHandler(AskUserEventHandler):
+    title = "<Missing title>"
+
+    def __init__(
+        self, engine: Engine, old_event_handler: EventHandler, items: Iterable[Item]
+    ) -> None:
+        super().__init__(engine=engine, old_event_handler=old_event_handler)
+        self.items = list(items)
+
+    @property
+    def menu_width(self) -> int:
+        return len(self.title) + 4
+
+    @property
+    def menu_height(self) -> int:
+        return max(len(self.items) + 2, 3)
+
+    @property
+    def menu_location(self) -> tuple[int, int]:
+        x = 40 if self.engine.player.x <= 40 else 0
+        y = 0
+        return x, y
+
+    def on_render(self, console: Console) -> None:
+        super().on_render(console=console)
+
+        width = self.menu_width
+        height = self.menu_height
+
+        x, y = self.menu_location
+
+        console.draw_frame(
+            x=x,
+            y=y,
+            width=width,
+            height=height,
+            title=self.title,
+            clear=True,
+            fg=(255, 255, 255),
+            bg=(0, 0, 0),
+        )
+
+        if not self.items:
+            console.print(x=x + 1, y=y + 1, string="(Empty)")
+            return
+
+        for i, item in enumerate(self.items):
+            key = chr(ord("a") + i)
+            console.print(x=x + 1, y=y + 1 + i, string=f"({key}) {item.name}")
+
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Action | None:
+        key = event.sym
+        index = key - tcod.event.K_a
+
+        if not 0 <= index <= 26:
+            return super().ev_keydown(event)
+
+        if index >= len(self.items):
+            last_key = chr(ord("a") + len(self.items) - 1)
+            text = f"Invalid entry. Press keys from (a) to ({last_key})."
+            self.engine.add_to_message_log(text=text, fg=color.INVALID)
+            return
+
+        item = self.items[index]
+        return self.on_item_selected(item)
+
+    def on_item_selected(self, item: Item) -> Action | None:
+        """Called when the user selects a valid item."""
+        raise NotImplementedError()
+
+
+class SelectItemToConsumeEventHandler(SelectItemEventHandler):
+    title = "Select an item to consume."
+
+    def __init__(self, engine: Engine, old_event_handler: EventHandler) -> None:
+        x, y = engine.player.x, engine.player.y
+
+        super().__init__(
+            engine=engine,
+            old_event_handler=old_event_handler,
+            items=engine.game_map.get_items(x=x, y=y),
+        )
+
+    def on_item_selected(self, item: Item) -> Action:
+        return ConsumeItemAction(
+            engine=self.engine, entity=self.engine.player, item=item
+        )
+
+
+class SelectItemToPickupEventHandler(SelectItemEventHandler):
+    title = "Select an item to add to inventory."
+
+    def __init__(
+        self,
+        engine: Engine,
+        old_event_handler: EventHandler,
+    ) -> None:
+        x, y = engine.player.x, engine.player.y
+        super().__init__(
+            engine=engine,
+            old_event_handler=old_event_handler,
+            items=engine.game_map.get_items(x=x, y=y),
+        )
+
+    @property
+    def menu_height(self) -> int:
+        return max(len(self.items) + 3, 3)
+
+    def on_render(self, console: Console) -> None:
+        super().on_render(console)
+
+        if not self.items:
+            return
+
+        x, y = self.menu_location
+
+        console.print(
+            x=x + 1, y=y + 1 + len(self.items), string="(e) Pick up everything"
+        )
+
+    def ev_keydown(self, event: KeyDown) -> Action | None:
+        key = event.sym
+
+        if key == tcod.event.K_e:
+            return PickupAction(
+                engine=self.engine, entity=self.engine.player, items=self.items
+            )
+
+        return super().ev_keydown(event)
+
+    def on_item_selected(self, item: Item) -> Action | None:
+        return PickupAction(engine=self.engine, entity=self.engine.player, items=[item])
+
+
+class InventoryEventHandler(SelectItemEventHandler):
+    title = "Select an item to use from the inventory."
+
+    def __init__(self, engine: Engine, old_event_handler: EventHandler) -> None:
+        super().__init__(
+            engine=engine,
+            old_event_handler=old_event_handler,
+            items=engine.player.inventory_items,
+        )
+
+    def on_item_selected(self, item: Item) -> Action | None:
+        return ConsumeItemFromInventoryAction(
+            engine=self.engine, entity=self.engine.player, item=item
+        )
+
+
+class InventoryDropEventHandler(SelectItemEventHandler):
+    title = "Select an item to drop from the inventory."
+
+    def __init__(
+        self,
+        engine: Engine,
+        old_event_handler: EventHandler,
+    ) -> None:
+        x, y = engine.player.x, engine.player.y
+        super().__init__(
+            engine=engine,
+            old_event_handler=old_event_handler,
+            items=engine.player.inventory_items,
+        )
+
+    @property
+    def menu_height(self) -> int:
+        return max(len(self.items) + 3, 3)
+
+    def on_render(self, console: Console) -> None:
+        super().on_render(console)
+
+        if not self.items:
+            return
+
+        x, y = self.menu_location
+
+        console.print(x=x + 1, y=y + 1 + len(self.items), string="(d) Drop everything")
+
+    def ev_keydown(self, event: KeyDown) -> Action | None:
+        key = event.sym
+
+        if key == tcod.event.K_d:
+            return DropItemFromInventoryAction(
+                engine=self.engine, entity=self.engine.player, items=self.items
+            )
+
+        return super().ev_keydown(event)
+
+    def on_item_selected(self, item: Item) -> Action | None:
+        return DropItemFromInventoryAction(
+            engine=self.engine, entity=self.engine.player, items=[item]
+        )

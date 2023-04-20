@@ -57,4 +57,4 @@ COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
 COPY . /app/
 WORKDIR /app
 
-CMD ["bin/bash"]
+CMD ["/bin/bash"]

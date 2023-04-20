@@ -30,7 +30,7 @@ class Engine:
         self.update_fov()
 
     def add_to_message_log(
-        self, text: str, fg: tuple[int, int, int] = color.WHITE, *, stack: bool = False
+        self, text: str, fg: tuple[int, int, int] = color.WHITE, *, stack: bool = True
     ) -> None:
         self.message_log.add_message(text=text, fg=fg, stack=stack)
 

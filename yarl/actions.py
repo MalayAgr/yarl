@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Type
+from typing import TYPE_CHECKING, Iterable, Type
 
 from yarl.exceptions import ImpossibleActionException
 from yarl.interface import color
 
 if TYPE_CHECKING:
-    from yarl.components.consumable import Consumable
     from yarl.engine import Engine
     from yarl.entity import ActiveEntity, Entity, Item
     from yarl.gamemap import GameMap
@@ -124,33 +123,43 @@ class BumpAction(DirectedAction):
 
 
 class ItemAction(Action):
-    def __init__(self, engine: Engine, entity: Entity) -> None:
+    def __init__(
+        self, engine: Engine, entity: Entity, items: list[Item] | None = None
+    ) -> None:
         super().__init__(engine, entity)
 
         self.entity: ActiveEntity
 
-    @property
-    def items(self) -> set[Item]:
-        items = self.game_map.get_items(x=self.entity.x, y=self.entity.y)
-        return set(items)
+        self.items = items or []
+
+    def remove_item_from_map(self, item: Item) -> None:
+        self.game_map.remove_entity(entity=item, x=self.entity.x, y=self.entity.y)
 
 
-# class ConsumeItemAction(ItemAction):
-#     def perform(self) -> None:
-#         items = self.items
+class ConsumeItemAction(ItemAction):
+    def __init__(
+        self, engine: Engine, entity: Entity, item: Item | None = None
+    ) -> None:
+        super().__init__(
+            engine=engine, entity=entity, items=None if item is None else [item]
+        )
+        self.item = item
 
-#         if len(items) == 0:
-#             raise ImpossibleActionException("There is no item to consume.")
+    def perform(self) -> None:
+        item = self.item
 
-#         # items.consumable.activate(consumer=self.entity, engine=self.engine)
-#         # self.game_map.remove_entity(entity=items, x=self.entity.x, y=self.entity.y)
+        if item is None:
+            raise ImpossibleActionException("There is no item to consume.")
+
+        item.consumable.activate(consumer=self.entity, engine=self.engine)
+        self.remove_item_from_map(item=item)
 
 
 class PickupAction(ItemAction):
     def perform(self) -> None:
-        items = set(self.items)
+        items = self.items
 
-        if len(items) == 0:
+        if not items:
             raise ImpossibleActionException("There is no item to pick up.")
 
         inventory = self.entity.inventory
@@ -158,12 +167,61 @@ class PickupAction(ItemAction):
         if inventory is None:
             raise ImpossibleActionException("There is no inventory to add items to.")
 
-        for items in items:
-            self.game_map.remove_entity(entity=items, x=self.entity.x, y=self.entity.y)
+        for item in items:
+            self.remove_item_from_map(item=item)
 
-            added = inventory.add_item(item=items)
+            added = inventory.add_item(item=item)
 
             if added is False:
                 raise ImpossibleActionException("Your inventory is full.")
 
-            self.engine.add_to_message_log(text=f"You picked up the item {items.name}")
+            self.engine.add_to_message_log(text=f"You picked up the item {item.name}.")
+
+
+class ConsumeItemFromInventoryAction(ItemAction):
+    def __init__(self, engine: Engine, entity: Entity, item: Item | None) -> None:
+        super().__init__(engine, entity, items=None if item is None else [item])
+        self.item = item
+
+    def perform(self) -> None:
+        item = self.item
+
+        if item is None:
+            raise ImpossibleActionException("There is no item to consume.")
+
+        entity = self.entity
+
+        action = ConsumeItemAction(engine=self.engine, entity=entity, item=item)
+        action.perform()
+
+        entity.inventory.remove_item(item=item)
+
+
+class DropItemFromInventoryAction(ItemAction):
+    def place_item(self, item: Item, x: int, y: int):
+        self.game_map.add_entity(entity=item, x=x, y=y, check_blocking=False)
+
+    def perform(self) -> None:
+        items = self.items
+
+        if not items:
+            raise ImpossibleActionException("There are no items to drop.")
+
+        inventory = self.entity.inventory
+
+        if inventory is None:
+            raise ImpossibleActionException(
+                "There is no inventory to drop the items from."
+            )
+
+        for item in items:
+            try:
+                inventory.remove_item(item=item)
+                self.place_item(item=item, x=self.entity.x, y=self.entity.y)
+                self.engine.add_to_message_log(
+                    text=f"You dropped {item.name} from your inventory."
+                )
+            except ValueError:
+                raise ImpossibleActionException(
+                    f"{item.name} is not part of your inventory."
+                )
