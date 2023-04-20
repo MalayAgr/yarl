@@ -24,12 +24,3 @@ class Inventory:
 
         self.items.append(item)
         return True
-
-    def drop_item(self, item: Item, engine: Engine) -> None:
-        self.items.remove(item)
-
-        item.place(x=self.entity.x, y=self.entity.y)
-
-        engine.add_to_message_log(
-            text=f"You dropped item {item.name} from your inventory."
-        )

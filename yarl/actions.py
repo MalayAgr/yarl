@@ -167,15 +167,15 @@ class PickupAction(ItemAction):
         if inventory is None:
             raise ImpossibleActionException("There is no inventory to add items to.")
 
-        for items in items:
-            self.game_map.remove_entity(entity=items, x=self.entity.x, y=self.entity.y)
+        for item in items:
+            self.remove_item_from_map(item=item)
 
-            added = inventory.add_item(item=items)
+            added = inventory.add_item(item=item)
 
             if added is False:
                 raise ImpossibleActionException("Your inventory is full.")
 
-            self.engine.add_to_message_log(text=f"You picked up the item {items.name}.")
+            self.engine.add_to_message_log(text=f"You picked up the item {item.name}.")
 
 
 class ConsumeItemFromInventoryAction(ItemAction):
@@ -195,3 +195,33 @@ class ConsumeItemFromInventoryAction(ItemAction):
         action.perform()
 
         entity.inventory.remove_item(item=item)
+
+
+class DropItemFromInventoryAction(ItemAction):
+    def place_item(self, item: Item, x: int, y: int):
+        self.game_map.add_entity(entity=item, x=x, y=y, check_blocking=False)
+
+    def perform(self) -> None:
+        items = self.items
+
+        if not items:
+            raise ImpossibleActionException("There are no items to drop.")
+
+        inventory = self.entity.inventory
+
+        if inventory is None:
+            raise ImpossibleActionException(
+                "There is no inventory to drop the items from."
+            )
+
+        for item in items:
+            try:
+                inventory.remove_item(item=item)
+                self.place_item(item=item, x=self.entity.x, y=self.entity.y)
+                self.engine.add_to_message_log(
+                    text=f"You dropped {item.name} from your inventory."
+                )
+            except ValueError:
+                raise ImpossibleActionException(
+                    f"{item.name} is not part of your inventory."
+                )

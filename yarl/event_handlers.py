@@ -13,6 +13,7 @@ from yarl.actions import (  # ConsumeItemAction,
     BumpAction,
     ConsumeItemAction,
     ConsumeItemFromInventoryAction,
+    DropItemFromInventoryAction,
     EscapeAction,
     PickupAction,
     WaitAction,
@@ -88,6 +89,12 @@ class EventHandler(tcod.event.EventDispatch[Action]):
 
         if key == tcod.event.K_i:
             engine.event_handler = InventoryEventHandler(
+                engine=engine, old_event_handler=self
+            )
+            return
+
+        if key == tcod.event.K_d:
+            engine.event_handler = InventoryDropEventHandler(
                 engine=engine, old_event_handler=self
             )
             return
@@ -465,4 +472,49 @@ class InventoryEventHandler(SelectItemEventHandler):
     def on_item_selected(self, item: Item) -> Action | None:
         return ConsumeItemFromInventoryAction(
             engine=self.engine, entity=self.engine.player, item=item
+        )
+
+
+class InventoryDropEventHandler(SelectItemEventHandler):
+    title = "Select an item to drop from the inventory."
+
+    def __init__(
+        self,
+        engine: Engine,
+        old_event_handler: EventHandler,
+    ) -> None:
+        x, y = engine.player.x, engine.player.y
+        super().__init__(
+            engine=engine,
+            old_event_handler=old_event_handler,
+            items=engine.player.inventory_items,
+        )
+
+    @property
+    def menu_height(self) -> int:
+        return max(len(self.items) + 3, 3)
+
+    def on_render(self, console: Console) -> None:
+        super().on_render(console)
+
+        if not self.items:
+            return
+
+        x, y = self.menu_location
+
+        console.print(x=x + 1, y=y + 1 + len(self.items), string="(d) Drop everything")
+
+    def ev_keydown(self, event: KeyDown) -> Action | None:
+        key = event.sym
+
+        if key == tcod.event.K_d:
+            return DropItemFromInventoryAction(
+                engine=self.engine, entity=self.engine.player, items=self.items
+            )
+
+        return super().ev_keydown(event)
+
+    def on_item_selected(self, item: Item) -> Action | None:
+        return DropItemFromInventoryAction(
+            engine=self.engine, entity=self.engine.player, items=[item]
         )
