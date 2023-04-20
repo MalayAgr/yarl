@@ -73,15 +73,9 @@ class GameMap:
     def items(self) -> Iterable[Item]:
         yield from (entity for entity in self.entities if isinstance(entity, Item))
 
-    def get_item(self, x: int, y: int) -> Item | None:
+    def get_items(self, x: int, y: int) -> Iterable[Item]:
         entities = self.get_entities(x=x, y=y)
-
-        if entities is None:
-            return None
-
-        for entity in entities:
-            if isinstance(entity, Item):
-                return entity
+        return (entity for entity in entities if isinstance(entity, Item))
 
     def get_active_entity(self, x: int, y: int) -> ActiveEntity | None:
         entities = self.get_entities(x=x, y=y)

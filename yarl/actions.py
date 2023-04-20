@@ -130,38 +130,40 @@ class ItemAction(Action):
         self.entity: ActiveEntity
 
     @property
-    def item(self):
-        return self.game_map.get_item(x=self.entity.x, y=self.entity.y)
+    def items(self) -> set[Item]:
+        items = self.game_map.get_items(x=self.entity.x, y=self.entity.y)
+        return set(items)
 
 
 class ConsumeItemAction(ItemAction):
     def perform(self) -> None:
-        item = self.item
+        items = self.items
 
-        if item is None:
+        if len(items) == 0:
             raise ImpossibleActionException("There is no item to consume.")
 
-        item.consumable.activate(consumer=self.entity, engine=self.engine)
-        self.game_map.remove_entity(entity=item, x=self.entity.x, y=self.entity.y)
+        items.consumable.activate(consumer=self.entity, engine=self.engine)
+        self.game_map.remove_entity(entity=items, x=self.entity.x, y=self.entity.y)
 
 
 class PickupAction(ItemAction):
     def perform(self) -> None:
-        item = self.item
+        items = set(self.items)
 
-        if item is None:
+        if len(items) == 0:
             raise ImpossibleActionException("There is no item to pick up.")
-
-        self.game_map.remove_entity(entity=item, x=self.entity.x, y=self.entity.y)
 
         inventory = self.entity.inventory
 
         if inventory is None:
-            raise ImpossibleActionException("There is no inventory to add the item to.")
+            raise ImpossibleActionException("There is no inventory to add items to.")
 
-        added = inventory.add_item(item=item)
+        for items in items:
+            self.game_map.remove_entity(entity=items, x=self.entity.x, y=self.entity.y)
 
-        if added is False:
-            raise ImpossibleActionException("Your inventory is full.")
+            added = inventory.add_item(item=items)
 
-        self.engine.add_to_message_log(text=f"You picked up the item {item.name}")
+            if added is False:
+                raise ImpossibleActionException("Your inventory is full.")
+
+            self.engine.add_to_message_log(text=f"You picked up the item {items.name}")
