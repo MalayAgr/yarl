@@ -6,8 +6,15 @@ from typing import TYPE_CHECKING, Any, Iterable
 
 import tcod.event
 from tcod import Console
-from tcod.event import KeySym
-from yarl.actions import Action, BumpAction, EscapeAction, ItemAction, WaitAction
+from tcod.context import Context
+from tcod.event import KeyDown, KeySym, MouseButtonDown, MouseMotion
+from yarl.actions import (  # ConsumeItemAction,
+    Action,
+    BumpAction,
+    EscapeAction,
+    PickupAction,
+    WaitAction,
+)
 from yarl.exceptions import ImpossibleActionException
 from yarl.interface import color
 
@@ -77,8 +84,11 @@ class EventHandler(tcod.event.EventDispatch[Action]):
             )
             return
 
-        if key == tcod.event.K_c:
-            return ItemAction(engine=engine, entity=entity)
+        # if key == tcod.event.K_c:
+        #     return ConsumeItemAction(engine=engine, entity=entity)
+
+        if key == tcod.event.K_e:
+            return PickupAction(engine=engine, entity=entity)
 
         if key in MOVE_KEYS:
             deviation = MOVE_KEYS.get(key)
@@ -89,10 +99,18 @@ class EventHandler(tcod.event.EventDispatch[Action]):
         if key in WAIT_KEYS:
             return WaitAction(engine=engine, entity=entity)
 
-    def handle_events(self, context: tcod.context.Context) -> None:
+    def handle_action(self, action: Action) -> None:
+        action.perform()
+
+    def handle_events(self, context: Context) -> None:
         for event in tcod.event.get():
             context.convert_event(event)
-            self.dispatch(event)
+            action = self.dispatch(event)
+
+            if action is None:
+                continue
+
+            self.handle_action(action=action)
 
     def ev_mousemotion(self, event: tcod.event.MouseMotion) -> None:
         if self.engine.game_map.in_bounds(event.tile.x, event.tile.y):
@@ -123,16 +141,8 @@ class MainGameEventHandler(EventHandler):
             except ImpossibleActionException as e:
                 pass
 
-    def handle_events(self, context: tcod.context.Context) -> None:
-        for event in tcod.event.get():
-            context.convert_event(event=event)
-
-            action = self.dispatch(event)
-
-            if action is None:
-                continue
-
-            self.handle_action(action=action)
+    def handle_events(self, context: Context) -> None:
+        super().handle_events(context=context)
 
         current_time = time.monotonic()
 
@@ -143,7 +153,7 @@ class MainGameEventHandler(EventHandler):
 
     def handle_action(self, action: Action) -> None:
         try:
-            action.perform()
+            super().handle_action(action=action)
             self.engine.update_fov()
         except ImpossibleActionException as e:
             self.engine.add_to_message_log(text=e.args[0], fg=color.IMPOSSIBLE)
@@ -152,25 +162,14 @@ class MainGameEventHandler(EventHandler):
             self.engine.update_fov()
             self.last_turn_time = time.monotonic()
 
-    def ev_keydown(self, event: tcod.event.KeyDown) -> Action | None:
+    def ev_keydown(self, event: KeyDown) -> Action | None:
         key = event.sym
 
         return self.get_action(key=key)
 
 
 class GameOverEventHandler(EventHandler):
-    def handle_events(self, context: tcod.context.Context) -> None:
-        for event in tcod.event.get():
-            context.convert_event(event=event)
-
-            action = self.dispatch(event)
-
-            if action is None:
-                continue
-
-            action.perform()
-
-    def ev_keydown(self, event: tcod.event.KeyDown) -> Action | None:
+    def ev_keydown(self, event: KeyDown) -> Action | None:
         action: Action | None = None
 
         key = event.sym
@@ -221,7 +220,7 @@ class HistoryEventHandler(EventHandler):
 
         log_console.blit(console, 3, 3)
 
-    def ev_keydown(self, event: tcod.event.KeyDown) -> None:
+    def ev_keydown(self, event: KeyDown) -> None:
         # Fancy conditional movement to make it feel right.
         if event.sym in self.CURSOR_Y_KEYS:
             adjust = self.CURSOR_Y_KEYS[event.sym]
@@ -244,3 +243,39 @@ class HistoryEventHandler(EventHandler):
 
         else:  # Any other key moves back to the main game state.
             self.engine.event_handler = self.old_event_handler
+
+
+class AskUserEventHandler(EventHandler):
+    IGNORE_KEYS: set[KeySym] = {
+        tcod.event.K_LSHIFT,
+        tcod.event.K_RSHIFT,
+        tcod.event.K_LCTRL,
+        tcod.event.K_RCTRL,
+        tcod.event.K_LALT,
+        tcod.event.K_RALT,
+    }
+
+    def __init__(self, engine: Engine, old_event_handler: EventHandler) -> None:
+        super().__init__(engine=engine)
+        self.old_event_handler = old_event_handler
+
+    def on_exit(self) -> Action | None:
+        self.engine.event_handler = self.old_event_handler
+
+    def handle_action(self, action: Action) -> None:
+        try:
+            super().handle_action(action=action)
+            self.engine.event_handler = self.old_event_handler
+        except ImpossibleActionException:
+            pass
+
+    def ev_keydown(self, event: KeyDown) -> Action | None:
+        key = event.sym
+
+        if key in self.IGNORE_KEYS:
+            return
+
+        return self.on_exit()
+
+    def ev_mousebuttondown(self, event: MouseButtonDown) -> Action | None:
+        return self.on_exit()

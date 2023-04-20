@@ -6,10 +6,10 @@ from yarl.exceptions import ImpossibleActionException
 from yarl.interface import color
 
 if TYPE_CHECKING:
+    from yarl.components.consumable import Consumable
     from yarl.engine import Engine
     from yarl.entity import ActiveEntity, Entity, Item
     from yarl.gamemap import GameMap
-    from yarl.utils.consumable import Consumable
 
 
 class Action:
@@ -124,18 +124,46 @@ class BumpAction(DirectedAction):
 
 
 class ItemAction(Action):
-    @property
-    def location(self) -> tuple[int, int]:
-        pass
+    def __init__(self, engine: Engine, entity: Entity) -> None:
+        super().__init__(engine, entity)
+
+        self.entity: ActiveEntity
 
     @property
-    def item(self) -> Item | None:
-        return self.game_map.get_item(x=self.entity.x, y=self.entity.y)
+    def items(self) -> set[Item]:
+        items = self.game_map.get_items(x=self.entity.x, y=self.entity.y)
+        return set(items)
 
+
+# class ConsumeItemAction(ItemAction):
+#     def perform(self) -> None:
+#         items = self.items
+
+#         if len(items) == 0:
+#             raise ImpossibleActionException("There is no item to consume.")
+
+#         # items.consumable.activate(consumer=self.entity, engine=self.engine)
+#         # self.game_map.remove_entity(entity=items, x=self.entity.x, y=self.entity.y)
+
+
+class PickupAction(ItemAction):
     def perform(self) -> None:
-        item = self.item
+        items = set(self.items)
 
-        if self.item is None:
-            raise ImpossibleActionException("There is no item to consume.")
+        if len(items) == 0:
+            raise ImpossibleActionException("There is no item to pick up.")
 
-        item.consumable.activate(consumer=self.entity, engine=self.engine)
+        inventory = self.entity.inventory
+
+        if inventory is None:
+            raise ImpossibleActionException("There is no inventory to add items to.")
+
+        for items in items:
+            self.game_map.remove_entity(entity=items, x=self.entity.x, y=self.entity.y)
+
+            added = inventory.add_item(item=items)
+
+            if added is False:
+                raise ImpossibleActionException("Your inventory is full.")
+
+            self.engine.add_to_message_log(text=f"You picked up the item {items.name}")

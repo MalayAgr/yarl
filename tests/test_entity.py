@@ -1,8 +1,8 @@
 import pytest
 from yarl.entity import ActiveEntity, Entity
-from yarl.utils.ai import AttackingAI
-from yarl.utils.fighter import Fighter
-from yarl.utils.render_order import RenderOrder
+from yarl.components.ai import AttackingAI
+from yarl.components.fighter import Fighter
+from yarl.components.render_order import RenderOrder
 
 
 class TestEntity:

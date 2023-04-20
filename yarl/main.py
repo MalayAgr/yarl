@@ -1,9 +1,16 @@
+import os
+
 import tcod
+from yarl.components.ai import AttackingAI
 from yarl.engine import Engine
 from yarl.entity import ActiveEntity
 from yarl.interface import color
 from yarl.mapgen import MapGenerator
-from yarl.utils.ai import AttackingAI
+
+
+def get_tileset_path() -> str:
+    parent = os.path.dirname(__file__)
+    return os.path.join(parent, "assets", "tileset.png")
 
 
 def main() -> None:
@@ -14,7 +21,7 @@ def main() -> None:
     map_height = 43
 
     tileset = tcod.tileset.load_tilesheet(
-        "./assets/tileset.png", 32, 8, tcod.tileset.CHARMAP_TCOD
+        get_tileset_path(), 32, 8, tcod.tileset.CHARMAP_TCOD
     )
 
     player = ActiveEntity(
@@ -27,6 +34,7 @@ def main() -> None:
         power=5,
         speed=0,
         attack_speed=8,
+        inventory_capacity=26,
     )
 
     map_generator = MapGenerator(

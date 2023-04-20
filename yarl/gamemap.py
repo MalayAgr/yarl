@@ -73,15 +73,9 @@ class GameMap:
     def items(self) -> Iterable[Item]:
         yield from (entity for entity in self.entities if isinstance(entity, Item))
 
-    def get_item(self, x: int, y: int) -> Item | None:
+    def get_items(self, x: int, y: int) -> Iterable[Item]:
         entities = self.get_entities(x=x, y=y)
-
-        if entities is None:
-            return None
-
-        for entity in entities:
-            if isinstance(entity, Item):
-                return entity
+        return (entity for entity in entities if isinstance(entity, Item))
 
     def get_active_entity(self, x: int, y: int) -> ActiveEntity | None:
         entities = self.get_entities(x=x, y=y)
@@ -114,6 +108,15 @@ class GameMap:
         entity.place(x=x, y=y)
         self.entities.add(entity)
         self._entity_map[(x, y)].add(entity)
+
+    def remove_entity(self, entity: Entity, x: int, y: int) -> None:
+        entities = self.get_entities(x=x, y=y)
+
+        if entities is None:
+            return
+
+        entities.discard(entity)
+        self.entities.discard(entity)
 
     def get_names_at_location(self, x: int, y: int) -> str:
         if not self.in_bounds(x, y) or not self.visible[x, y]:

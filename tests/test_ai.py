@@ -8,7 +8,7 @@ import yarl.tile_types as tiles
 from yarl.engine import Engine
 from yarl.entity import ActiveEntity, Entity
 from yarl.gamemap import GameMap
-from yarl.utils.ai import AttackingAI, BaseAI
+from yarl.components.ai import AttackingAI, BaseAI
 
 
 @pytest.fixture

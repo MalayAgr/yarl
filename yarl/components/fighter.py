@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from yarl.utils import RenderOrder
+from yarl.components import RenderOrder
 
 if TYPE_CHECKING:
     from yarl.entity import ActiveEntity

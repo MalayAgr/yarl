@@ -303,11 +303,6 @@ class MapGenerator:
             x = random.randint(room.x1 + 1, room.x2 - 1)
             y = random.randint(room.y1 + 1, room.y2 - 1)
 
-            item = self.game_map.get_item(x=x, y=y)
-
-            if item is not None:
-                continue
-
             try:
                 entity = random.choice(ITEM_FACTORY)
                 entity = Entity.fromentity(entity=entity)

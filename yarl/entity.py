@@ -4,10 +4,11 @@ import copy
 from collections import deque
 from typing import Iterable, Type
 
-from yarl.utils import RenderOrder
-from yarl.utils.ai import AttackingAI, BaseAI
-from yarl.utils.consumable import Consumable, HealingPotion
-from yarl.utils.fighter import Fighter
+from yarl.components import RenderOrder
+from yarl.components.ai import AttackingAI, BaseAI
+from yarl.components.consumable import Consumable, HealingPotion
+from yarl.components.fighter import Fighter
+from yarl.components.inventory import Inventory
 
 
 class Entity:
@@ -56,6 +57,7 @@ class ActiveEntity(Entity):
         power: int = 5,
         speed: int = 8,
         attack_speed: int = 10,
+        inventory_capacity: int = 0,
     ) -> None:
         super().__init__(
             x=x,
@@ -69,6 +71,7 @@ class ActiveEntity(Entity):
 
         self.ai_cls = ai_cls
         self._path: deque[tuple[int, int]] = deque()
+
         self.fighter = Fighter(
             entity=self,
             max_hp=max_hp,
@@ -76,6 +79,13 @@ class ActiveEntity(Entity):
             power=power,
             attack_speed=attack_speed,
         )
+
+        self.inventory = (
+            Inventory(entity=self, capacity=inventory_capacity)
+            if inventory_capacity != 0
+            else None
+        )
+
         self.speed = speed
         self.movement_wait = 0
 
