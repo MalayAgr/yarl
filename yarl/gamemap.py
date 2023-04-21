@@ -57,7 +57,9 @@ class GameMap:
         if entities is None:
             return None
 
-        for entity in entities:
+        for entity in sorted(
+            entities, key=lambda x: x.render_order.value, reverse=True
+        ):
             if entity.blocking is True:
                 return entity
 
@@ -83,7 +85,9 @@ class GameMap:
         if entities is None:
             return None
 
-        for entity in entities:
+        for entity in sorted(
+            entities, key=lambda x: x.render_order.value, reverse=True
+        ):
             if isinstance(entity, ActiveEntity):
                 return entity
 
@@ -96,7 +100,9 @@ class GameMap:
         self._entity_map[(x, y)].add(entity)
         entity.place(x=x, y=y)
 
-    def add_entity(self, entity: Entity, x: int = -1, y: int = -1, *, check_blocking: bool = True) -> None:
+    def add_entity(
+        self, entity: Entity, x: int = -1, y: int = -1, *, check_blocking: bool = True
+    ) -> None:
         x = x if x != -1 else entity.x
         y = y if y != -1 else entity.y
 
