@@ -95,6 +95,9 @@ class ActiveEntity(Entity):
 
     @property
     def inventory_items(self) -> list[Item]:
+        if self.inventory is None:
+            return []
+
         return self.inventory.items
 
     @property

@@ -124,7 +124,7 @@ class BumpAction(DirectedAction):
 
 class ItemAction(Action):
     def __init__(
-        self, engine: Engine, entity: Entity, items: list[Item] | None = None
+        self, engine: Engine, entity: ActiveEntity, items: list[Item] | None = None
     ) -> None:
         super().__init__(engine, entity)
 
@@ -138,7 +138,7 @@ class ItemAction(Action):
 
 class ConsumeItemAction(ItemAction):
     def __init__(
-        self, engine: Engine, entity: Entity, item: Item | None = None
+        self, engine: Engine, entity: ActiveEntity, item: Item | None = None
     ) -> None:
         super().__init__(
             engine=engine, entity=entity, items=None if item is None else [item]
@@ -179,11 +179,18 @@ class PickupAction(ItemAction):
 
 
 class ConsumeItemFromInventoryAction(ItemAction):
-    def __init__(self, engine: Engine, entity: Entity, item: Item | None) -> None:
+    def __init__(self, engine: Engine, entity: ActiveEntity, item: Item | None) -> None:
         super().__init__(engine, entity, items=None if item is None else [item])
         self.item = item
 
     def perform(self) -> None:
+        inventory = self.entity.inventory
+
+        if inventory is None:
+            raise ImpossibleActionException(
+                "There is no inventory to consume the item from."
+            )
+
         item = self.item
 
         if item is None:
@@ -194,7 +201,7 @@ class ConsumeItemFromInventoryAction(ItemAction):
         action = ConsumeItemAction(engine=self.engine, entity=entity, item=item)
         action.perform()
 
-        entity.inventory.remove_item(item=item)
+        inventory.remove_item(item=item)
 
 
 class DropItemFromInventoryAction(ItemAction):

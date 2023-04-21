@@ -64,7 +64,7 @@ class LightningDamage(Consumable):
 
         target.fighter.take_damage(damage=damage)
 
-        text = f"A lighting bolt strikes the {target.name} with a loud thunder, for {damage} hit points!"
+        text = f"A lighting bolt strikes {target.name} with a loud thunder, for {damage} hit points!"
         engine.add_to_message_log(text=text)
 
         if not target.is_alive:
