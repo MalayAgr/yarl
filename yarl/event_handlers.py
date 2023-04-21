@@ -12,7 +12,6 @@ from yarl.actions import (  # ConsumeItemAction,
     Action,
     BumpAction,
     ConsumeItemAction,
-    ConsumeItemFromInventoryAction,
     DropItemFromInventoryAction,
     PickupAction,
     WaitAction,
@@ -106,11 +105,12 @@ class EventHandler(tcod.event.EventDispatch[Action]):
                 number_of_items = len(items)
 
                 if number_of_items <= 1:
-                    return ConsumeItemAction(
+                    engine.event_handler = ConsumeSingleItemEventHandler(
                         engine=engine,
-                        entity=entity,
                         item=None if number_of_items == 0 else items[0],
+                        old_event_handler=self,
                     )
+                    return None
 
                 engine.event_handler = SelectItemToConsumeEventHandler(
                     engine=engine, old_event_handler=self
@@ -295,6 +295,39 @@ class HistoryEventHandler(SwitchableEventHandler):
             self.switch_event_handler()
 
 
+class ConsumeSingleItemEventHandler(SwitchableEventHandler):
+    def __init__(
+        self,
+        engine: Engine,
+        item: Item | None = None,
+        old_event_handler: EventHandler | None = None,
+    ) -> None:
+        super().__init__(engine, old_event_handler)
+        self.item = item
+
+    def handle_action(self, action: Action) -> None:
+        try:
+            action.perform()
+        except ImpossibleActionException as e:
+            self.engine.add_to_message_log(text=e.args[0], fg=color.IMPOSSIBLE)
+
+        self.switch_event_handler()
+
+    def handle_events(self, context: Context) -> None:
+        item = self.item
+
+        if item is None:
+            self.engine.add_to_message_log("There is no item to consume.")
+            self.switch_event_handler()
+            return
+
+        action = item.consumable.get_action(
+            entity=self.engine.player, engine=self.engine
+        )
+
+        self.handle_action(action=action)
+
+
 class AskUserEventHandler(SwitchableEventHandler):
     IGNORE_KEYS: set[int] = {
         tcod.event.K_LSHIFT,
@@ -416,8 +449,11 @@ class SelectItemToConsumeEventHandler(SelectItemEventHandler):
             old_event_handler=old_event_handler,
         )
 
-    def on_item_selected(self, item: Item) -> Action:
-        return item.consumable.get_action(entity=self.engine.player, engine=self.engine)
+    def on_item_selected(self, item: Item) -> Action | None:
+        self.engine.event_handler = ConsumeSingleItemEventHandler(
+            engine=self.engine, item=item, old_event_handler=self.old_event_handler
+        )
+        return None
 
 
 class SelectItemToPickupEventHandler(SelectItemEventHandler):
@@ -477,9 +513,10 @@ class InventoryEventHandler(SelectItemEventHandler):
         )
 
     def on_item_selected(self, item: Item) -> Action | None:
-        return ConsumeItemFromInventoryAction(
-            engine=self.engine, entity=self.engine.player, item=item
+        self.engine.event_handler = ConsumeSingleItemEventHandler(
+            engine=self.engine, item=item, old_event_handler=self.old_event_handler
         )
+        return None
 
 
 class InventoryDropEventHandler(SelectItemEventHandler):
@@ -528,6 +565,8 @@ class InventoryDropEventHandler(SelectItemEventHandler):
         )
 
 
-class SelectIndexEventHandler(EventHandler):
-    def __init__(self, engine: Engine) -> None:
-        super().__init__(engine)
+class SelectIndexEventHandler(AskUserEventHandler):
+    def __init__(
+        self, engine: Engine, old_event_handler: EventHandler | None = None
+    ) -> None:
+        super().__init__(engine=engine, old_event_handler=old_event_handler)

@@ -12,11 +12,20 @@ if TYPE_CHECKING:
 
 
 class Consumable:
-    def __init__(self, item: Item):
+    def __init__(self, item: Item, targeted: bool = False):
         self.item = item
+        self.targeted = targeted
 
-    def get_action(self, entity: ActiveEntity, engine: Engine) -> Action:
+    def get_action(
+        self, entity: ActiveEntity, engine: Engine, *args, **kwargs
+    ) -> Action:
         return ConsumeItemAction(engine=engine, entity=entity, item=self.item)
+
+    def consume(self, consumer: ActiveEntity) -> None:
+        if consumer.inventory is None or self.item not in consumer.inventory_items:
+            return
+
+        consumer.inventory.remove_item(item=self.item)
 
     def activate(self, consumer: ActiveEntity, engine: Engine) -> None:
         raise NotImplementedError()
@@ -33,6 +42,7 @@ class HealingPotion(Consumable):
         if recovered > 0:
             text = f"You consume the {self.item.name}, and recover {recovered} amount of HP!"
             engine.add_to_message_log(text=text, fg=color.HEALTH_RECOVERED)
+            self.consume(consumer=consumer)
         else:
             raise ImpossibleActionException("Your health is already full.")
 
@@ -73,6 +83,14 @@ class LightningScroll(Consumable):
         text = f"A lighting bolt strikes {target.name} with a loud thunder, for {damage} hit points!"
         engine.add_to_message_log(text=text)
 
+        self.consume(consumer=consumer)
+
         if not target.is_alive:
             engine.add_to_message_log(text=f"{target.name} is dead!")
             target.name = f"remains of {target.name}"
+
+
+class ConfusionSpell(Consumable):
+    def __init__(self, item: Item, number_of_turns: int):
+        super().__init__(item, targeted=True)
+        self.number_of_turns = number_of_turns
