@@ -42,8 +42,9 @@ jobs:
         run: |
           source $VENV
           black .
-      - name: Type check code using Mypy
+      - name: Type check code using mypy
         run: |
+          source $VENV
           mypy
       - name: Test with pytest
         run: |
