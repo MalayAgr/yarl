@@ -19,6 +19,12 @@ mypy = "^1.2.0"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+addopts = "--cov=yarl/ --cov-report=xml:./coverage.xml --cov-report term-missing"
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+packages = ["yarl"]
 
 [build-system]
 requires = ["poetry-core"]
