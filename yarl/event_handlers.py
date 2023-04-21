@@ -77,62 +77,6 @@ class EventHandler(tcod.event.EventDispatch[Action]):
     def process_key(self, key: KeySym) -> Action | None:
         engine, entity = self.engine, self.engine.player
 
-        if key == tcod.event.K_ESCAPE:
-            raise SystemExit()
-
-        if key == tcod.event.K_v:
-            engine.event_handler = HistoryEventHandler(
-                engine=engine, old_event_handler=self
-            )
-            return None
-
-        if key == tcod.event.K_i:
-            engine.event_handler = InventoryEventHandler(
-                engine=engine, old_event_handler=self
-            )
-            return None
-
-        if key == tcod.event.K_d:
-            engine.event_handler = InventoryDropEventHandler(
-                engine=engine, old_event_handler=self
-            )
-            return None
-
-        if key == tcod.event.K_c:
-            items = engine.game_map.get_items(x=entity.x, y=entity.y)
-            items = list(items)
-
-            number_of_items = len(items)
-
-            if number_of_items <= 1:
-                return ConsumeItemAction(
-                    engine=engine,
-                    entity=entity,
-                    item=None if number_of_items == 0 else items[0],
-                )
-
-            engine.event_handler = SelectItemToConsumeEventHandler(
-                engine=engine, old_event_handler=self
-            )
-            return None
-
-        if key == tcod.event.K_e:
-            items = engine.game_map.get_items(x=entity.x, y=entity.y)
-            items = list(items)
-
-            number_of_items = len(items)
-
-            if number_of_items <= 1:
-                return PickupAction(
-                    engine=engine,
-                    entity=entity,
-                    items=items,
-                )
-
-            engine.event_handler = SelectItemToPickupEventHandler(
-                engine=engine, old_event_handler=self
-            )
-
         if key in MOVE_KEYS:
             deviation = MOVE_KEYS[key]
             return BumpAction(
@@ -141,6 +85,54 @@ class EventHandler(tcod.event.EventDispatch[Action]):
 
         if key in WAIT_KEYS:
             return WaitAction(engine=engine, entity=entity)
+
+        match key:
+            case tcod.event.K_ESCAPE:
+                raise SystemExit()
+            case tcod.event.K_v:
+                engine.event_handler = HistoryEventHandler(
+                    engine=engine, old_event_handler=self
+                )
+            case tcod.event.K_i:
+                engine.event_handler = InventoryEventHandler(
+                    engine=engine, old_event_handler=self
+                )
+            case tcod.event.K_d:
+                engine.event_handler = InventoryDropEventHandler(
+                engine=engine, old_event_handler=self
+            )
+            case tcod.event.K_c:
+                items = engine.game_map.get_items(x=entity.x, y=entity.y)
+                items = list(items)
+
+                number_of_items = len(items)
+
+                if number_of_items <= 1:
+                    return ConsumeItemAction(
+                        engine=engine,
+                        entity=entity,
+                        item=None if number_of_items == 0 else items[0],
+                    )
+
+                engine.event_handler = SelectItemToConsumeEventHandler(
+                    engine=engine, old_event_handler=self
+                )
+            case tcod.event.K_e:
+                items = engine.game_map.get_items(x=entity.x, y=entity.y)
+                items = list(items)
+
+                number_of_items = len(items)
+
+                if number_of_items <= 1:
+                    return PickupAction(
+                        engine=engine,
+                        entity=entity,
+                        items=items,
+                    )
+
+                engine.event_handler = SelectItemToPickupEventHandler(
+                    engine=engine, old_event_handler=self
+                )
 
         return None
 
