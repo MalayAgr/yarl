@@ -32,7 +32,7 @@ class Deviation:
     dy: int
 
 
-MOVE_KEYS: dict[KeySym, Deviation] = {
+MOVE_KEYS: dict[int, Deviation] = {
     # Arrow keys
     tcod.event.K_UP: Deviation(0, -1),
     tcod.event.K_DOWN: Deviation(0, 1),
@@ -63,7 +63,7 @@ MOVE_KEYS: dict[KeySym, Deviation] = {
 }
 
 
-WAIT_KEYS: set[KeySym] = {tcod.event.K_KP_5}
+WAIT_KEYS: set[int] = {tcod.event.K_KP_5}
 
 
 class EventHandler(tcod.event.EventDispatch[Action]):
@@ -85,19 +85,19 @@ class EventHandler(tcod.event.EventDispatch[Action]):
             engine.event_handler = HistoryEventHandler(
                 engine=engine, old_event_handler=self
             )
-            return
+            return None
 
         if key == tcod.event.K_i:
             engine.event_handler = InventoryEventHandler(
                 engine=engine, old_event_handler=self
             )
-            return
+            return None
 
         if key == tcod.event.K_d:
             engine.event_handler = InventoryDropEventHandler(
                 engine=engine, old_event_handler=self
             )
-            return
+            return None
 
         if key == tcod.event.K_c:
             items = engine.game_map.get_items(x=entity.x, y=entity.y)
@@ -115,7 +115,7 @@ class EventHandler(tcod.event.EventDispatch[Action]):
             engine.event_handler = SelectItemToConsumeEventHandler(
                 engine=engine, old_event_handler=self
             )
-            return
+            return None
 
         if key == tcod.event.K_e:
             items = engine.game_map.get_items(x=entity.x, y=entity.y)
@@ -135,13 +135,15 @@ class EventHandler(tcod.event.EventDispatch[Action]):
             )
 
         if key in MOVE_KEYS:
-            deviation = MOVE_KEYS.get(key)
+            deviation = MOVE_KEYS[key]
             return BumpAction(
                 engine=engine, entity=entity, dx=deviation.dx, dy=deviation.dy
             )
 
         if key in WAIT_KEYS:
             return WaitAction(engine=engine, entity=entity)
+
+        return None
 
     def handle_action(self, action: Action) -> None:
         action.perform()
@@ -165,7 +167,7 @@ class EventHandler(tcod.event.EventDispatch[Action]):
 
 
 class MainGameEventHandler(EventHandler):
-    def __init__(self, engine: Engine, turn_interval: int = 0.5) -> None:
+    def __init__(self, engine: Engine, turn_interval: float = 0.5) -> None:
         super().__init__(engine=engine)
         self.turn_interval = turn_interval
         self.last_turn_time = time.monotonic()
@@ -290,7 +292,7 @@ class HistoryEventHandler(EventHandler):
 
 
 class AskUserEventHandler(EventHandler):
-    IGNORE_KEYS: set[KeySym] = {
+    IGNORE_KEYS: set[int] = {
         tcod.event.K_LSHIFT,
         tcod.event.K_RSHIFT,
         tcod.event.K_LCTRL,
@@ -305,6 +307,7 @@ class AskUserEventHandler(EventHandler):
 
     def on_exit(self) -> Action | None:
         self.engine.event_handler = self.old_event_handler
+        return None
 
     def handle_action(self, action: Action) -> None:
         try:
@@ -317,7 +320,7 @@ class AskUserEventHandler(EventHandler):
         key = event.sym
 
         if key in self.IGNORE_KEYS:
-            return
+            return None
 
         return self.on_exit()
 
@@ -386,7 +389,7 @@ class SelectItemEventHandler(AskUserEventHandler):
             last_key = chr(ord("a") + len(self.items) - 1)
             text = f"Invalid entry. Press keys from (a) to ({last_key})."
             self.engine.add_to_message_log(text=text, fg=color.INVALID)
-            return
+            return None
 
         item = self.items[index]
         return self.on_item_selected(item)
