@@ -332,7 +332,10 @@ class SelectItemEventHandler(AskUserEventHandler):
     title = "<Missing title>"
 
     def __init__(
-        self, engine: Engine, old_event_handler: EventHandler, items: Iterable[Item]
+        self,
+        engine: Engine,
+        items: Iterable[Item],
+        old_event_handler: EventHandler | None = None,
     ) -> None:
         super().__init__(engine=engine, old_event_handler=old_event_handler)
         self.items = list(items)
@@ -402,13 +405,15 @@ class SelectItemEventHandler(AskUserEventHandler):
 class SelectItemToConsumeEventHandler(SelectItemEventHandler):
     title = "Select an item to consume."
 
-    def __init__(self, engine: Engine, old_event_handler: EventHandler) -> None:
+    def __init__(
+        self, engine: Engine, old_event_handler: EventHandler | None = None
+    ) -> None:
         x, y = engine.player.x, engine.player.y
 
         super().__init__(
             engine=engine,
-            old_event_handler=old_event_handler,
             items=engine.game_map.get_items(x=x, y=y),
+            old_event_handler=old_event_handler,
         )
 
     def on_item_selected(self, item: Item) -> Action:
@@ -421,13 +426,14 @@ class SelectItemToPickupEventHandler(SelectItemEventHandler):
     def __init__(
         self,
         engine: Engine,
-        old_event_handler: EventHandler,
+        old_event_handler: EventHandler | None = None,
     ) -> None:
         x, y = engine.player.x, engine.player.y
+
         super().__init__(
             engine=engine,
-            old_event_handler=old_event_handler,
             items=engine.game_map.get_items(x=x, y=y),
+            old_event_handler=old_event_handler,
         )
 
     @property
@@ -482,13 +488,14 @@ class InventoryDropEventHandler(SelectItemEventHandler):
     def __init__(
         self,
         engine: Engine,
-        old_event_handler: EventHandler,
+        old_event_handler: EventHandler | None = None,
     ) -> None:
         x, y = engine.player.x, engine.player.y
+
         super().__init__(
             engine=engine,
-            old_event_handler=old_event_handler,
             items=engine.player.inventory_items,
+            old_event_handler=old_event_handler,
         )
 
     @property
