@@ -31,41 +31,39 @@ class Deviation:
     dy: int
 
 
-MOVE_KEYS: dict[int, Deviation] = {
-    # Arrow keys
-    tcod.event.K_UP: Deviation(0, -1),
-    tcod.event.K_DOWN: Deviation(0, 1),
-    tcod.event.K_LEFT: Deviation(-1, 0),
-    tcod.event.K_RIGHT: Deviation(1, 0),
-    tcod.event.K_HOME: Deviation(-1, -1),
-    tcod.event.K_END: Deviation(-1, 1),
-    tcod.event.K_PAGEUP: Deviation(1, -1),
-    tcod.event.K_PAGEDOWN: Deviation(1, 1),
-    # Numpad keys
-    tcod.event.K_KP_8: Deviation(dx=0, dy=-1),
-    tcod.event.K_KP_2: Deviation(dx=0, dy=1),
-    tcod.event.K_KP_4: Deviation(dx=-1, dy=0),
-    tcod.event.K_KP_6: Deviation(dx=1, dy=0),
-    tcod.event.K_KP_7: Deviation(dx=-1, dy=-1),
-    tcod.event.K_KP_9: Deviation(dx=1, dy=-1),
-    tcod.event.K_KP_3: Deviation(dx=1, dy=1),
-    tcod.event.K_KP_1: Deviation(dx=-1, dy=1),
-    # Vi keys
-    tcod.event.K_h: Deviation(-1, 0),
-    tcod.event.K_j: Deviation(0, 1),
-    tcod.event.K_k: Deviation(0, -1),
-    tcod.event.K_l: Deviation(1, 0),
-    tcod.event.K_y: Deviation(-1, -1),
-    tcod.event.K_u: Deviation(1, -1),
-    tcod.event.K_b: Deviation(-1, 1),
-    tcod.event.K_n: Deviation(1, 1),
-}
-
-
-WAIT_KEYS: set[int] = {tcod.event.K_KP_5}
-
-
 class EventHandler(tcod.event.EventDispatch[Action]):
+    MOVE_KEYS: dict[int, Deviation] = {
+        # Arrow keys
+        tcod.event.K_UP: Deviation(0, -1),
+        tcod.event.K_DOWN: Deviation(0, 1),
+        tcod.event.K_LEFT: Deviation(-1, 0),
+        tcod.event.K_RIGHT: Deviation(1, 0),
+        tcod.event.K_HOME: Deviation(-1, -1),
+        tcod.event.K_END: Deviation(-1, 1),
+        tcod.event.K_PAGEUP: Deviation(1, -1),
+        tcod.event.K_PAGEDOWN: Deviation(1, 1),
+        # Numpad keys
+        tcod.event.K_KP_8: Deviation(dx=0, dy=-1),
+        tcod.event.K_KP_2: Deviation(dx=0, dy=1),
+        tcod.event.K_KP_4: Deviation(dx=-1, dy=0),
+        tcod.event.K_KP_6: Deviation(dx=1, dy=0),
+        tcod.event.K_KP_7: Deviation(dx=-1, dy=-1),
+        tcod.event.K_KP_9: Deviation(dx=1, dy=-1),
+        tcod.event.K_KP_3: Deviation(dx=1, dy=1),
+        tcod.event.K_KP_1: Deviation(dx=-1, dy=1),
+        # Vi keys
+        tcod.event.K_h: Deviation(-1, 0),
+        tcod.event.K_j: Deviation(0, 1),
+        tcod.event.K_k: Deviation(0, -1),
+        tcod.event.K_l: Deviation(1, 0),
+        tcod.event.K_y: Deviation(-1, -1),
+        tcod.event.K_u: Deviation(1, -1),
+        tcod.event.K_b: Deviation(-1, 1),
+        tcod.event.K_n: Deviation(1, 1),
+    }
+
+    WAIT_KEYS: set[int] = {tcod.event.K_KP_5}
+
     def __init__(self, engine: Engine) -> None:
         super().__init__()
 
@@ -77,13 +75,13 @@ class EventHandler(tcod.event.EventDispatch[Action]):
     def process_key(self, key: KeySym) -> Action | None:
         engine, entity = self.engine, self.engine.player
 
-        if key in MOVE_KEYS:
-            deviation = MOVE_KEYS[key]
+        if key in self.MOVE_KEYS:
+            deviation = self.MOVE_KEYS[key]
             return BumpAction(
                 engine=engine, entity=entity, dx=deviation.dx, dy=deviation.dy
             )
 
-        if key in WAIT_KEYS:
+        if key in self.WAIT_KEYS:
             return WaitAction(engine=engine, entity=entity)
 
         match key:
@@ -99,8 +97,8 @@ class EventHandler(tcod.event.EventDispatch[Action]):
                 )
             case tcod.event.K_d:
                 engine.event_handler = InventoryDropEventHandler(
-                engine=engine, old_event_handler=self
-            )
+                    engine=engine, old_event_handler=self
+                )
             case tcod.event.K_c:
                 items = engine.game_map.get_items(x=entity.x, y=entity.y)
                 items = list(items)
@@ -221,7 +219,7 @@ class GameOverEventHandler(EventHandler):
 class HistoryEventHandler(EventHandler):
     """Print the history on a larger window which can be navigated."""
 
-    CURSOR_Y_KEYS = {
+    SCROLL_KEYS = {
         tcod.event.K_UP: -1,
         tcod.event.K_DOWN: 1,
         tcod.event.K_PAGEUP: -10,
@@ -259,8 +257,8 @@ class HistoryEventHandler(EventHandler):
 
     def ev_keydown(self, event: KeyDown) -> None:
         # Fancy conditional movement to make it feel right.
-        if event.sym in self.CURSOR_Y_KEYS:
-            adjust = self.CURSOR_Y_KEYS[event.sym]
+        if event.sym in self.SCROLL_KEYS:
+            adjust = self.SCROLL_KEYS[event.sym]
 
             if adjust < 0 and self.cursor == 0:
                 # Only move from the top to the bottom when you're on the edge.
