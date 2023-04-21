@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import math
 from collections import deque
 from typing import Iterable, Type
 
@@ -41,6 +42,9 @@ class Entity:
 
     def place(self, x: int, y: int) -> None:
         self.x, self.y = x, y
+
+    def distance(self, x: int, y: int) -> float:
+        return math.sqrt((self.x - x) ** 2 + (self.y - y) ** 2)
 
 
 class ActiveEntity(Entity):
