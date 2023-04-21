@@ -14,7 +14,6 @@ from yarl.actions import (  # ConsumeItemAction,
     ConsumeItemAction,
     ConsumeItemFromInventoryAction,
     DropItemFromInventoryAction,
-    EscapeAction,
     PickupAction,
     WaitAction,
 )
@@ -79,7 +78,7 @@ class EventHandler(tcod.event.EventDispatch[Action]):
         engine, entity = self.engine, self.engine.player
 
         if key == tcod.event.K_ESCAPE:
-            return EscapeAction(engine=engine, entity=entity)
+            raise SystemExit()
 
         if key == tcod.event.K_v:
             engine.event_handler = HistoryEventHandler(
@@ -221,7 +220,7 @@ class GameOverEventHandler(EventHandler):
         key = event.sym
 
         if key == tcod.event.K_ESCAPE:
-            action = EscapeAction(engine=self.engine, entity=self.engine.player)
+            raise SystemExit()
 
         # No valid key was pressed
         return action
