@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from yarl.actions import Action, ConsumeItemAction
 from yarl.exceptions import ImpossibleActionException
 from yarl.interface import color
 
@@ -13,6 +14,9 @@ if TYPE_CHECKING:
 class Consumable:
     def __init__(self, item: Item):
         self.item = item
+
+    def get_action(self, entity: ActiveEntity, engine: Engine) -> Action:
+        return ConsumeItemAction(engine=engine, entity=entity, item=self.item)
 
     def activate(self, consumer: ActiveEntity, engine: Engine) -> None:
         raise NotImplementedError()
@@ -33,7 +37,7 @@ class HealingPotion(Consumable):
             raise ImpossibleActionException("Your health is already full.")
 
 
-class LightningDamage(Consumable):
+class LightningScroll(Consumable):
     def __init__(self, item: Item, power: int, range: int):
         super().__init__(item)
         self.power = power
@@ -60,7 +64,9 @@ class LightningDamage(Consumable):
         damage = max(0, self.power - target.fighter.defense)
 
         if damage == 0:
-            raise ImpossibleActionException(f"The closest enemy {target.name} is too strong to strike.")
+            raise ImpossibleActionException(
+                f"The closest enemy {target.name} is too strong to strike."
+            )
 
         target.fighter.take_damage(damage=damage)
 

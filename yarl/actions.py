@@ -193,7 +193,7 @@ class ConsumeItemFromInventoryAction(ItemAction):
 
         entity = self.entity
 
-        action = ConsumeItemAction(engine=self.engine, entity=entity, item=item)
+        action = item.consumable.get_action(entity=entity, engine=self.engine)
         action.perform()
 
         inventory.remove_item(item=item)

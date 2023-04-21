@@ -401,9 +401,7 @@ class SelectItemToConsumeEventHandler(SelectItemEventHandler):
         )
 
     def on_item_selected(self, item: Item) -> Action:
-        return ConsumeItemAction(
-            engine=self.engine, entity=self.engine.player, item=item
-        )
+        return item.consumable.get_action(entity=self.engine.player, engine=self.engine)
 
 
 class SelectItemToPickupEventHandler(SelectItemEventHandler):

@@ -7,7 +7,7 @@ from typing import Iterable, Type, TypeVar
 
 from yarl.components import RenderOrder
 from yarl.components.ai import AttackingAI, BaseAI
-from yarl.components.consumable import Consumable, HealingPotion, LightningDamage
+from yarl.components.consumable import Consumable, HealingPotion, LightningScroll
 from yarl.components.fighter import Fighter
 from yarl.components.inventory import Inventory
 
@@ -181,7 +181,7 @@ ITEM_FACTORY = [
         amount=4,
     ),
     Item(
-        consumable_cls=LightningDamage,
+        consumable_cls=LightningScroll,
         char="~",
         color=(255, 255, 0),
         name="Lightning Scroll",
