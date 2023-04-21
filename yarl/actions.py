@@ -163,13 +163,12 @@ class PickupAction(ItemAction):
             raise ImpossibleActionException("There is no inventory to add items to.")
 
         for item in items:
-            self.remove_item_from_map(item=item)
-
             added = inventory.add_item(item=item)
 
             if added is False:
                 raise ImpossibleActionException("Your inventory is full.")
 
+            self.remove_item_from_map(item=item)
             self.engine.add_to_message_log(text=f"You picked up the item {item.name}.")
 
 

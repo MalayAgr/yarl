@@ -216,7 +216,21 @@ class GameOverEventHandler(EventHandler):
         return action
 
 
-class HistoryEventHandler(EventHandler):
+class SwitchableEventHandler(EventHandler):
+    def __init__(
+        self, engine: Engine, old_event_handler: EventHandler | None = None
+    ) -> None:
+        super().__init__(engine=engine)
+        self.old_event_handler = old_event_handler
+
+    def switch_event_handler(self) -> None:
+        if self.old_event_handler is None:
+            return
+
+        self.engine.event_handler = self.old_event_handler
+
+
+class HistoryEventHandler(SwitchableEventHandler):
     """Print the history on a larger window which can be navigated."""
 
     SCROLL_KEYS = {
@@ -226,11 +240,12 @@ class HistoryEventHandler(EventHandler):
         tcod.event.K_PAGEDOWN: 10,
     }
 
-    def __init__(self, engine: Engine, old_event_handler: EventHandler):
-        super().__init__(engine)
+    def __init__(
+        self, engine: Engine, old_event_handler: EventHandler | None = None
+    ) -> None:
+        super().__init__(engine=engine, old_event_handler=old_event_handler)
         self.log_length = len(engine.message_log.messages)
         self.cursor = self.log_length - 1
-        self.old_event_handler = old_event_handler
 
     def on_render(self, console: tcod.Console) -> None:
         super().on_render(console)  # Draw the main state as the background.
@@ -276,11 +291,11 @@ class HistoryEventHandler(EventHandler):
         elif event.sym == tcod.event.K_END:
             self.cursor = self.log_length - 1  # Move directly to the last message.
 
-        else:  # Any other key moves back to the main game state.
-            self.engine.event_handler = self.old_event_handler
+        else:
+            self.switch_event_handler()
 
 
-class AskUserEventHandler(EventHandler):
+class AskUserEventHandler(SwitchableEventHandler):
     IGNORE_KEYS: set[int] = {
         tcod.event.K_LSHIFT,
         tcod.event.K_RSHIFT,
@@ -290,18 +305,14 @@ class AskUserEventHandler(EventHandler):
         tcod.event.K_RALT,
     }
 
-    def __init__(self, engine: Engine, old_event_handler: EventHandler) -> None:
-        super().__init__(engine=engine)
-        self.old_event_handler = old_event_handler
-
     def on_exit(self) -> Action | None:
-        self.engine.event_handler = self.old_event_handler
+        self.switch_event_handler()
         return None
 
     def handle_action(self, action: Action) -> None:
         try:
             super().handle_action(action=action)
-            self.engine.event_handler = self.old_event_handler
+            self.switch_event_handler()
         except ImpossibleActionException as e:
             self.engine.add_to_message_log(text=e.args[0], fg=color.IMPOSSIBLE)
 
@@ -508,3 +519,8 @@ class InventoryDropEventHandler(SelectItemEventHandler):
         return DropItemFromInventoryAction(
             engine=self.engine, entity=self.engine.player, items=[item]
         )
+
+
+class SelectIndexEventHandler(EventHandler):
+    def __init__(self, engine: Engine) -> None:
+        super().__init__(engine)
