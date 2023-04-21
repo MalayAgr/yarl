@@ -170,6 +170,7 @@ ENTITY_FACTORY = [
 ITEM_FACTORY = [
     Item(
         consumable_cls=HealingPotion,
+        char="!",
         color=(127, 0, 255),
         name="Healing Potion",
         amount=4,
