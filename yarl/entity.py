@@ -3,13 +3,15 @@ from __future__ import annotations
 import copy
 import math
 from collections import deque
-from typing import Iterable, Type
+from typing import Iterable, Type, TypeVar
 
 from yarl.components import RenderOrder
 from yarl.components.ai import AttackingAI, BaseAI
 from yarl.components.consumable import Consumable, HealingPotion, LightningDamage
 from yarl.components.fighter import Fighter
 from yarl.components.inventory import Inventory
+
+T = TypeVar("T", bound="Entity")
 
 
 class Entity:
@@ -33,8 +35,8 @@ class Entity:
         self.render_order = render_order
 
     @classmethod
-    def fromentity(cls, entity: Entity) -> Entity:
-        return copy.deepcopy(entity)
+    def fromentity(cls: Type[T], other: T) -> T:
+        return copy.deepcopy(other)
 
     def move(self, dx: int, dy: int) -> None:
         self.x += dx
@@ -127,10 +129,6 @@ class ActiveEntity(Entity):
     def place(self, x: int, y: int) -> None:
         super().place(x, y)
         self.movement_wait = self.speed
-
-    def get_destination_from_path(self) -> tuple[int, int] | None:
-        if self.path:
-            return self.path.popleft()
 
 
 class Item(Entity):

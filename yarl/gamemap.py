@@ -26,7 +26,7 @@ class GameMap:
         self.width, self.height = width, height
         self.pov_radius = pov_radius
         self.entities = set(entities)
-        self._entity_map = defaultdict(set)
+        self._entity_map: defaultdict[tuple[int, int], set[Entity]] = defaultdict(set)
 
         for entity in entities:
             self._entity_map[(entity.x, entity.y)].add(entity)
@@ -48,13 +48,13 @@ class GameMap:
         )
         self.explored |= self.visible
 
-    def get_entities(self, x: int, y: int) -> set[Entity] | None:
-        return self._entity_map.get((x, y), None)
+    def get_entities(self, x: int, y: int) -> set[Entity]:
+        return self._entity_map.get((x, y), set())
 
     def get_blocking_entity(self, x: int, y: int) -> Entity | None:
         entities = self.get_entities(x=x, y=y)
 
-        if entities is None:
+        if not entities:
             return None
 
         for entity in sorted(
@@ -62,6 +62,8 @@ class GameMap:
         ):
             if entity.blocking is True:
                 return entity
+
+        return None
 
     @property
     def active_entities(self) -> Iterable[ActiveEntity]:
@@ -82,7 +84,7 @@ class GameMap:
     def get_active_entity(self, x: int, y: int) -> ActiveEntity | None:
         entities = self.get_entities(x=x, y=y)
 
-        if entities is None:
+        if not entities:
             return None
 
         for entity in sorted(
@@ -90,6 +92,8 @@ class GameMap:
         ):
             if isinstance(entity, ActiveEntity):
                 return entity
+
+        return None
 
     def move_entity(self, entity: Entity, x: int, y: int) -> None:
         entities = self.get_entities(x=entity.x, y=entity.y)

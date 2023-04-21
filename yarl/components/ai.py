@@ -37,9 +37,9 @@ class BaseAI(Action):
 
         pathfinder.add_root(index=(self.entity.x, self.entity.y))
 
-        path = pathfinder.path_to(index=(dest_x, dest_y))[1:].tolist()
+        path: list[list[int]] = pathfinder.path_to(index=(dest_x, dest_y))[1:].tolist()
 
-        return deque(tuple(node) for node in path)
+        return deque((x, y) for x, y in path)
 
 
 class AttackingAI(BaseAI):
@@ -51,7 +51,7 @@ class AttackingAI(BaseAI):
         dx = target.x - entity.x
         dy = target.y - entity.y
 
-        distance = max(abs(dx), abs(dy))
+        distance = float(max(abs(dx), abs(dy)))
 
         game_map = engine.game_map
 
@@ -69,7 +69,7 @@ class AttackingAI(BaseAI):
             dx, dy = int(dx // distance), int(dy // distance)
             return MovementAction(engine=engine, entity=entity, dx=dx, dy=dy).perform()
 
-        dest_x, dest_y = entity.get_destination_from_path()
+        dest_x, dest_y = entity.path.popleft()
         action = MovementAction(
             engine=engine, entity=entity, dx=dest_x - entity.x, dy=dest_y - entity.y
         )
