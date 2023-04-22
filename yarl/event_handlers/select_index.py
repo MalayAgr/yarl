@@ -18,6 +18,7 @@ if TYPE_CHECKING:
 
 class SelectIndexEventHandler(AskUserEventHandler):
     CONFIRM_KEYS: set[int] = {tcod.event.K_RETURN, tcod.event.K_KP_ENTER}
+    MESSAGE: str = ""
 
     def __init__(
         self, engine: Engine, old_event_handler: EventHandler | None = None
@@ -27,6 +28,9 @@ class SelectIndexEventHandler(AskUserEventHandler):
             self.engine.player.x,
             self.engine.player.y,
         )
+
+        if self.MESSAGE:
+            self.engine.add_to_message_log(text=self.MESSAGE, fg=color.NEEDS_TARGET)
 
     def on_render(self, console: Console) -> None:
         """Highlight the tile under the cursor."""

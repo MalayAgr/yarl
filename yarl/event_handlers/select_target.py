@@ -17,6 +17,8 @@ if TYPE_CHECKING:
 
 
 class SelectTargetEventHandler(SelectIndexEventHandler):
+    MESSAGE = "Select a target location."
+
     def __init__(
         self, engine: Engine, item: Item, old_event_handler: EventHandler | None = None
     ) -> None:
