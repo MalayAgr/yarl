@@ -7,7 +7,7 @@ from yarl.interface import color
 
 if TYPE_CHECKING:
     from yarl.engine import Engine
-    from yarl.entity import ActiveEntity, Entity, Item
+    from yarl.entity import ActiveEntity, Entity, Item, TargetedItem
     from yarl.gamemap import GameMap
 
 
@@ -117,30 +117,12 @@ class BumpAction(DirectedAction):
         action.perform()
 
 
-class ItemAction(Action):
-    def __init__(
-        self,
-        engine: Engine,
-        entity: ActiveEntity,
-        items: list[Item] | None = None,
-    ) -> None:
-        super().__init__(engine, entity)
-
-        self.entity: ActiveEntity
-
-        self.items = items or []
-
-    def remove_item_from_map(self, item: Item) -> None:
-        self.game_map.remove_entity(entity=item, x=self.entity.x, y=self.entity.y)
-
-
-class ConsumeItemAction(ItemAction):
+class ConsumeItemAction(Action):
     def __init__(
         self, engine: Engine, entity: ActiveEntity, item: Item | None = None
     ) -> None:
-        super().__init__(
-            engine=engine, entity=entity, items=None if item is None else [item]
-        )
+        super().__init__(engine=engine, entity=entity)
+        self.entity: ActiveEntity
         self.item = item
 
     def perform(self) -> None:
@@ -150,10 +132,44 @@ class ConsumeItemAction(ItemAction):
             raise ImpossibleActionException("There is no item to consume.")
 
         item.consumable.activate(consumer=self.entity, engine=self.engine)
-        self.remove_item_from_map(item=item)
+        self.game_map.remove_entity(entity=item, x=self.entity.x, y=self.entity.y)
 
 
-class PickupAction(ItemAction):
+class ConsumeTargetedItemAction(Action):
+    def __init__(
+        self,
+        engine: Engine,
+        entity: ActiveEntity,
+        target_location: tuple[int, int],
+        item: TargetedItem | None = None,
+    ) -> None:
+        super().__init__(engine, entity)
+        self.entity: ActiveEntity
+        self.item = item
+        self.target_location = target_location
+
+    def perform(self) -> None:
+        item = self.item
+
+        if item is None:
+            raise ImpossibleActionException("There is no item to consume.")
+
+        item.consumable.activate(
+            consumer=self.entity,
+            engine=self.engine,
+            target_location=self.target_location,
+        )
+        self.game_map.remove_entity(entity=item, x=self.entity.x, y=self.entity.y)
+
+
+class PickupAction(Action):
+    def __init__(
+        self, engine: Engine, entity: Entity, items: list[Item] | None = None
+    ) -> None:
+        super().__init__(engine, entity)
+        self.entity: ActiveEntity
+        self.items = items or []
+
     def perform(self) -> None:
         items = self.items
 
@@ -171,11 +187,18 @@ class PickupAction(ItemAction):
             if added is False:
                 raise ImpossibleActionException("Your inventory is full.")
 
-            self.remove_item_from_map(item=item)
+            self.game_map.remove_entity(entity=item, x=self.entity.x, y=self.entity.y)
             self.engine.add_to_message_log(text=f"You picked up the item {item.name}.")
 
 
-class DropItemFromInventoryAction(ItemAction):
+class DropItemFromInventoryAction(Action):
+    def __init__(
+        self, engine: Engine, entity: Entity, items: list[Item] | None = None
+    ) -> None:
+        super().__init__(engine, entity)
+        self.entity: ActiveEntity
+        self.items = items or []
+
     def place_item(self, item: Item, x: int, y: int):
         self.game_map.add_entity(entity=item, x=x, y=y, check_blocking=False)
 
