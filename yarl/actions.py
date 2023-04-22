@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Iterable, Type
+from typing import TYPE_CHECKING
 
 from yarl.exceptions import ImpossibleActionException
 from yarl.interface import color

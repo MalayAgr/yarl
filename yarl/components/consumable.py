@@ -1,14 +1,15 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Type
+from typing import TYPE_CHECKING
 
-from yarl.actions import Action, ConsumeItemAction, ConsumeTargetedItemAction
+from yarl.actions import ConsumeItemAction
 from yarl.components.ai import ConfusionAI
 from yarl.event_handlers import SelectTargetEventHandler
 from yarl.exceptions import ImpossibleActionException
 from yarl.interface import color
 
 if TYPE_CHECKING:
+    from yarl.actions import Action
     from yarl.engine import Engine
     from yarl.entity import ActiveEntity, Item
     from yarl.event_handlers import EventHandler
