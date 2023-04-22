@@ -7,7 +7,12 @@ from typing import Iterable, Type, TypeVar
 
 from yarl.components import RenderOrder
 from yarl.components.ai import AttackingAI, BaseAI
-from yarl.components.consumable import Consumable, HealingPotion, LightningScroll
+from yarl.components.consumable import (
+    Consumable,
+    HealingPotion,
+    LightningScroll,
+    TargetedConsumable,
+)
 from yarl.components.fighter import Fighter
 from yarl.components.inventory import Inventory
 
@@ -143,11 +148,42 @@ class Item(Entity):
         **kwargs,
     ) -> None:
         super().__init__(
-            x, y, char, color, name, blocking=False, render_order=RenderOrder.ITEM
+            x=x,
+            y=y,
+            char=char,
+            color=color,
+            name=name,
+            blocking=False,
+            render_order=RenderOrder.ITEM,
         )
 
         self.consumable_cls = consumable_cls
         self.consumable = consumable_cls(item=self, **kwargs)
+
+
+class TargetedItem(Item):
+    def __init__(
+        self,
+        consumable_cls: Type[TargetedConsumable],
+        x: int = 0,
+        y: int = 0,
+        char: str = "?",
+        color: tuple[int, int, int] = (255, 255, 255),
+        name: str = "<Unnamed>",
+        **kwargs,
+    ) -> None:
+        super().__init__(
+            consumable_cls=consumable_cls,
+            x=x,
+            y=y,
+            char=char,
+            color=color,
+            name=name,
+            **kwargs,
+        )
+
+        self.consumable_cls: Type[TargetedConsumable]
+        self.consumable: TargetedConsumable
 
 
 ENTITY_FACTORY = [
