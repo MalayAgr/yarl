@@ -11,12 +11,10 @@ from yarl.interface import color
 if TYPE_CHECKING:
     from yarl.engine import Engine
     from yarl.entity import ActiveEntity, Item
-    from yarl.event_handlers import EventHandler, SwitchableEventHandler
+    from yarl.event_handlers import EventHandler
 
 
 class Consumable:
-    event_handler_cls: Type[SwitchableEventHandler] | None = None
-
     def __init__(self, item: Item):
         self.item = item
 
