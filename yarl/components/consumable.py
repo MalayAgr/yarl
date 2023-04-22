@@ -1,24 +1,26 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Type
 
-from yarl.actions import Action, ConsumeItemAction
+from yarl.actions import Action, ConsumeItemAction, ConsumeTargetedItemAction
+from yarl.components.ai import ConfusionAI
+from yarl.event_handlers import SelectTargetEventHandler
 from yarl.exceptions import ImpossibleActionException
 from yarl.interface import color
 
 if TYPE_CHECKING:
     from yarl.engine import Engine
-    from yarl.entity import ActiveEntity, Item
+    from yarl.entity import ActiveEntity, Item, TargetedItem
+    from yarl.event_handlers import SwitchableEventHandler
 
 
 class Consumable:
-    def __init__(self, item: Item, targeted: bool = False):
-        self.item = item
-        self.targeted = targeted
+    event_handler_cls: Type[SwitchableEventHandler] | None = None
 
-    def get_action(
-        self, entity: ActiveEntity, engine: Engine, *args, **kwargs
-    ) -> Action:
+    def __init__(self, item: Item):
+        self.item = item
+
+    def get_action(self, entity: ActiveEntity, engine: Engine) -> Action:
         return ConsumeItemAction(engine=engine, entity=entity, item=self.item)
 
     def consume(self, consumer: ActiveEntity) -> None:
@@ -28,6 +30,37 @@ class Consumable:
         consumer.inventory.remove_item(item=self.item)
 
     def activate(self, consumer: ActiveEntity, engine: Engine) -> None:
+        raise NotImplementedError()
+
+
+class TargetedConsumable(Consumable):
+    def __init__(self, item: TargetedItem):
+        super().__init__(item=item)
+
+        self.item: TargetedItem
+
+    def get_action(
+        self,
+        entity: ActiveEntity,
+        engine: Engine,
+        target_location: tuple[int, int] | None = None,
+    ) -> Action:
+        if target_location is None:
+            return super().get_action(entity=entity, engine=engine)
+
+        return ConsumeTargetedItemAction(
+            engine=engine,
+            entity=entity,
+            item=self.item,
+            target_location=target_location,
+        )
+
+    def activate(
+        self,
+        consumer: ActiveEntity,
+        engine: Engine,
+        target_location: tuple[int, int] | None = None,
+    ) -> None:
         raise NotImplementedError()
 
 
@@ -90,7 +123,48 @@ class LightningScroll(Consumable):
             target.name = f"remains of {target.name}"
 
 
-class ConfusionSpell(Consumable):
-    def __init__(self, item: Item, number_of_turns: int):
-        super().__init__(item, targeted=True)
+class ConfusionSpell(TargetedConsumable):
+    event_handler_cls = SelectTargetEventHandler
+
+    def __init__(self, item: TargetedItem, number_of_turns: int):
+        super().__init__(item=item)
         self.number_of_turns = number_of_turns
+
+    def activate(
+        self,
+        consumer: ActiveEntity,
+        engine: Engine,
+        target_location: tuple[int, int] | None = None,
+    ) -> None:
+        if target_location is None:
+            raise ImpossibleActionException(f"No target selected for {self.item.name}")
+
+        x, y = target_location
+        game_map = engine.game_map
+
+        if not game_map.visible[x, y]:
+            raise ImpossibleActionException("You cannot attack unexplored areas.")
+
+        target = game_map.get_active_entity(x=x, y=y)
+
+        if target is None:
+            raise ImpossibleActionException(
+                "There is nothing to target at that location!"
+            )
+
+        if target is consumer:
+            raise ImpossibleActionException("Woah! You cannot target yourself!")
+
+        engine.message_log.add_message(
+            f"The eyes of {target.name} look vacant, as it starts to stumble around!",
+            color.STATUS_EFFECT_APPLIED,
+        )
+
+        target.ai = ConfusionAI(
+            engine=engine,
+            entity=target,
+            turns_remaining=self.number_of_turns,
+            previous_ai=target.ai,
+        )
+
+        self.consume(consumer=consumer)

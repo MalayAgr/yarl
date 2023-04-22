@@ -173,10 +173,11 @@ class MainGameEventHandler(EventHandler):
             if entity.ai_cls is None:
                 continue
 
-            ai = entity.ai_cls(engine=self.engine, entity=entity)
+            if entity.ai is None:
+                entity.ai = entity.ai_cls(engine=self.engine, entity=entity)
 
             try:
-                ai.perform()
+                entity.ai.perform()
             except ImpossibleActionException as e:
                 pass
 
@@ -654,7 +655,6 @@ class SelectTargetEventHandler(SelectIndexEventHandler):
         self.item = item
 
     def on_index_selected(self, location: tuple[int, int]) -> Action | None:
-        action = self.item.consumable.get_action(
+        return self.item.consumable.get_action(
             entity=self.engine.player, engine=self.engine, target_location=location
         )
-        return action

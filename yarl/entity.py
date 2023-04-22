@@ -81,6 +81,7 @@ class ActiveEntity(Entity):
         )
 
         self.ai_cls = ai_cls
+        self._ai: BaseAI | None = None
         self._path: deque[tuple[int, int]] = deque()
 
         self.fighter = Fighter(
@@ -110,6 +111,15 @@ class ActiveEntity(Entity):
     @property
     def is_alive(self) -> bool:
         return self.ai_cls is not None
+
+    @property
+    def ai(self) -> BaseAI | None:
+        return self._ai
+
+    @ai.setter
+    def ai(self, ai: BaseAI | None) -> None:
+        self._ai = ai
+        self.ai_cls = ai.__class__ if ai is not None else None
 
     @property
     def is_waiting_to_move(self) -> bool:
