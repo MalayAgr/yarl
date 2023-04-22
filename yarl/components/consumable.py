@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from yarl.actions import ConsumeItemAction
 from yarl.components.ai import ConfusionAI
-from yarl.event_handlers import SelectTargetEventHandler
+from yarl.event_handlers import SelectTargetIndexEventHandler
 from yarl.exceptions import ImpossibleActionException
 from yarl.interface import color
 
@@ -122,7 +122,7 @@ class ConfusionSpell(Consumable):
         engine: Engine,
         old_event_handler: EventHandler | None = None,
     ) -> Action | None:
-        engine.event_handler = SelectTargetEventHandler(
+        engine.event_handler = SelectTargetIndexEventHandler(
             engine=engine, item=self.item, old_event_handler=old_event_handler
         )
         return None

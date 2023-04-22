@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from .event_handler import EventHandler
 
 
-class SelectTargetEventHandler(SelectIndexEventHandler):
+class SelectTargetIndexEventHandler(SelectIndexEventHandler):
     MESSAGE = "Select a target location."
 
     def __init__(
