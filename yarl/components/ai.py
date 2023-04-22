@@ -122,4 +122,3 @@ class ConfusionAI(BaseAI):
             return
 
         self.turns_remaining = max(0, self.turns_remaining - 1)
-
