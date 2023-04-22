@@ -21,7 +21,7 @@ from yarl.interface import color
 
 if TYPE_CHECKING:
     from yarl.engine import Engine
-    from yarl.entity import Entity, Item
+    from yarl.entity import Entity, Item, TargetedItem
 
 
 @dataclass
@@ -129,6 +129,10 @@ class EventHandler(tcod.event.EventDispatch[Action]):
                     )
 
                 engine.event_handler = SelectItemToPickupEventHandler(
+                    engine=engine, old_event_handler=self
+                )
+            case tcod.event.K_SLASH:
+                engine.event_handler = LookEventHandler(
                     engine=engine, old_event_handler=self
                 )
 
@@ -319,6 +323,13 @@ class ConsumeSingleItemEventHandler(SwitchableEventHandler):
         if item is None:
             self.engine.add_to_message_log("There is no item to consume.")
             self.switch_event_handler()
+            return
+
+        if item.consumable.event_handler_cls is not None:
+            handler = item.consumable.event_handler_cls
+            self.engine.event_handler = handler(
+                engine=self.engine, old_event_handler=self.old_event_handler
+            )
             return
 
         action = item.consumable.get_action(
@@ -566,7 +577,84 @@ class InventoryDropEventHandler(SelectItemEventHandler):
 
 
 class SelectIndexEventHandler(AskUserEventHandler):
+    CONFIRM_KEYS: set[int] = {tcod.event.K_RETURN, tcod.event.K_KP_ENTER}
+
     def __init__(
         self, engine: Engine, old_event_handler: EventHandler | None = None
     ) -> None:
         super().__init__(engine=engine, old_event_handler=old_event_handler)
+        self.mouse_location: tuple[int, int] = (
+            self.engine.player.x,
+            self.engine.player.y,
+        )
+
+    def on_render(self, console: Console) -> None:
+        """Highlight the tile under the cursor."""
+        super().on_render(console)
+
+        x, y = self.mouse_location
+
+        console.tiles_rgb["bg"][x, y] = color.WHITE
+        console.tiles_rgb["fg"][x, y] = color.BLACK
+
+    def ev_keydown(self, event: KeyDown) -> Action | None:
+        key = event.sym
+
+        if key in self.CONFIRM_KEYS:
+            return self.on_index_selected(self.mouse_location)
+
+        if key in self.MOVE_KEYS:
+            modifier = 1
+
+            if event.mod & (tcod.event.KMOD_LSHIFT | tcod.event.KMOD_RSHIFT):
+                modifier *= 5
+            if event.mod & (tcod.event.KMOD_LCTRL | tcod.event.KMOD_RCTRL):
+                modifier *= 10
+            if event.mod & (tcod.event.KMOD_LALT | tcod.event.KMOD_RALT):
+                modifier *= 20
+
+            x, y = self.mouse_location
+            deviation = self.MOVE_KEYS[key]
+
+            x += deviation.dx * modifier
+            y += deviation.dy * modifier
+
+            x = max(0, min(x, self.engine.game_map.width - 1))
+            y = max(0, min(y, self.engine.game_map.height - 1))
+
+            self.mouse_location = x, y
+            return None
+
+        return super().ev_keydown(event=event)
+
+    def ev_mousebuttondown(self, event: tcod.event.MouseButtonDown) -> Action | None:
+        if not self.engine.game_map.in_bounds(*event.tile) or event.button != 1:
+            return super().ev_mousebuttondown(event=event)
+
+        return self.on_index_selected(event.tile)
+
+    def on_index_selected(self, location: tuple[int, int]) -> Action | None:
+        raise NotImplementedError()
+
+
+class LookEventHandler(SelectIndexEventHandler):
+    def on_index_selected(self, location: tuple[int, int]) -> Action | None:
+        self.switch_event_handler()
+        return None
+
+
+class SelectTargetEventHandler(SelectIndexEventHandler):
+    def __init__(
+        self,
+        engine: Engine,
+        item: TargetedItem,
+        old_event_handler: EventHandler | None = None,
+    ) -> None:
+        super().__init__(engine, old_event_handler)
+        self.item = item
+
+    def on_index_selected(self, location: tuple[int, int]) -> Action | None:
+        action = self.item.consumable.get_action(
+            entity=self.engine.player, engine=self.engine, target_location=location
+        )
+        return action
