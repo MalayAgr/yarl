@@ -3,18 +3,17 @@ from __future__ import annotations
 import copy
 import math
 from collections import deque
-from typing import Iterable, Type, TypeVar
+from typing import TYPE_CHECKING, Iterable, Type, TypeVar
 
 from yarl.components import RenderOrder
-from yarl.components.ai import AttackingAI, BaseAI
-from yarl.components.consumable import (
-    Consumable,
-    HealingPotion,
-    LightningScroll,
-    TargetedConsumable,
-)
+from yarl.components.ai import AttackingAI
+from yarl.components.consumable import ConfusionSpell, HealingPotion, LightningScroll
 from yarl.components.fighter import Fighter
 from yarl.components.inventory import Inventory
+
+if TYPE_CHECKING:
+    from yarl.components.ai import BaseAI
+    from yarl.components.consumable import Consumable
 
 T = TypeVar("T", bound="Entity")
 
@@ -171,31 +170,6 @@ class Item(Entity):
         self.consumable = consumable_cls(item=self, **kwargs)
 
 
-class TargetedItem(Item):
-    def __init__(
-        self,
-        consumable_cls: Type[TargetedConsumable],
-        x: int = 0,
-        y: int = 0,
-        char: str = "?",
-        color: tuple[int, int, int] = (255, 255, 255),
-        name: str = "<Unnamed>",
-        **kwargs,
-    ) -> None:
-        super().__init__(
-            consumable_cls=consumable_cls,
-            x=x,
-            y=y,
-            char=char,
-            color=color,
-            name=name,
-            **kwargs,
-        )
-
-        self.consumable_cls: Type[TargetedConsumable]
-        self.consumable: TargetedConsumable
-
-
 ENTITY_FACTORY = [
     ActiveEntity(
         char="O",
@@ -233,5 +207,12 @@ ITEM_FACTORY = [
         name="Lightning Scroll",
         power=20,
         range=5,
+    ),
+    Item(
+        consumable_cls=ConfusionSpell,
+        char="~",
+        color=(207, 63, 255),
+        name="Confusion Scroll",
+        number_of_turns=10,
     ),
 ]

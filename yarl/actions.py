@@ -7,7 +7,7 @@ from yarl.interface import color
 
 if TYPE_CHECKING:
     from yarl.engine import Engine
-    from yarl.entity import ActiveEntity, Entity, Item, TargetedItem
+    from yarl.entity import ActiveEntity, Entity, Item
     from yarl.gamemap import GameMap
 
 
@@ -141,7 +141,7 @@ class ConsumeTargetedItemAction(Action):
         engine: Engine,
         entity: ActiveEntity,
         target_location: tuple[int, int],
-        item: TargetedItem | None = None,
+        item: Item | None = None,
     ) -> None:
         super().__init__(engine, entity)
         self.entity: ActiveEntity

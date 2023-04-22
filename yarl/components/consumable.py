@@ -10,8 +10,8 @@ from yarl.interface import color
 
 if TYPE_CHECKING:
     from yarl.engine import Engine
-    from yarl.entity import ActiveEntity, Item, TargetedItem
-    from yarl.event_handlers import SwitchableEventHandler
+    from yarl.entity import ActiveEntity, Item
+    from yarl.event_handlers import EventHandler, SwitchableEventHandler
 
 
 class Consumable:
@@ -20,7 +20,12 @@ class Consumable:
     def __init__(self, item: Item):
         self.item = item
 
-    def get_action(self, entity: ActiveEntity, engine: Engine) -> Action:
+    def get_action(
+        self,
+        entity: ActiveEntity,
+        engine: Engine,
+        old_event_handler: EventHandler | None = None,
+    ) -> Action | None:
         return ConsumeItemAction(engine=engine, entity=entity, item=self.item)
 
     def consume(self, consumer: ActiveEntity) -> None:
@@ -28,32 +33,6 @@ class Consumable:
             return
 
         consumer.inventory.remove_item(item=self.item)
-
-    def activate(self, consumer: ActiveEntity, engine: Engine) -> None:
-        raise NotImplementedError()
-
-
-class TargetedConsumable(Consumable):
-    def __init__(self, item: TargetedItem):
-        super().__init__(item=item)
-
-        self.item: TargetedItem
-
-    def get_action(
-        self,
-        entity: ActiveEntity,
-        engine: Engine,
-        target_location: tuple[int, int] | None = None,
-    ) -> Action:
-        if target_location is None:
-            return super().get_action(entity=entity, engine=engine)
-
-        return ConsumeTargetedItemAction(
-            engine=engine,
-            entity=entity,
-            item=self.item,
-            target_location=target_location,
-        )
 
     def activate(
         self,
@@ -69,7 +48,12 @@ class HealingPotion(Consumable):
         super().__init__(item=item)
         self.amount = amount
 
-    def activate(self, consumer: ActiveEntity, engine: Engine) -> None:
+    def activate(
+        self,
+        consumer: ActiveEntity,
+        engine: Engine,
+        target_location: tuple[int, int] | None = None,
+    ) -> None:
         recovered = consumer.fighter.heal(amount=self.amount)
 
         if recovered > 0:
@@ -86,7 +70,12 @@ class LightningScroll(Consumable):
         self.power = power
         self.range = range
 
-    def activate(self, consumer: ActiveEntity, engine: Engine) -> None:
+    def activate(
+        self,
+        consumer: ActiveEntity,
+        engine: Engine,
+        target_location: tuple[int, int] | None = None,
+    ) -> None:
         game_map = engine.game_map
 
         entities = {
@@ -123,12 +112,21 @@ class LightningScroll(Consumable):
             target.name = f"remains of {target.name}"
 
 
-class ConfusionSpell(TargetedConsumable):
-    event_handler_cls = SelectTargetEventHandler
-
-    def __init__(self, item: TargetedItem, number_of_turns: int):
+class ConfusionSpell(Consumable):
+    def __init__(self, item: Item, number_of_turns: int):
         super().__init__(item=item)
         self.number_of_turns = number_of_turns
+
+    def get_action(
+        self,
+        entity: ActiveEntity,
+        engine: Engine,
+        old_event_handler: EventHandler | None = None,
+    ) -> Action | None:
+        engine.event_handler = SelectTargetEventHandler(
+            engine=engine, item=self.item, old_event_handler=old_event_handler
+        )
+        return None
 
     def activate(
         self,
@@ -143,13 +141,15 @@ class ConfusionSpell(TargetedConsumable):
         game_map = engine.game_map
 
         if not game_map.visible[x, y]:
-            raise ImpossibleActionException("You cannot attack unexplored areas.")
+            raise ImpossibleActionException(
+                "You cannot attack an area that you cannot see."
+            )
 
         target = game_map.get_active_entity(x=x, y=y)
 
         if target is None:
             raise ImpossibleActionException(
-                "There is nothing to target at that location!"
+                "There is nothing to target at that location."
             )
 
         if target is consumer:

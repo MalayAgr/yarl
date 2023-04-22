@@ -12,6 +12,7 @@ from yarl.actions import (  # ConsumeItemAction,
     Action,
     BumpAction,
     ConsumeItemAction,
+    ConsumeTargetedItemAction,
     DropItemFromInventoryAction,
     PickupAction,
     WaitAction,
@@ -21,7 +22,7 @@ from yarl.interface import color
 
 if TYPE_CHECKING:
     from yarl.engine import Engine
-    from yarl.entity import Entity, Item, TargetedItem
+    from yarl.entity import Entity, Item
 
 
 @dataclass
@@ -326,16 +327,14 @@ class ConsumeSingleItemEventHandler(SwitchableEventHandler):
             self.switch_event_handler()
             return
 
-        if item.consumable.event_handler_cls is not None:
-            handler = item.consumable.event_handler_cls
-            self.engine.event_handler = handler(
-                engine=self.engine, old_event_handler=self.old_event_handler
-            )
-            return
-
         action = item.consumable.get_action(
-            entity=self.engine.player, engine=self.engine
+            entity=self.engine.player,
+            engine=self.engine,
+            old_event_handler=self.old_event_handler,
         )
+
+        if action is None:
+            return
 
         self.handle_action(action=action)
 
@@ -646,15 +645,23 @@ class LookEventHandler(SelectIndexEventHandler):
 
 class SelectTargetEventHandler(SelectIndexEventHandler):
     def __init__(
-        self,
-        engine: Engine,
-        item: TargetedItem,
-        old_event_handler: EventHandler | None = None,
+        self, engine: Engine, item: Item, old_event_handler: EventHandler | None = None
     ) -> None:
         super().__init__(engine, old_event_handler)
         self.item = item
 
+    def handle_action(self, action: Action) -> None:
+        try:
+            action.perform()
+        except ImpossibleActionException as e:
+            self.engine.add_to_message_log(text=e.args[0], fg=color.IMPOSSIBLE)
+
+        self.switch_event_handler()
+
     def on_index_selected(self, location: tuple[int, int]) -> Action | None:
-        return self.item.consumable.get_action(
-            entity=self.engine.player, engine=self.engine, target_location=location
+        return ConsumeTargetedItemAction(
+            engine=self.engine,
+            entity=self.engine.player,
+            item=self.item,
+            target_location=location,
         )
