@@ -63,5 +63,5 @@ class Fighter:
         self.entity.char = "%"
         self.entity.color = (191, 0, 0)
         self.entity.blocking = False
-        self.entity.ai_cls = None
+        self.entity.ai = None
         self.entity.render_order = RenderOrder.CORPSE

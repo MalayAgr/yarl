@@ -26,7 +26,7 @@ class GameMap:
         self.width, self.height = width, height
         self.pov_radius = pov_radius
         self.entities = set(entities)
-        self._entity_map = defaultdict(set)
+        self._entity_map: defaultdict[tuple[int, int], set[Entity]] = defaultdict(set)
 
         for entity in entities:
             self._entity_map[(entity.x, entity.y)].add(entity)
@@ -48,18 +48,22 @@ class GameMap:
         )
         self.explored |= self.visible
 
-    def get_entities(self, x: int, y: int) -> set[Entity] | None:
-        return self._entity_map.get((x, y), None)
+    def get_entities(self, x: int, y: int) -> set[Entity]:
+        return self._entity_map.get((x, y), set())
 
     def get_blocking_entity(self, x: int, y: int) -> Entity | None:
         entities = self.get_entities(x=x, y=y)
 
-        if entities is None:
+        if not entities:
             return None
 
-        for entity in entities:
+        for entity in sorted(
+            entities, key=lambda x: x.render_order.value, reverse=True
+        ):
             if entity.blocking is True:
                 return entity
+
+        return None
 
     @property
     def active_entities(self) -> Iterable[ActiveEntity]:
@@ -80,12 +84,16 @@ class GameMap:
     def get_active_entity(self, x: int, y: int) -> ActiveEntity | None:
         entities = self.get_entities(x=x, y=y)
 
-        if entities is None:
+        if not entities:
             return None
 
-        for entity in entities:
+        for entity in sorted(
+            entities, key=lambda x: x.render_order.value, reverse=True
+        ):
             if isinstance(entity, ActiveEntity):
                 return entity
+
+        return None
 
     def move_entity(self, entity: Entity, x: int, y: int) -> None:
         entities = self.get_entities(x=entity.x, y=entity.y)
@@ -96,7 +104,9 @@ class GameMap:
         self._entity_map[(x, y)].add(entity)
         entity.place(x=x, y=y)
 
-    def add_entity(self, entity: Entity, x: int = -1, y: int = -1, *, check_blocking: bool = True) -> None:
+    def add_entity(
+        self, entity: Entity, x: int = -1, y: int = -1, *, check_blocking: bool = True
+    ) -> None:
         x = x if x != -1 else entity.x
         y = y if y != -1 else entity.y
 

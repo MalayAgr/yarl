@@ -28,7 +28,7 @@ class TestEntity:
         assert entity.y == 7
 
     def test_fromentity(self, entity: Entity) -> None:
-        copied_entity = Entity.fromentity(entity=entity)
+        copied_entity = Entity.fromentity(other=entity)
 
         assert copied_entity.x == 1
         assert copied_entity.y == 5
@@ -100,14 +100,3 @@ class TestActiveEntity:
 
         assert entity.movement_wait == entity.speed
         assert entity.is_waiting_to_move is True
-
-    def test_get_destination_from_path(self, entity: ActiveEntity) -> None:
-        assert entity.get_destination_from_path() is None
-
-        path = [(1, 2), (3, 4), (5, 6), (7, 8)]
-        entity.path = path
-
-        for node in path:
-            assert entity.get_destination_from_path() == node
-
-        assert entity.get_destination_from_path() is None

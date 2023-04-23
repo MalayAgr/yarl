@@ -6,7 +6,7 @@ from typing import Iterator
 import tcod
 import yarl.tile_types as tiles
 from tcod.bsp import BSP
-from yarl.entity import ENTITY_FACTORY, ITEM_FACTORY, Entity, Item
+from yarl.entity import ENTITY_FACTORY, ITEM_FACTORY, ActiveEntity, Entity, Item
 from yarl.exceptions import CollisionWithEntityException
 from yarl.gamemap import GameMap
 
@@ -294,7 +294,7 @@ class MapGenerator:
 
             try:
                 entity = random.choice(ENTITY_FACTORY)
-                entity = Entity.fromentity(entity=entity)
+                entity = ActiveEntity.fromentity(other=entity)
                 self.game_map.add_entity(entity=entity, x=x, y=y)
             except CollisionWithEntityException:
                 pass
@@ -304,9 +304,9 @@ class MapGenerator:
             y = random.randint(room.y1 + 1, room.y2 - 1)
 
             try:
-                entity = random.choice(ITEM_FACTORY)
-                entity = Entity.fromentity(entity=entity)
-                self.game_map.add_entity(entity=entity, x=x, y=y)
+                item = random.choice(ITEM_FACTORY)
+                item = Item.fromentity(other=item)
+                self.game_map.add_entity(entity=item, x=x, y=y)
             except CollisionWithEntityException:
                 pass
 

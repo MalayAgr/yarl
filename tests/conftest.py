@@ -7,7 +7,7 @@ from yarl.event_handlers import EventHandler
 
 
 @pytest.fixture(scope="session")
-def event_handler() -> EventHandler:
+def event_handler_cls() -> EventHandler:
     return EventHandler()
 
 

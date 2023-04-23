@@ -26,10 +26,10 @@ class MessageLog:
 
     def add_message(
         self, text: str, fg: tuple[int, int, int] = color.WHITE, *, stack: bool = True
-    ) -> Message:
+    ) -> None:
         if stack and self.messages and self.messages[-1].plain_text == text:
             self.messages[-1].count += 1
-            return
+            return None
 
         self.messages.append(Message(text=text, fg=fg))
 

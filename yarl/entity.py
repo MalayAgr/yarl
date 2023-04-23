@@ -1,14 +1,26 @@
 from __future__ import annotations
 
 import copy
+import math
 from collections import deque
-from typing import Iterable, Type
+from typing import TYPE_CHECKING, Iterable, Type, TypeVar
 
 from yarl.components import RenderOrder
-from yarl.components.ai import AttackingAI, BaseAI
-from yarl.components.consumable import Consumable, HealingPotion
+from yarl.components.ai import AttackingAI
+from yarl.components.consumable import (
+    ConfusionSpell,
+    FireballScroll,
+    HealingPotion,
+    LightningScroll,
+)
 from yarl.components.fighter import Fighter
 from yarl.components.inventory import Inventory
+
+if TYPE_CHECKING:
+    from yarl.components.ai import BaseAI
+    from yarl.components.consumable import Consumable
+
+T = TypeVar("T", bound="Entity")
 
 
 class Entity:
@@ -32,8 +44,8 @@ class Entity:
         self.render_order = render_order
 
     @classmethod
-    def fromentity(cls, entity: Entity) -> Entity:
-        return copy.deepcopy(entity)
+    def fromentity(cls: Type[T], other: T) -> T:
+        return copy.deepcopy(other)
 
     def move(self, dx: int, dy: int) -> None:
         self.x += dx
@@ -41,6 +53,9 @@ class Entity:
 
     def place(self, x: int, y: int) -> None:
         self.x, self.y = x, y
+
+    def distance(self, x: int, y: int) -> float:
+        return math.sqrt((self.x - x) ** 2 + (self.y - y) ** 2)
 
 
 class ActiveEntity(Entity):
@@ -70,6 +85,7 @@ class ActiveEntity(Entity):
         )
 
         self.ai_cls = ai_cls
+        self._ai: BaseAI | None = None
         self._path: deque[tuple[int, int]] = deque()
 
         self.fighter = Fighter(
@@ -91,11 +107,23 @@ class ActiveEntity(Entity):
 
     @property
     def inventory_items(self) -> list[Item]:
+        if self.inventory is None:
+            return []
+
         return self.inventory.items
 
     @property
     def is_alive(self) -> bool:
         return self.ai_cls is not None
+
+    @property
+    def ai(self) -> BaseAI | None:
+        return self._ai
+
+    @ai.setter
+    def ai(self, ai: BaseAI | None) -> None:
+        self._ai = ai
+        self.ai_cls = ai.__class__ if ai is not None else None
 
     @property
     def is_waiting_to_move(self) -> bool:
@@ -121,10 +149,6 @@ class ActiveEntity(Entity):
         super().place(x, y)
         self.movement_wait = self.speed
 
-    def get_destination_from_path(self) -> tuple[int, int] | None:
-        if self.path:
-            return self.path.popleft()
-
 
 class Item(Entity):
     def __init__(
@@ -138,7 +162,13 @@ class Item(Entity):
         **kwargs,
     ) -> None:
         super().__init__(
-            x, y, char, color, name, blocking=False, render_order=RenderOrder.ITEM
+            x=x,
+            y=y,
+            char=char,
+            color=color,
+            name=name,
+            blocking=False,
+            render_order=RenderOrder.ITEM,
         )
 
         self.consumable_cls = consumable_cls
@@ -170,8 +200,32 @@ ENTITY_FACTORY = [
 ITEM_FACTORY = [
     Item(
         consumable_cls=HealingPotion,
+        char="!",
         color=(127, 0, 255),
         name="Healing Potion",
         amount=4,
-    )
+    ),
+    Item(
+        consumable_cls=LightningScroll,
+        char="~",
+        color=(255, 255, 0),
+        name="Lightning Scroll",
+        power=20,
+        range=5,
+    ),
+    Item(
+        consumable_cls=ConfusionSpell,
+        char="~",
+        color=(207, 63, 255),
+        name="Confusion Spell",
+        number_of_turns=10,
+    ),
+    Item(
+        consumable_cls=FireballScroll,
+        char="~",
+        color=(255, 0, 0),
+        name="Fireball Scroll",
+        power=12,
+        radius=3,
+    ),
 ]

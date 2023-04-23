@@ -42,7 +42,11 @@ jobs:
         run: |
           source $VENV
           black .
+      - name: Type check code using mypy
+        run: |
+          source $VENV
+          mypy
       - name: Test with pytest
         run: |
           source $VENV
-          pytest -v --cov=yarl/ --cov-report=xml:./coverage.xml --cov-report term-missing
+          pytest

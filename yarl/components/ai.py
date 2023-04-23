@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 import math
+import random
 from collections import deque
 from typing import TYPE_CHECKING
 
 import numpy as np
 import tcod
-from yarl.actions import Action, MeleeAction, MovementAction
+from yarl.actions import Action, BumpAction, MeleeAction, MovementAction
 
 if TYPE_CHECKING:
     from yarl.engine import Engine
@@ -37,9 +38,9 @@ class BaseAI(Action):
 
         pathfinder.add_root(index=(self.entity.x, self.entity.y))
 
-        path = pathfinder.path_to(index=(dest_x, dest_y))[1:].tolist()
+        path: list[list[int]] = pathfinder.path_to(index=(dest_x, dest_y))[1:].tolist()
 
-        return deque(tuple(node) for node in path)
+        return deque((x, y) for x, y in path)
 
 
 class AttackingAI(BaseAI):
@@ -51,9 +52,9 @@ class AttackingAI(BaseAI):
         dx = target.x - entity.x
         dy = target.y - entity.y
 
-        distance = max(abs(dx), abs(dy))
+        distance = float(max(abs(dx), abs(dy)))
 
-        game_map = engine.game_map
+        game_map = self.game_map
 
         if game_map.visible[entity.x, entity.y]:
             if distance <= 1:
@@ -69,8 +70,55 @@ class AttackingAI(BaseAI):
             dx, dy = int(dx // distance), int(dy // distance)
             return MovementAction(engine=engine, entity=entity, dx=dx, dy=dy).perform()
 
-        dest_x, dest_y = entity.get_destination_from_path()
+        dest_x, dest_y = entity.path.popleft()
         action = MovementAction(
             engine=engine, entity=entity, dx=dest_x - entity.x, dy=dest_y - entity.y
         )
         action.perform()
+
+
+class ConfusionAI(BaseAI):
+    DIRECTIONS: list[tuple[int, int]] = [
+        (0, -1),
+        (1, -1),
+        (1, 0),
+        (1, 1),
+        (0, 1),
+        (-1, 1),
+        (-1, 0),
+        (-1, -1),
+    ]
+
+    def __init__(
+        self,
+        engine: Engine,
+        entity: ActiveEntity,
+        turns_remaining: int,
+        previous_ai: BaseAI | None,
+    ) -> None:
+        super().__init__(engine, entity)
+
+        self.previous_ai = previous_ai
+        self.turns_remaining = turns_remaining
+
+    def perform(self) -> None:
+        if self.turns_remaining == 0:
+            if self.previous_ai is not None:
+                self.entity.ai = self.previous_ai
+
+            self.engine.add_to_message_log(
+                text=f"{self.entity.name} is no longer confused."
+            )
+            return
+
+        entity = self.entity
+
+        dx, dy = random.choice(self.DIRECTIONS)
+
+        action = BumpAction(engine=self.engine, entity=entity, dx=dx, dy=dy)
+        action.perform()
+
+        if entity.is_waiting_to_move or entity.fighter.is_waiting_to_attack:
+            return
+
+        self.turns_remaining = max(0, self.turns_remaining - 1)
