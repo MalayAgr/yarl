@@ -4,8 +4,10 @@ from typing import TYPE_CHECKING
 
 from yarl.actions import ConsumeItemAction
 from yarl.components.ai import ConfusionAI
-from yarl.event_handlers import SelectTargetIndexEventHandler
-from yarl.event_handlers.select_target_area import SelectTargetAreaEventHandler
+from yarl.event_handlers import (
+    SelectTargetAreaEventHandler,
+    SelectTargetIndexEventHandler,
+)
 from yarl.exceptions import ImpossibleActionException
 from yarl.interface import color
 
