@@ -10,3 +10,4 @@ exclude_lines =
     __repr__
     on_render
     def render
+    except
