@@ -112,13 +112,6 @@ class ActiveEntity(Entity):
         self.movement_wait = 0
 
     @property
-    def inventory_items(self) -> list[Item]:
-        if self.inventory is None:
-            return []
-
-        return self.inventory.items
-
-    @property
     def is_alive(self) -> bool:
         return self.ai_cls is not None
 

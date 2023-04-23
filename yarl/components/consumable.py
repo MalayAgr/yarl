@@ -35,7 +35,7 @@ class Consumable:
         return ConsumeItemAction(engine=engine, entity=entity, item=self.item)
 
     def consume(self, consumer: ActiveEntity) -> None:
-        if consumer.inventory is None or self.item not in consumer.inventory_items:
+        if consumer.inventory is None or self.item not in consumer.inventory.items:
             return
 
         consumer.inventory.remove_item(item=self.item)

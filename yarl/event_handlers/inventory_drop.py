@@ -25,11 +25,11 @@ class InventoryDropEventHandler(SelectItemEventHandler):
         engine: Engine,
         old_event_handler: EventHandler | None = None,
     ) -> None:
-        x, y = engine.player.x, engine.player.y
+        inventory = engine.player.inventory
 
         super().__init__(
             engine=engine,
-            items=engine.player.inventory_items,
+            items=[] if inventory is None else inventory.items,
             old_event_handler=old_event_handler,
         )
 
