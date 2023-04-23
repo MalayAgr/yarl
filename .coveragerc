@@ -11,3 +11,4 @@ exclude_lines =
     on_render
     def render
     except
+skip_empty = true
