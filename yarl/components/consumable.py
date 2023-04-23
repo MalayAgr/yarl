@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from yarl.actions import ConsumeItemAction
 from yarl.components.ai import ConfusionAI
 from yarl.event_handlers import SelectTargetIndexEventHandler
+from yarl.event_handlers.select_target_area import SelectTargetAreaEventHandler
 from yarl.exceptions import ImpossibleActionException
 from yarl.interface import color
 
@@ -165,5 +166,71 @@ class ConfusionSpell(Consumable):
             turns_remaining=self.number_of_turns,
             previous_ai=target.ai,
         )
+
+        self.consume(consumer=consumer)
+
+
+class FireballScroll(Consumable):
+    def __init__(self, item: Item, power: int, radius: int):
+        super().__init__(item)
+        self.power = power
+        self.radius = radius
+
+    def get_action(
+        self,
+        entity: ActiveEntity,
+        engine: Engine,
+        old_event_handler: EventHandler | None = None,
+    ) -> Action | None:
+        engine.event_handler = SelectTargetAreaEventHandler(
+            engine=engine,
+            radius=self.radius,
+            item=self.item,
+            old_event_handler=old_event_handler,
+        )
+        return None
+
+    def activate(
+        self,
+        consumer: ActiveEntity,
+        engine: Engine,
+        target_location: tuple[int, int] | None = None,
+    ) -> None:
+        if target_location is None:
+            raise ImpossibleActionException(f"No target selected for {self.item.name}.")
+
+        x, y = target_location
+        game_map = engine.game_map
+
+        if not game_map.visible[x, y]:
+            raise ImpossibleActionException(
+                "You cannot attack an area that you cannot see."
+            )
+
+        targets = {
+            entity
+            for entity in game_map.active_entities
+            if entity.distance(x=x, y=y) <= self.radius
+        }
+
+        if not targets:
+            raise ImpossibleActionException("There are no targets in the radius.")
+
+        for target in targets:
+            distance = target.distance(x=x, y=y)
+            damage = max(0, self.power - target.fighter.defense)
+
+            if damage == 0:
+                continue
+
+            damage = int(damage - distance * damage / self.radius)
+
+            if damage == 0:
+                continue
+
+            target.fighter.take_damage(damage=damage)
+            engine.add_to_message_log(
+                f"{target.name} is engulfed in a fiery explosion, taking {damage} damage!"
+            )
 
         self.consume(consumer=consumer)

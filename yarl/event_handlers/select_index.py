@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 import tcod
 from tcod.console import Console
 from tcod.event import KeyDown
+from yarl.exceptions import ImpossibleActionException
 from yarl.interface import color
 
 from .ask_user import AskUserEventHandler
@@ -40,6 +41,14 @@ class SelectIndexEventHandler(AskUserEventHandler):
 
         console.tiles_rgb["bg"][x, y] = color.WHITE
         console.tiles_rgb["fg"][x, y] = color.BLACK
+
+    def handle_action(self, action: Action) -> None:
+        try:
+            action.perform()
+        except ImpossibleActionException as e:
+            self.engine.add_to_message_log(text=e.args[0], fg=color.IMPOSSIBLE)
+
+        self.switch_event_handler()
 
     def ev_keydown(self, event: KeyDown) -> Action | None:
         key = event.sym

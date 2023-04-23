@@ -7,7 +7,12 @@ from typing import TYPE_CHECKING, Iterable, Type, TypeVar
 
 from yarl.components import RenderOrder
 from yarl.components.ai import AttackingAI
-from yarl.components.consumable import ConfusionSpell, HealingPotion, LightningScroll
+from yarl.components.consumable import (
+    ConfusionSpell,
+    FireballScroll,
+    HealingPotion,
+    LightningScroll,
+)
 from yarl.components.fighter import Fighter
 from yarl.components.inventory import Inventory
 
@@ -212,7 +217,15 @@ ITEM_FACTORY = [
         consumable_cls=ConfusionSpell,
         char="~",
         color=(207, 63, 255),
-        name="Confusion Scroll",
+        name="Confusion Spell",
         number_of_turns=10,
+    ),
+    Item(
+        consumable_cls=FireballScroll,
+        char="~",
+        color=(255, 0, 0),
+        name="Fireball Scroll",
+        power=12,
+        radius=3,
     ),
 ]
