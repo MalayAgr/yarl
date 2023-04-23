@@ -1,4 +1,5 @@
 from __future__ import annotations
+import math
 
 from typing import TYPE_CHECKING
 
@@ -225,7 +226,7 @@ class FireballScroll(Consumable):
             if damage == 0:
                 continue
 
-            damage = int(damage - distance * damage / self.radius)
+            damage = math.ceil(damage - distance * damage / self.radius)
 
             if damage == 0:
                 continue
