@@ -288,23 +288,33 @@ class MapGenerator:
         number_of_enemies = random.randint(0, self.max_enemies_per_room)
         number_of_items = random.randint(0, self.max_items_per_room)
 
-        for _ in range(number_of_enemies):
+        enemies = random.choices(
+            population=list(ENTITY_FACTORY.values()),
+            weights=list(ENTITY_FACTORY.keys()),
+            k=number_of_enemies,
+        )
+
+        for enemy in enemies:
             x = random.randint(room.x1 + 1, room.x2 - 1)
             y = random.randint(room.y1 + 1, room.y2 - 1)
 
             try:
-                entity = random.choice(ENTITY_FACTORY)
-                entity = ActiveEntity.fromentity(other=entity)
+                entity = ActiveEntity.fromentity(other=enemy)
                 self.game_map.add_entity(entity=entity, x=x, y=y)
             except CollisionWithEntityException:
                 pass
 
-        for _ in range(number_of_items):
+        items = random.choices(
+            population=list(ITEM_FACTORY.values()),
+            weights=list(ITEM_FACTORY.keys()),
+            k=number_of_items,
+        )
+
+        for item in items:
             x = random.randint(room.x1 + 1, room.x2 - 1)
             y = random.randint(room.y1 + 1, room.y2 - 1)
 
             try:
-                item = random.choice(ITEM_FACTORY)
                 item = Item.fromentity(other=item)
                 self.game_map.add_entity(entity=item, x=x, y=y)
             except CollisionWithEntityException:

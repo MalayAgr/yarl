@@ -1,6 +1,6 @@
 from __future__ import annotations
-import math
 
+import math
 from typing import TYPE_CHECKING
 
 from yarl.actions import ConsumeItemAction
