@@ -104,7 +104,7 @@ class GameMap:
     def move_entity(self, entity: Entity, x: int, y: int) -> None:
         entities = self.get_entities(x=entity.x, y=entity.y)
 
-        if entities is not None:
+        if entities:
             entities.discard(entity)
 
         self._entity_map[(x, y)].add(entity)
@@ -125,10 +125,10 @@ class GameMap:
         self.entities.add(entity)
         self._entity_map[(x, y)].add(entity)
 
-    def remove_entity(self, entity: Entity, x: int, y: int) -> None:
-        entities = self.get_entities(x=x, y=y)
+    def remove_entity(self, entity: Entity) -> None:
+        entities = self.get_entities(x=entity.x, y=entity.y)
 
-        if entities is None:
+        if not entities:
             return
 
         entities.discard(entity)
@@ -139,9 +139,6 @@ class GameMap:
             return ""
 
         entities = self.get_entities(x=x, y=y)
-
-        if entities is None:
-            return ""
 
         names = ", ".join(entity.name.capitalize() for entity in entities)
 

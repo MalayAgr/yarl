@@ -144,7 +144,7 @@ class ConsumeItemAction(Action):
             raise ImpossibleActionException("There is no item to consume.")
 
         item.consumable.activate(consumer=self.entity, engine=self.engine)
-        self.game_map.remove_entity(entity=item, x=self.entity.x, y=self.entity.y)
+        self.game_map.remove_entity(entity=item)
 
 
 class ConsumeTargetedItemAction(Action):
@@ -177,7 +177,7 @@ class ConsumeTargetedItemAction(Action):
             engine=self.engine,
             target_location=self.target_location,
         )
-        self.game_map.remove_entity(entity=item, x=self.entity.x, y=self.entity.y)
+        self.game_map.remove_entity(entity=item)
 
 
 class PickupAction(Action):
@@ -205,7 +205,7 @@ class PickupAction(Action):
             if added is False:
                 raise ImpossibleActionException("Your inventory is full.")
 
-            self.game_map.remove_entity(entity=item, x=self.entity.x, y=self.entity.y)
+            self.game_map.remove_entity(entity=item)
             self.engine.add_to_message_log(text=f"You picked up the item {item.name}.")
 
 
