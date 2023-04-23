@@ -17,6 +17,8 @@ if TYPE_CHECKING:
 
 
 class SelectTargetAreaEventHandler(SelectIndexEventHandler):
+    MESSAGE = "Select target area."
+
     def __init__(
         self,
         engine: Engine,
