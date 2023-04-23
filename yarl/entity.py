@@ -43,6 +43,12 @@ class Entity:
         self.blocking = blocking
         self.render_order = render_order
 
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(x={self.x}, y={self.y}, name={self.name}, char={self.char})"
+
+    def __str__(self) -> str:
+        return self.__repr__()
+
     @classmethod
     def fromentity(cls: Type[T], other: T) -> T:
         return copy.deepcopy(other)

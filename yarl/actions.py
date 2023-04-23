@@ -16,6 +16,12 @@ class Action:
         self.engine = engine
         self.entity = entity
 
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}()"
+
+    def __str__(self) -> str:
+        return self.__repr__()
+
     @property
     def game_map(self) -> GameMap:
         return self.engine.game_map
@@ -36,6 +42,12 @@ class DirectedAction(Action):
         self.entity: ActiveEntity
         self.dx = dx
         self.dy = dy
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(dx={self.dx}, dy={self.dy})"
+
+    def __str__(self) -> str:
+        return self.__repr__()
 
     @property
     def destination(self) -> tuple[int, int]:
@@ -147,6 +159,12 @@ class ConsumeTargetedItemAction(Action):
         self.entity: ActiveEntity
         self.item = item
         self.target_location = target_location
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(target_location={self.target_location})"
+
+    def __str__(self) -> str:
+        return self.__repr__()
 
     def perform(self) -> None:
         item = self.item

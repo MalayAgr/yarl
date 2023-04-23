@@ -35,6 +35,12 @@ class GameMap:
         self.visible = np.full((width, height), fill_value=False, order="F")
         self.explored = np.full((width, height), fill_value=False, order="F")
 
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(width={self.width}, height={self.height}, pov_radius={self.pov_radius})"
+
+    def __str__(self) -> str:
+        return self.__repr__()
+
     def in_bounds(self, x: int, y: int) -> bool:
         """Return True if x and y are inside of the bounds of this map."""
         return 0 <= x < self.width and 0 <= y < self.height

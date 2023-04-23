@@ -23,6 +23,9 @@ class Consumable:
     def __init__(self, item: Item):
         self.item = item
 
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}()"
+
     def get_action(
         self,
         entity: ActiveEntity,
@@ -51,6 +54,12 @@ class HealingPotion(Consumable):
         super().__init__(item=item)
         self.amount = amount
 
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(amount={self.amount})"
+
+    def __str__(self) -> str:
+        return self.__repr__()
+
     def activate(
         self,
         consumer: ActiveEntity,
@@ -72,6 +81,9 @@ class LightningScroll(Consumable):
         super().__init__(item)
         self.power = power
         self.range = range
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(power={self.power}, range={self.range})"
 
     def activate(
         self,
@@ -119,6 +131,12 @@ class ConfusionSpell(Consumable):
     def __init__(self, item: Item, number_of_turns: int):
         super().__init__(item=item)
         self.number_of_turns = number_of_turns
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(number_of_turns={self.number_of_turns})"
+
+    def __str__(self) -> str:
+        return self.__repr__()
 
     def get_action(
         self,
@@ -178,6 +196,9 @@ class FireballScroll(Consumable):
         super().__init__(item)
         self.power = power
         self.radius = radius
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(power={self.power}, radius={self.radius})"
 
     def get_action(
         self,

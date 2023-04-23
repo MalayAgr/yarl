@@ -58,6 +58,12 @@ class RectangularRoom:
         self.x2 = x + width
         self.y2 = y + height
 
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(x1={self.x1}, y1={self.y1}, x2={self.x2}, y2={self.y2})"
+
+    def __str__(self) -> str:
+        return self.__repr__()
+
     @classmethod
     def fromnode(cls, node: BSP) -> RectangularRoom:
         """Method to create a RectangularRoom object from a BSP node.
@@ -185,6 +191,12 @@ class MapGenerator:
         self.rooms: list[RectangularRoom] = []
 
         self.game_map = GameMap(width=map_width, height=map_height)
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(map_width={self.map_width}, map_height={self.map_height})"
+
+    def __str__(self) -> str:
+        return self.__repr__()
 
     def create_bsp_tree(self) -> BSP:
         """Method to create a BSP tree and obtain its root node."""
