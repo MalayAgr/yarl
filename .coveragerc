@@ -8,3 +8,5 @@ exclude_lines =
     if __name__ == "__main__":
     @overload
     __repr__
+    on_render
+    def render
