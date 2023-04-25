@@ -108,7 +108,7 @@ jobs:
         run: poetry install --without dev
       - name: Add environment variables
         env:
-          PRODUCTION: True
+          PRODUCTION: "True"
           LOGGER_HOST: ${{ secrets.LOGGER_HOST }}
           LOGGER_PORT: ${{ secrets.LOGGER_PORT }}
         run: |
