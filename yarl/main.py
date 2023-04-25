@@ -1,4 +1,5 @@
 import os
+import time
 
 import tcod
 from yarl.components.ai import AttackingAI
@@ -6,6 +7,8 @@ from yarl.engine import Engine
 from yarl.entity import ActiveEntity
 from yarl.interface import color
 from yarl.mapgen import MapGenerator
+
+from yarl.logger import logger
 
 
 def get_tileset_path() -> str:
@@ -63,6 +66,8 @@ def main() -> None:
         title="Yet Another RogueLike",
         vsync=True,
     ) as context:
+        logger.info("Game started.")
+        
         root_console = tcod.Console(width=screen_width, height=screen_height, order="F")
 
         while True:

@@ -7,6 +7,7 @@ from yarl.gamemap import GameMap
 from yarl.interface import color
 from yarl.interface.message_log import MessageLog
 from yarl.interface.renderer import render_health_bar
+from yarl.logger import logger
 
 if TYPE_CHECKING:
     from tcod.console import Console
@@ -37,6 +38,7 @@ class Engine:
         self.game_map.update_fov(player=self.player)
 
     def handle_player_death(self) -> None:
+        logger.info("Player has died. Switching to game over state.")
         self.event_handler = GameOverEventHandler(engine=self)
 
     def render(self, console: Console) -> None:
