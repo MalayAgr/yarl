@@ -3,11 +3,11 @@ name: Build
 on:
   push:
     tags:
-      - '*'
+      - "*"
 
 defaults:
-      run:
-        shell: bash
+  run:
+    shell: bash
 
 jobs:
   test:
@@ -106,6 +106,17 @@ jobs:
           virtualenvs-in-project: true
       - name: Install dependencies
         run: poetry install --without dev
+      - name: Add environment variables
+        env:
+          PRODUCTION: True
+          LOGGER_HOST: ${{ secrets.LOGGER_HOST }}
+          LOGGER_PORT: ${{ secrets.LOGGER_PORT }}
+        run: |
+          touch yarl/assets/.env
+          echo PRODUCTION=${PRODUCTION} >> yarl/assets/.env
+          echo LOGGER_HOST=${LOGGER_HOST} >> yarl/assets/.env
+          echo LOGGER_PORT=${LOGGER_PORT} >> yarl/assets/.env
+          cat yarl/assets/.env
       - name: Run PyInstaller
         env:
           PYTHONOPTIMIZE: 1
@@ -135,6 +146,3 @@ jobs:
           generateReleaseNotes: true
           omitBodyDuringUpdate: true
           omitNameDuringUpdate: true
-
-
-
