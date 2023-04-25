@@ -30,6 +30,12 @@ class SelectTargetAreaEventHandler(SelectIndexEventHandler):
         self.item = item
         self.radius = radius
 
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(radius={self.radius})"
+
+    def __str__(self) -> str:
+        return self.__repr__()
+
     def on_render(self, console: Console) -> None:
         super().on_render(console)
 

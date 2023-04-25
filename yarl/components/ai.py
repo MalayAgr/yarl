@@ -20,6 +20,12 @@ class BaseAI(Action):
 
         self.entity: ActiveEntity
 
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}()"
+
+    def __str__(self) -> str:
+        return self.__repr__()
+
     def get_path_to(self, dest_x: int, dest_y: int) -> deque[tuple[int, int]]:
         engine = self.engine
 
@@ -100,6 +106,9 @@ class ConfusionAI(BaseAI):
 
         self.previous_ai = previous_ai
         self.turns_remaining = turns_remaining
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(turns_remaining={self.turns_remaining})"
 
     def perform(self) -> None:
         if self.turns_remaining == 0:

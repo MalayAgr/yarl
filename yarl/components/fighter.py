@@ -25,6 +25,14 @@ class Fighter:
         self.attack_speed = attack_speed
         self.attack_wait = 0
 
+    def __repr__(self) -> str:
+        attrs = ["max_hp", "hp", "defense", "power", "attack_speed"]
+        string = ", ".join(f"{attr}={getattr(self, attr)}" for attr in attrs)
+        return f"{self.__class__.__name__}({string})"
+
+    def __str__(self) -> str:
+        return self.__repr__()
+
     @property
     def hp(self) -> int:
         return self._hp

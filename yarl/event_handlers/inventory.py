@@ -17,10 +17,11 @@ class InventoryEventHandler(SelectItemEventHandler):
     title = "Select an item to use from the inventory."
 
     def __init__(self, engine: Engine, old_event_handler: EventHandler) -> None:
+        inventory = engine.player.inventory
         super().__init__(
             engine=engine,
             old_event_handler=old_event_handler,
-            items=engine.player.inventory_items,
+            items=[] if inventory is None else inventory.items,
         )
 
     def on_item_selected(self, item: Item) -> Action | None:

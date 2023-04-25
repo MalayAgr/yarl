@@ -28,6 +28,12 @@ class Engine:
 
         self.update_fov()
 
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}()"
+
+    def __str__(self) -> str:
+        return self.__repr__()
+
     def add_to_message_log(
         self, text: str, fg: tuple[int, int, int] = color.WHITE, *, stack: bool = True
     ) -> None:

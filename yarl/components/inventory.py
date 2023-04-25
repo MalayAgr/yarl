@@ -15,6 +15,9 @@ class Inventory:
         self.capacity = capacity
         self.items: list[Item] = []
 
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(capacity={self.capacity})"
+
     def remove_item(self, item: Item) -> None:
         self.items.remove(item)
 

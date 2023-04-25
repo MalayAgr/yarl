@@ -43,6 +43,12 @@ class Entity:
         self.blocking = blocking
         self.render_order = render_order
 
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(x={self.x}, y={self.y}, name={self.name}, char={self.char})"
+
+    def __str__(self) -> str:
+        return self.__repr__()
+
     @classmethod
     def fromentity(cls: Type[T], other: T) -> T:
         return copy.deepcopy(other)
@@ -104,13 +110,6 @@ class ActiveEntity(Entity):
 
         self.speed = speed
         self.movement_wait = 0
-
-    @property
-    def inventory_items(self) -> list[Item]:
-        if self.inventory is None:
-            return []
-
-        return self.inventory.items
 
     @property
     def is_alive(self) -> bool:
@@ -175,8 +174,8 @@ class Item(Entity):
         self.consumable = consumable_cls(item=self, **kwargs)
 
 
-ENTITY_FACTORY = [
-    ActiveEntity(
+ENTITY_FACTORY = {
+    0.8: ActiveEntity(
         char="O",
         color=(63, 127, 63),
         name="Orc",
@@ -185,7 +184,7 @@ ENTITY_FACTORY = [
         defense=0,
         power=3,
     ),
-    ActiveEntity(
+    0.2: ActiveEntity(
         char="T",
         color=(0, 127, 0),
         name="Troll",
@@ -194,18 +193,17 @@ ENTITY_FACTORY = [
         defense=1,
         power=4,
     ),
-]
+}
 
-
-ITEM_FACTORY = [
-    Item(
+ITEM_FACTORY = {
+    0.4: Item(
         consumable_cls=HealingPotion,
         char="!",
         color=(127, 0, 255),
         name="Healing Potion",
         amount=4,
     ),
-    Item(
+    0.1: Item(
         consumable_cls=LightningScroll,
         char="~",
         color=(255, 255, 0),
@@ -213,14 +211,14 @@ ITEM_FACTORY = [
         power=20,
         range=5,
     ),
-    Item(
+    0.3: Item(
         consumable_cls=ConfusionSpell,
         char="~",
         color=(207, 63, 255),
         name="Confusion Spell",
         number_of_turns=10,
     ),
-    Item(
+    0.2: Item(
         consumable_cls=FireballScroll,
         char="~",
         color=(255, 0, 0),
@@ -228,4 +226,4 @@ ITEM_FACTORY = [
         power=12,
         radius=3,
     ),
-]
+}
