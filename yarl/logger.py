@@ -22,12 +22,12 @@ logger = logging.getLogger(__name__)
 
 if PRODUCTION:
     host = env.get("LOGGER_HOST", "localhost")
-    port = int(env.get("LOGGER_PORT", 5000)) # type: ignore
+    port = int(env.get("LOGGER_PORT", 5000))  # type: ignore
 
     logger.setLevel(logging.INFO)
 
     transport = HttpTransport(
-        host, #type: ignore
+        host,  # type: ignore
         port,
         ssl_enable=False,
         ssl_verify=False,

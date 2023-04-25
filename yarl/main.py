@@ -67,7 +67,7 @@ def main() -> None:
         vsync=True,
     ) as context:
         logger.info("Game started.")
-        
+
         root_console = tcod.Console(width=screen_width, height=screen_height, order="F")
 
         while True:
