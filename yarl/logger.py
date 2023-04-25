@@ -1,8 +1,8 @@
 import logging
 
-from logstash_async.transport import HttpTransport
-from logstash_async.handler import AsynchronousLogstashHandler
-from logstash_async.formatter import LogstashFormatter
+from logstash_async.formatter import LogstashFormatter  # type: ignore
+from logstash_async.handler import AsynchronousLogstashHandler  # type: ignore
+from logstash_async.transport import HttpTransport  # type: ignore
 
 host = "localhost"
 port = 50000
