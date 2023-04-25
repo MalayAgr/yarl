@@ -8,7 +8,7 @@ from logstash_async.transport import HttpTransport  # type: ignore
 
 
 def get_env():
-    parent = os.path.dirname(__file__)
+    parent = os.path.dirname(os.path.dirname(__file__))
     path = os.path.join(parent, "assets", ".env")
     return dotenv_values(dotenv_path=path)
 
@@ -16,6 +16,8 @@ def get_env():
 env = get_env()
 
 PRODUCTION = env.get("PRODUCTION", "False") == "True"
+
+print(PRODUCTION)
 
 logger = logging.getLogger(__name__)
 
