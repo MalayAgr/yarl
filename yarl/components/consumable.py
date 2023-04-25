@@ -1,6 +1,6 @@
 from __future__ import annotations
-import math
 
+import math
 from typing import TYPE_CHECKING
 
 from yarl.actions import ConsumeItemAction
@@ -23,6 +23,9 @@ class Consumable:
     def __init__(self, item: Item):
         self.item = item
 
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}()"
+
     def get_action(
         self,
         entity: ActiveEntity,
@@ -32,7 +35,7 @@ class Consumable:
         return ConsumeItemAction(engine=engine, entity=entity, item=self.item)
 
     def consume(self, consumer: ActiveEntity) -> None:
-        if consumer.inventory is None or self.item not in consumer.inventory_items:
+        if consumer.inventory is None or self.item not in consumer.inventory.items:
             return
 
         consumer.inventory.remove_item(item=self.item)
@@ -50,6 +53,12 @@ class HealingPotion(Consumable):
     def __init__(self, item: Item, amount: int):
         super().__init__(item=item)
         self.amount = amount
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(amount={self.amount})"
+
+    def __str__(self) -> str:
+        return self.__repr__()
 
     def activate(
         self,
@@ -72,6 +81,9 @@ class LightningScroll(Consumable):
         super().__init__(item)
         self.power = power
         self.range = range
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(power={self.power}, range={self.range})"
 
     def activate(
         self,
@@ -119,6 +131,12 @@ class ConfusionSpell(Consumable):
     def __init__(self, item: Item, number_of_turns: int):
         super().__init__(item=item)
         self.number_of_turns = number_of_turns
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(number_of_turns={self.number_of_turns})"
+
+    def __str__(self) -> str:
+        return self.__repr__()
 
     def get_action(
         self,
@@ -178,6 +196,9 @@ class FireballScroll(Consumable):
         super().__init__(item)
         self.power = power
         self.radius = radius
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(power={self.power}, radius={self.radius})"
 
     def get_action(
         self,

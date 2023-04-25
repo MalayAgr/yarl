@@ -35,6 +35,12 @@ class GameMap:
         self.visible = np.full((width, height), fill_value=False, order="F")
         self.explored = np.full((width, height), fill_value=False, order="F")
 
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(width={self.width}, height={self.height}, pov_radius={self.pov_radius})"
+
+    def __str__(self) -> str:
+        return self.__repr__()
+
     def in_bounds(self, x: int, y: int) -> bool:
         """Return True if x and y are inside of the bounds of this map."""
         return 0 <= x < self.width and 0 <= y < self.height
@@ -77,9 +83,9 @@ class GameMap:
     def items(self) -> Iterable[Item]:
         yield from (entity for entity in self.entities if isinstance(entity, Item))
 
-    def get_items(self, x: int, y: int) -> Iterable[Item]:
+    def get_items(self, x: int, y: int) -> set[Item]:
         entities = self.get_entities(x=x, y=y)
-        yield from (entity for entity in entities if isinstance(entity, Item))
+        return {entity for entity in entities if isinstance(entity, Item)}
 
     def get_active_entity(self, x: int, y: int) -> ActiveEntity | None:
         entities = self.get_entities(x=x, y=y)
@@ -98,7 +104,7 @@ class GameMap:
     def move_entity(self, entity: Entity, x: int, y: int) -> None:
         entities = self.get_entities(x=entity.x, y=entity.y)
 
-        if entities is not None:
+        if entities:
             entities.discard(entity)
 
         self._entity_map[(x, y)].add(entity)
@@ -119,10 +125,10 @@ class GameMap:
         self.entities.add(entity)
         self._entity_map[(x, y)].add(entity)
 
-    def remove_entity(self, entity: Entity, x: int, y: int) -> None:
-        entities = self.get_entities(x=x, y=y)
+    def remove_entity(self, entity: Entity) -> None:
+        entities = self.get_entities(x=entity.x, y=entity.y)
 
-        if entities is None:
+        if not entities:
             return
 
         entities.discard(entity)
@@ -133,9 +139,6 @@ class GameMap:
             return ""
 
         entities = self.get_entities(x=x, y=y)
-
-        if entities is None:
-            return ""
 
         names = ", ".join(entity.name.capitalize() for entity in entities)
 

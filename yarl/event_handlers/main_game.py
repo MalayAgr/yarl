@@ -61,14 +61,11 @@ class MainGameEventHandler(EventHandler):
                 )
             case tcod.event.K_c:
                 items = engine.game_map.get_items(x=entity.x, y=entity.y)
-                items = list(items)
 
-                number_of_items = len(items)
-
-                if number_of_items <= 1:
+                if not items or len(items) == 1:
                     engine.event_handler = ConsumeSingleItemEventHandler(
                         engine=engine,
-                        item=None if number_of_items == 0 else items[0],
+                        item=None if not items else list(items)[0],
                         old_event_handler=self,
                     )
                     return None
@@ -78,15 +75,12 @@ class MainGameEventHandler(EventHandler):
                 )
             case tcod.event.K_e:
                 items = engine.game_map.get_items(x=entity.x, y=entity.y)
-                items = list(items)
 
-                number_of_items = len(items)
-
-                if number_of_items <= 1:
+                if not items or len(items) == 1:
                     return PickupAction(
                         engine=engine,
                         entity=entity,
-                        items=items,
+                        items=list(items),
                     )
 
                 engine.event_handler = SelectItemToPickupEventHandler(

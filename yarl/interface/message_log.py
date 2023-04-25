@@ -13,6 +13,12 @@ class Message:
         self.fg = fg
         self.count = 1
 
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(plain_text={self.plain_text}, count={self.count})"
+
+    def __str__(self) -> str:
+        return self.__repr__()
+
     @property
     def full_text(self) -> str:
         return (
@@ -23,6 +29,12 @@ class Message:
 class MessageLog:
     def __init__(self) -> None:
         self.messages: list[Message] = []
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}()"
+
+    def __str__(self) -> str:
+        return self.__repr__()
 
     def add_message(
         self, text: str, fg: tuple[int, int, int] = color.WHITE, *, stack: bool = True
