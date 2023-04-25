@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 import tcod
 from tcod.event import KeyDown
+from yarl.logger import logger
 
 from .event_handler import EventHandler
 
@@ -18,6 +19,7 @@ class GameOverEventHandler(EventHandler):
         key = event.sym
 
         if key == tcod.event.K_ESCAPE:
+            logger.info("Game exited.")
             raise SystemExit()
 
         # No valid key was pressed

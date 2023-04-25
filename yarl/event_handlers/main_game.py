@@ -9,6 +9,7 @@ from tcod.event import KeyDown, KeySym
 from yarl.actions import BumpAction, PickupAction, WaitAction
 from yarl.exceptions import ImpossibleActionException
 from yarl.interface import color
+from yarl.logger import logger
 
 from .consume_single_item import ConsumeSingleItemEventHandler
 from .event_handler import EventHandler
@@ -44,6 +45,7 @@ class MainGameEventHandler(EventHandler):
 
         match key:
             case tcod.event.K_ESCAPE:
+                logger.info("Game exited.")
                 raise SystemExit()
             case tcod.event.K_v:
                 engine.event_handler = HistoryEventHandler(
@@ -104,6 +106,7 @@ class MainGameEventHandler(EventHandler):
 
             try:
                 entity.ai.perform()
+                logger.info(f"{entity.name} took a turn.")
             except ImpossibleActionException as e:
                 pass
 
@@ -122,6 +125,7 @@ class MainGameEventHandler(EventHandler):
             super().handle_action(action=action)
             self.engine.update_fov()
         except ImpossibleActionException as e:
+            logger.error(e.args[0])
             self.engine.add_to_message_log(text=e.args[0], fg=color.IMPOSSIBLE)
         finally:
             self.handle_enemy_turns()
