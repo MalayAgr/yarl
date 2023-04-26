@@ -12,6 +12,7 @@ from yarl.interface import color
 from yarl.logger import logger
 
 from .consume_single_item import ConsumeSingleItemEventHandler
+from .controls import MOVE_KEYS, WAIT_KEYS
 from .event_handler import EventHandler
 from .history import HistoryEventHandler
 from .inventory import InventoryEventHandler
@@ -34,13 +35,13 @@ class MainGameEventHandler(EventHandler):
     def process_key(self, key: KeySym) -> Action | None:
         engine, entity = self.engine, self.engine.player
 
-        if key in self.MOVE_KEYS:
-            deviation = self.MOVE_KEYS[key]
+        if key in MOVE_KEYS:
+            deviation = MOVE_KEYS[key]
             return BumpAction(
                 engine=engine, entity=entity, dx=deviation.dx, dy=deviation.dy
             )
 
-        if key in self.WAIT_KEYS:
+        if key in WAIT_KEYS:
             return WaitAction(engine=engine, entity=entity)
 
         match key:
