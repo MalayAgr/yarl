@@ -82,7 +82,7 @@ jobs:
       - name: Deploy docs
         run: |
           source $VENV
-          mkdocs gh-deploy
+          mkdocs gh-deploy --force
 
   containerize:
     runs-on: ubuntu-latest
