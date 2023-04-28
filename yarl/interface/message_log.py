@@ -8,7 +8,23 @@ from yarl.interface import color
 
 
 class Message:
+    """Class to represent a colored text message.
+
+    Attributes:
+        plain_text (str): Text of the message.
+
+        fg (tuple[int, int, int]): Color for the message.
+
+        count (int): Multiplier to show beside the message.
+    """
+
     def __init__(self, text: str, fg: tuple[int, int, int]) -> None:
+        """Create a message.
+
+        Args:
+            text: Text of the message.
+            fg: Color for the message.
+        """
         self.plain_text = text
         self.fg = fg
         self.count = 1
@@ -21,13 +37,30 @@ class Message:
 
     @property
     def full_text(self) -> str:
+        """The full text of the message with the count.
+
+        Examples:
+            >>> msg = Message(text="Hello", fg=(255, 255, 255))
+            >>> msg.full_text
+            'Hello'
+            >>> msg.count = 3
+            >>> msg.full_text
+            'Hello (x3)'
+        """
         return (
             f"{self.plain_text} (x{self.count})" if self.count > 1 else self.plain_text
         )
 
 
 class MessageLog:
+    """Class to represent a list of `Message` instances with rendering capabilities.
+
+    Attributes:
+        messages (list[Message]): Current messages in the log.
+    """
+
     def __init__(self) -> None:
+        """Create an empty message log."""
         self.messages: list[Message] = []
 
     def __repr__(self) -> str:

@@ -89,11 +89,11 @@ nav:
  - Download and Install: download-install.md
  - Reference:
     - "reference.md"
-    - Map generation:
-        - "yarl/map_generator.md"
-        - "yarl/rectangular_room.md"
+    - "mapgen": "yarl/mapgen.md"
     - Event handlers:
       - "yarl/event_handlers/index.md"
+    - Interface:
+      - "message_log": "yarl/interface/message_log.md"
 
 
 extra:

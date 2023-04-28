@@ -1,6 +1,6 @@
 # Welcome to YARL - Yet Another RogueLike
 
-Get ready to dive into the dark dungeons :door: and fight terrifying monsters :japanese_goblin: :japanese_ogre: ?
+Get ready to dive into the dark dungeons :door: and fight terrifying monsters :japanese_goblin: :japanese_ogre:.
 
 ## Project Layout
 
