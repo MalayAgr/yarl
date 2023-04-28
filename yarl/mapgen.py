@@ -81,13 +81,13 @@ class RectangularRoom:
 
     @classmethod
     def fromnode(cls, node: BSP) -> RectangularRoom:
-        """Method to create a RectangularRoom object from a BSP node.
+        """Method to create a RectangularRoom object from a `BSP` node.
 
         Args:
             node: Node from which the room should be created.
 
         Returns:
-            Created room using the BSP node.
+            Room created using the `BSP` node.
         """
         return cls(x=node.x, y=node.y, width=node.width, height=node.height)
 
@@ -166,7 +166,7 @@ class MapGenerator:
 
             max_enemies_per_room: Number of enemies to spawn per room. Defaults to 2.
 
-            max_items_per_rooms: Number of consumable items to spawn per room. Defaults to 2.
+            max_items_per_room: Number of consumable items to spawn per room. Defaults to 2.
 
             full_rooms: Indicates whether rooms should use the dimensions of the BSP nodes
                 they are created from (`True`) or have random sizes based on those dimensions (`False`).
@@ -223,15 +223,15 @@ class MapGenerator:
             self.connect_rooms(node1=node, node2=child)
 
     def create_room(self, node: BSP) -> RectangularRoom:
-        """Method to create a room and add it to the map from the given BSP node.
+        """Method to create a room and add it to the map from the given `BSP` node.
         It also adds the room to the rooms attribute of the class and returns the room
         object.
 
         Args:
-            node: BSP node from which the room should be created.
+            node: `BSP` node from which the room should be created.
 
         Returns:
-            Room created using the BSP node.
+            Room created using the `BSP` node.
         """
         if self.full_rooms is False:
             min_x, min_y = node.x, node.y

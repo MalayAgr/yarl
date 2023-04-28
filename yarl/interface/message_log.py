@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-import textwrap
-from typing import Reversible
-
-import tcod
+from tcod.console import Console
 from yarl.interface import color
+from yarl.interface.renderer import render_messages
 
 
 class Message:
@@ -23,6 +21,7 @@ class Message:
 
         Args:
             text: Text of the message.
+
             fg: Color for the message.
         """
         self.plain_text = text
@@ -72,14 +71,45 @@ class MessageLog:
     def add_message(
         self, text: str, fg: tuple[int, int, int] = color.WHITE, *, stack: bool = True
     ) -> None:
+        """Add a message to the message log with optional stacking.
+
+        It creates a [`Message`][yarl.interface.message_log.Message] instance and adds it to the log.
+
+        Args:
+            text: Text of the message.
+
+            fg: Color for the message. Defaults to `color.WHITE`.
+
+            stack: Indicates whether the message should be stacked.
+                If `True` and the last message in the log has the same text as `text`,
+                the count of the message is incremented. Otherwise, the message is appended
+                to the log. Defaults to `True`.
+        """
         if stack and self.messages and self.messages[-1].plain_text == text:
             self.messages[-1].count += 1
             return None
 
         self.messages.append(Message(text=text, fg=fg))
 
-    def render(self, console: tcod.Console, x: int, y: int, width: int, height: int):
-        self.render_messages(
+    def render(self, console: Console, x: int, y: int, width: int, height: int):
+        """Method to render the message log to the console.
+
+        Message lines will be wrapped to fit within `width` and
+        each line will take up one unit of `height`. Thus, only
+        as many message lines as can be fitted in `height` will be rendered.
+
+        Args:
+            console: Console to render the log to.
+
+            x: x-coordinate of the location where rendering should start on the console.
+
+            y: y-coordinate of the location where rendering should start on the console.
+
+            width: Amount of horizontal space to use for rendering.
+
+            height: Amount of vertical space to use for rendering.
+        """
+        render_messages(
             console=console,
             x=x,
             y=y,
@@ -87,22 +117,3 @@ class MessageLog:
             height=height,
             messages=self.messages,
         )
-
-    @staticmethod
-    def render_messages(
-        console: tcod.Console,
-        x: int,
-        y: int,
-        width: int,
-        height: int,
-        messages: Reversible[Message],
-    ) -> None:
-        for message in reversed(messages):
-            lines = reversed(textwrap.wrap(text=message.full_text, width=width))
-
-            for line in lines:
-                console.print(x=x, y=y + height - 1, string=line, fg=message.fg)
-                height -= 1
-
-                if height <= 0:
-                    return

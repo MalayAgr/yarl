@@ -1,11 +1,14 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+import textwrap
+from typing import TYPE_CHECKING, Reversible
 
 from yarl.interface import color
 
 if TYPE_CHECKING:
     from tcod.console import Console
+
+    from .message_log import Message
 
 
 def render_health_bar(
@@ -21,3 +24,22 @@ def render_health_bar(
         )
 
     console.print(x=1, y=45, string=f"HP: {current_hp}/{max_hp}", fg=color.BAR_TEXT)
+
+
+def render_messages(
+    console: Console,
+    x: int,
+    y: int,
+    width: int,
+    height: int,
+    messages: Reversible[Message],
+) -> None:
+    for message in reversed(messages):
+        lines = reversed(textwrap.wrap(text=message.full_text, width=width))
+
+        for line in lines:
+            console.print(x=x, y=y + height - 1, string=line, fg=message.fg)
+            height -= 1
+
+            if height <= 0:
+                return

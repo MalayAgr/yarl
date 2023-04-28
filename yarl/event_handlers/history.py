@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 import tcod
 from tcod.event import KeyDown
+from yarl.interface.renderer import render_messages
 
 from .controls import HISTORY_SCROLL_KEYS
 from .switachable import SwitchableEventHandler
@@ -36,7 +37,7 @@ class HistoryEventHandler(SwitchableEventHandler):
         )
 
         # Render the message log using the cursor parameter.
-        self.engine.message_log.render_messages(
+        render_messages(
             console=log_console,
             x=1,
             y=1,
