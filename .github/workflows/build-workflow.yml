@@ -56,6 +56,9 @@ jobs:
   deploy-docs:
     runs-on: ubuntu-20.04
     needs: test
+    permissions:
+      contents: write
+
     steps:
       - uses: actions/checkout@v3
       - name: Setup Python 3.11
@@ -82,7 +85,7 @@ jobs:
       - name: Deploy docs
         run: |
           source $VENV
-          mkdocs gh-deploy --force
+          mkdocs gh-deploy --force --clean --verbose
 
   containerize:
     runs-on: ubuntu-latest
