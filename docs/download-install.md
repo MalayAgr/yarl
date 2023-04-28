@@ -51,5 +51,5 @@ tar -xvzf yarl-linux.x64.tar.gz -C yarl/
 
 - Download the [latest release of the game](https://github.com/MalayAgr/yarl/releases/latest/download/yarl-windows.x64.tar.gz)
 - Unzip the file by right clicking on the downloaded archive and clicking on `Extract All`. On the window that appears, click `Extract`.
-- Double click on `yarl-windows.x64 > dist > yarl` and then run `yarl.exe`.
+- Double click on `yarl-windows.x64 > yarl` and then run `yarl.exe`.
 - (**Optional**) For easier access in the future, you can add `yarl.exe` to your desktop.

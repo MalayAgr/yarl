@@ -4,7 +4,7 @@ Get ready to dive into the dark dungeons :door: and fight terrifying monsters :j
 
 ## Project Layout
 
-```
+```bash
 .
 └── yarl
     ├── actions.py
