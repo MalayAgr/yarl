@@ -1,14 +1,20 @@
 from __future__ import annotations
 
 import textwrap
-from typing import TYPE_CHECKING, Reversible
+from typing import TYPE_CHECKING, Protocol, Reversible
 
 from yarl.interface import color
 
 if TYPE_CHECKING:
     from tcod.console import Console
 
-    from .message_log import Message
+
+class MessageType(Protocol):
+    fg: tuple[int, int, int]
+
+    @property
+    def full_text(self) -> str:
+        ...
 
 
 def render_health_bar(
@@ -32,7 +38,7 @@ def render_messages(
     y: int,
     width: int,
     height: int,
-    messages: Reversible[Message],
+    messages: Reversible[MessageType],
 ) -> None:
     for message in reversed(messages):
         lines = reversed(textwrap.wrap(text=message.full_text, width=width))
