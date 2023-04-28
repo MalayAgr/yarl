@@ -86,7 +86,7 @@ extra_css:
 
 nav:
  - Introduction: index.md
- - Download: download.md
+ - Download and Install: download-install.md
  - Reference:
     - "reference.md"
     - Map generation:
