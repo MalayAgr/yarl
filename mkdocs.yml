@@ -1,0 +1,107 @@
+site_name: YARL - Yet Another RogueLike
+repo_url: https://github.com/MalayAgr/yarl
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.indexes
+    - navigation.tabs.sticky
+    - navigation.footer
+    - content.code.annotate
+    - content.code.copy
+  palette:
+  - media: "(prefers-color-scheme: light)"
+    scheme: default
+    accent: purple
+    toggle:
+      icon: material/weather-sunny
+      name: Switch to dark mode
+  - media: "(prefers-color-scheme: dark)"
+    scheme: slate
+    primary: black
+    toggle:
+      icon: material/weather-night
+      name: Switch to light mode
+
+markdown_extensions:
+  - attr_list
+  - smarty
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - md_in_html
+  - admonition
+  - def_list
+  - meta
+
+  - toc:
+      permalink: true
+      baselevel: 1
+  - pymdownx.keys
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.snippets
+  - markdown.extensions.attr_list
+
+
+plugins:
+  search:
+  autorefs:
+  mkdocstrings:
+    custom_templates: docs/_templates
+    default_handler: python
+    handlers:
+      python:
+        import:
+          - https://docs.python.org/3/objects.inv
+          - https://python-tcod.readthedocs.io/en/stable/objects.inv
+        options:
+          show_signature_annotations: false
+          separate_signature: true
+          merge_init_into_class: true
+          docstring_options:
+            ignore_init_summary: true
+          show_source: false
+          filters:
+            - "!^_"
+            - "^__init__$"
+            - "!^can_replace$"
+
+
+watch:
+  - mkdocs.yml
+  - yarl/
+
+extra_css:
+  - "custom_css.css"
+
+
+nav:
+ - Introduction: index.md
+ - Download: download.md
+ - Reference:
+    - "reference.md"
+    - Map generation:
+        - "yarl/map_generator.md"
+        - "yarl/rectangular_room.md"
+    - Event handlers:
+      - "yarl/event_handlers/index.md"
+
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/MalayAgr
+      name: Malay Agarwal on GitHub
+    - icon: fontawesome/brands/github
+      link: https://github.com/jashAtGit
+      name: Jashwanth Sai on GitHub
+copyright: Copyright &copy; Malay Agarwal, Jashwanth Sai

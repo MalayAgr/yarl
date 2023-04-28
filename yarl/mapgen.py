@@ -14,44 +14,38 @@ from yarl.gamemap import GameMap
 class RectangularRoom:
     """Class to represent a rectangular room.
 
-    Attributes
-    ----------
-    x1: int
-        x-coordinate of one corner of the room.
+    Attributes:
+        x1 (int):
+            x-coordinate of one corner of the room.
 
-    y1: int
-        y-coordinate of one corner of the room.
+        y1 (int):
+            y-coordinate of one corner of the room.
 
-    x2: int
-        x-coordinate of second corner of the room.
+        x2 (int):
+            x-coordinate of second corner of the room.
 
-    y2: int
-        y-coordinate of second corner of the room.
+        y2 (int):
+            y-coordinate of second corner of the room.
 
-    inner: tuple[slice, slice]
-        Corner coordinates of the inner area of the room.
+        inner (tuple[slice, slice]):
+            Corner coordinates of the inner area of the room.
 
-    center: tuple[int, int]
-        Coordinates of the center of the room.
-
-
-    Methods
-    ----------
-    intersects(other) -> bool
-        Returns true if other intersects the room.
-
-    fromnode(node) -> RectangularRoom
-        Constructor to create a room from a BSP node.
+        center (tuple[int, int]):
+            Coordinates of the center of the room.
     """
 
     def __init__(self, x: int, y: int, width: int, height: int):
-        """
-        Arguments
-        ----------
-        x: x coordinate of the room.
-        y: y coordinate of the room.
-        width: Width of the room.
-        height: Height of the room.
+        """Create a RectangularRoom.
+
+        Args:
+            x: x coordinate of the room.
+
+            y: y coordinate of the room.
+
+            width: Width of the room.
+
+            height: Height of the room.
+
         """
         self.x1 = x
         self.y1 = y
@@ -68,9 +62,8 @@ class RectangularRoom:
     def fromnode(cls, node: BSP) -> RectangularRoom:
         """Method to create a RectangularRoom object from a BSP node.
 
-        Arguments
-        ----------
-        node: Node from which the room should be created.
+        Args:
+            node: Node from which the room should be created.
         """
         return cls(x=node.x, y=node.y, width=node.width, height=node.height)
 
@@ -90,9 +83,8 @@ class RectangularRoom:
     def intersects(self, other: RectangularRoom) -> bool:
         """Method to check if the given room intersects the room.
 
-        Arguments
-        ----------
-        other: Room which needs to be checked for intersection.
+        Args:
+            other: Room which needs to be checked for intersection.
         """
         return (
             self.x1 <= other.x2
@@ -105,53 +97,22 @@ class RectangularRoom:
 class MapGenerator:
     """Class to handle map generation via BSP.
 
-    Attributes
-    ----------
-    room_min_size: int
-        Minimum size of the generated rooms.
+    Attributes:
+        room_min_size (int): Minimum size of the generated rooms.
 
-    map_width: int
-        Width of the map to be generated.
+        map_width (int): Width of the map to be generated.
 
-    map_height: int
-        Height of the map to be generated.
+        map_height (int): Height of the map to be generated.
 
-    depth: int
-        Depth of the BSP tree.
+        depth (int): Depth of the BSP tree.
 
-    full_rooms: bool
-        Indicates whether rooms should use the dimensions of the nodes
-        in the BSP tree (True) or have random dimensions based on the
-        dimensions of the node.
+        full_rooms (bool): Indicates whether rooms should use the dimensions of the
+            nodes in the BSP tree (True) or have random dimensions based on the
+            dimensions of the node.
 
-    rooms: list[RectangularRooms]
-        All the rooms in the map.
+        rooms (list[RectangularRooms]): All the rooms in the map.
 
-    game_map: GameMap
-        Generated map.
-
-    Methods
-    ----------
-    create_bsp_tree() -> BSP
-        Creates a BSP tree and returns its root node.
-
-    traverse_bsp(node)
-        Recursively traverses a BSP tree using DFS to create and connect rooms.
-
-    create_room(node) -> RectangularRoom
-        Creates a room in the map from the given BSP node and returns it.
-
-    tunnel_coordinates(start, end) -> Iterator[tuple[int, int]]
-        Returns the coordinates required to connect two points using a Bresenham line.
-        It is random since it randomly decides whether to connect the rooms horizontally or vertically.
-
-    connect_rooms(node1, node2)
-        Connects the two rooms denoted by node1 and node2 by a thin line in the map.
-
-    generate_map(player) -> GameMap
-        Generates a game map using BSP and optionally places a player Entity
-        in a random room on the map. By default, player is None and no player is
-        placed on the map.
+        game_map (GameMap): Generated map.
     """
 
     def __init__(
@@ -165,20 +126,21 @@ class MapGenerator:
         *,
         full_rooms: bool = False,
     ) -> None:
-        """
-        Arguments
-        ----------
-        map_width: Width of the map that will be generated.
+        """Create a MapGenerator.
 
-        map_height: Height of the map that will be generated.
+        Args:
+            map_width: Width of the map that will be generated.
 
-        room_min_size: Minimum size of the rooms that should be generated. Defaults to 5.
+            map_height: Height of the map that will be generated.
 
-        depth: Depth of the BSP tree. Defaults to 10.
+            room_min_size: Minimum size of the rooms that should be generated. Defaults to 5.
 
-        full_rooms: Indicates whether rooms should use the dimensions of the BSP nodes
-        they are created from (True) or have random sizes based on those dimensions (False).
-        More interesting maps are generated when set to False. Defaults to False.
+            depth: Depth of the BSP tree. Defaults to 10.
+
+            full_rooms: Indicates whether rooms should use the dimensions of the BSP nodes
+                they are created from (True) or have random sizes based on those dimensions (False).
+
+                More interesting maps are generated when set to False. Defaults to False.
         """
         self.room_min_size = room_min_size
         self.map_width = map_width
@@ -215,9 +177,8 @@ class MapGenerator:
     def traverse_bsp(self, node: BSP) -> None:
         """Method to recursively traverse a BSP tree, and create and connect rooms.
 
-        Arguments
-        ----------
-        node: Current BSP node in the recursion.
+        Args:
+            node: Current BSP node in the recursion.
         """
         if not node.children:
             self.create_room(node=node)
@@ -232,9 +193,8 @@ class MapGenerator:
         It also adds the room to the rooms attribute of the class and returns the room
         object.
 
-        Arguments
-        ----------
-        node: BSP node from which the room should be created.
+        Args:
+            node: BSP node from which the room should be created.
         """
         if self.full_rooms is False:
             min_x, min_y = node.x, node.y
@@ -269,10 +229,9 @@ class MapGenerator:
         random since it randomly decides whether to connect the points
         horizontally or vertically.
 
-        Arguments
-        ----------
-        start: First point to connect.
-        end: Second point to connect.
+        Args:
+            start: First point to connect.
+            end: Second point to connect.
         """
         x1, y1 = start
         x2, y2 = end
@@ -285,10 +244,9 @@ class MapGenerator:
     def connect_rooms(self, node1: BSP, node2: BSP) -> None:
         """Method to connect the two rooms represented by the given BSP nodes.
 
-        Arguments
-        ----------
-        node1: First node to connect.
-        node2: Second node to connect.
+        Args:
+            node1: First node to connect.
+            node2: Second node to connect.
         """
         room1 = RectangularRoom.fromnode(node=node1)
         room2 = RectangularRoom.fromnode(node=node2)
@@ -336,9 +294,8 @@ class MapGenerator:
         """Method to generate a map using BSP and optionally place the
         player at the center of a random room in the generated map.
 
-        Arguments
-        ----------
-        player: Player to be placed on the map. Defaults to None.
+        Args:
+            player: Player to be placed on the map. Defaults to None.
         """
         bsp = self.create_bsp_tree()
 

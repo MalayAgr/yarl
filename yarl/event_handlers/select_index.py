@@ -9,6 +9,7 @@ from yarl.exceptions import ImpossibleActionException
 from yarl.interface import color
 
 from .ask_user import AskUserEventHandler
+from .controls import MOVE_KEYS
 
 if TYPE_CHECKING:
     from yarl.actions import Action
@@ -56,7 +57,7 @@ class SelectIndexEventHandler(AskUserEventHandler):
         if key in self.CONFIRM_KEYS:
             return self.on_index_selected(self.mouse_location)
 
-        if key in self.MOVE_KEYS:
+        if key in MOVE_KEYS:
             modifier = 1
 
             if event.mod & (tcod.event.KMOD_LSHIFT | tcod.event.KMOD_RSHIFT):
@@ -67,7 +68,7 @@ class SelectIndexEventHandler(AskUserEventHandler):
                 modifier *= 20
 
             x, y = self.mouse_location
-            deviation = self.MOVE_KEYS[key]
+            deviation = MOVE_KEYS[key]
 
             x += deviation.dx * modifier
             y += deviation.dy * modifier

@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 import tcod
 from tcod.event import KeyDown
 
+from .controls import HISTORY_SCROLL_KEYS
 from .switachable import SwitchableEventHandler
 
 if TYPE_CHECKING:
@@ -15,13 +16,6 @@ if TYPE_CHECKING:
 
 class HistoryEventHandler(SwitchableEventHandler):
     """Print the history on a larger window which can be navigated."""
-
-    SCROLL_KEYS = {
-        tcod.event.K_UP: -1,
-        tcod.event.K_DOWN: 1,
-        tcod.event.K_PAGEUP: -10,
-        tcod.event.K_PAGEDOWN: 10,
-    }
 
     def __init__(
         self, engine: Engine, old_event_handler: EventHandler | None = None
@@ -55,8 +49,8 @@ class HistoryEventHandler(SwitchableEventHandler):
 
     def ev_keydown(self, event: KeyDown) -> None:
         # Fancy conditional movement to make it feel right.
-        if event.sym in self.SCROLL_KEYS:
-            adjust = self.SCROLL_KEYS[event.sym]
+        if event.sym in HISTORY_SCROLL_KEYS:
+            adjust = HISTORY_SCROLL_KEYS[event.sym]
 
             if adjust < 0 and self.cursor == 0:
                 # Only move from the top to the bottom when you're on the edge.
