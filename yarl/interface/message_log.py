@@ -1,3 +1,6 @@
+"""This module provides a message log with rendering capabilities."""
+
+
 from __future__ import annotations
 
 from tcod.console import Console
@@ -91,9 +94,20 @@ class MessageLog:
 
         self.messages.append(Message(text=text, fg=fg))
 
-    def render(self, console: Console, x: int, y: int, width: int, height: int):
+    def render(
+        self,
+        console: Console,
+        x: int,
+        y: int,
+        width: int,
+        height: int,
+        *,
+        limit: int | None = None,
+    ):
         """Method to render the message log to the console.
 
+        The messages will be rendered starting at `(x, y)`. A horizontal
+        space of `width` and a vertical space of `height` will be used.
         Message lines will be wrapped to fit within `width` and
         each line will take up one unit of `height`. Thus, only
         as many message lines as can be fitted in `height` will be rendered.
@@ -108,12 +122,19 @@ class MessageLog:
             width: Amount of horizontal space to use for rendering.
 
             height: Amount of vertical space to use for rendering.
+
+            limit: Limits the number of messages rendered to the first `limit` messages.
+                When set to `None`, all the messages in the log are rendered.
         """
+        messages = self.messages if limit is None else self.messages[:limit]
+
         render_messages(
             console=console,
             x=x,
             y=y,
             width=width,
             height=height,
-            messages=self.messages,
+            messages=reversed(
+                [(message.full_text, message.fg) for message in messages]
+            ),
         )

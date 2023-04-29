@@ -1,3 +1,43 @@
+"""
+Module which declares some RGB color constants used by the game.
+
+Attributes: Available Constants
+
+    WHITE (tuple[int, int, int]): (255, 255, 255).
+
+    BLACK (tuple[int, int, int]): (0, 0, 0).
+
+    RED (tuple[int, int, int]): (255, 0, 0).
+
+    PLAYER_ATTACK (tuple[int, int, int]): (244, 244, 244).
+
+    ENEMY_ATTACK (tuple[int, int, int]): (255, 192, 192).
+
+    NEED_TARGET (tuple[int, int, int]): (63, 255, 255).
+
+    STATUS_EFFECT_APPLIED (tuple[int, int, int]): (63, 255, 63).
+
+    PLAYER_DIE (tuple[int, int, int]): (255, 48, 48).
+
+    ENEMY_DIE (tuple[int, int, int]): (255, 160, 48).
+
+    WELCOME_TEXT (tuple[int, int, int]): (32, 160, 255).
+
+    BAR_TEXT (tuple[int, int, int]): (255, 255, 255).
+
+    BAR_FILLED (tuple[int, int, int]): (0, 96, 0).
+
+    BAR_EMPTY (tuple[int, int, int]): (64, 16, 16).
+
+    INVALID (tuple[int, int, int]): (255, 255, 0).
+
+    IMPOSSIBLE (tuple[int, int, int]): (128, 128, 128)
+
+    ERROR (tuple[int, int, int]): (255, 64, 64).
+
+    HEALTH_RECOVERED (tuple[int, int, int]): (0, 255, 0).
+"""
+
 WHITE = (0xFF, 0xFF, 0xFF)
 BLACK = (0x0, 0x0, 0x0)
 RED = (0xFF, 0x0, 0x0)

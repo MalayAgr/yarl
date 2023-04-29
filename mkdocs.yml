@@ -94,6 +94,8 @@ nav:
       - "yarl/event_handlers/index.md"
     - Interface:
       - "message_log": "yarl/interface/message_log.md"
+      - "color": "yarl/interface/color.md"
+      - "renderer": "yarl/interface/renderer.md"
 
 
 extra:

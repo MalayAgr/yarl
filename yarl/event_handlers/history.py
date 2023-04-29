@@ -37,13 +37,13 @@ class HistoryEventHandler(SwitchableEventHandler):
         )
 
         # Render the message log using the cursor parameter.
-        render_messages(
+        self.engine.message_log.render(
             console=log_console,
             x=1,
             y=1,
             width=log_console.width - 2,
             height=log_console.height - 2,
-            messages=self.engine.message_log.messages[: self.cursor + 1],
+            limit=self.cursor + 1
         )
 
         log_console.blit(console, 3, 3)
