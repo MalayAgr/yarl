@@ -79,7 +79,7 @@ watch:
   - yarl/
 
 extra_css:
-  - "custom_css.css"
+  - stylesheets/custom.css
 
 
 nav:
