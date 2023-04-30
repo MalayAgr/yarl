@@ -161,3 +161,4 @@ cython_debug/
 !build.spec
 *.db
 .markdownlint.*
+!_templates/
