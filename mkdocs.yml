@@ -48,8 +48,6 @@ markdown_extensions:
   - pymdownx.snippets
   - pymdownx.tabbed:
       alternate_style: true
-  - pymdownx.snippets
-  - markdown.extensions.attr_list
 
 
 plugins:
@@ -81,19 +79,21 @@ watch:
   - yarl/
 
 extra_css:
-  - "custom_css.css"
+  - stylesheets/custom.css
 
 
 nav:
  - Introduction: index.md
- - Download: download.md
+ - Download and Install: download-install.md
  - Reference:
     - "reference.md"
-    - Map generation:
-        - "yarl/map_generator.md"
-        - "yarl/rectangular_room.md"
+    - "mapgen": "yarl/mapgen.md"
     - Event handlers:
       - "yarl/event_handlers/index.md"
+    - Interface:
+      - "yarl/interface/message_log.md"
+      - "yarl/interface/color.md"
+      - "yarl/interface/renderer.md"
 
 
 extra:

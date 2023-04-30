@@ -6,7 +6,7 @@ from yarl.event_handlers import GameOverEventHandler, MainGameEventHandler
 from yarl.gamemap import GameMap
 from yarl.interface import color
 from yarl.interface.message_log import MessageLog
-from yarl.interface.renderer import render_health_bar
+from yarl.interface.renderer import render_fraction_bar
 from yarl.logger import logger
 
 if TYPE_CHECKING:
@@ -52,11 +52,15 @@ class Engine:
 
         self.message_log.render(console=console, x=21, y=45, width=40, height=5)
 
-        render_health_bar(
+        render_fraction_bar(
             console=console,
-            current_hp=self.player.fighter.hp,
-            max_hp=self.player.fighter.max_hp,
+            current_value=self.player.fighter.hp,
+            max_value=self.player.fighter.max_hp,
             total_width=20,
+            string_prefix="HP",
+            x=0,
+            y=45,
+            height=1,
         )
 
         x, y = self.mouse_location

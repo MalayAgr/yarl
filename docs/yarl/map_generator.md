@@ -1,3 +1,0 @@
-# MapGenerator
-
-::: yarl.mapgen.MapGenerator

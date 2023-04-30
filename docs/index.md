@@ -1,17 +1,9 @@
-# Welcome to MkDocs
+# Welcome to YARL - Yet Another RogueLike
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+Get ready to dive into the dark dungeons and fight terrifying monsters.
 
-## Commands
+Use magic spells :magic_wand:, throw fireballs :comet: and slay deadly Orcs :japanese_ogre: as you delve deeper into the :skull: **Dungeon of Doom** :skull:.
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
+Be wary of the dark. And tread carefully. :fontawesome-solid-ghost:
 
-## Project layout
-
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+[Download](./download-install.md) the game now to get started!

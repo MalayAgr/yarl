@@ -1,3 +1,0 @@
-# RectangularRoom
-
-::: yarl.mapgen.RectangularRoom
