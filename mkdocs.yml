@@ -91,9 +91,9 @@ nav:
     - Event handlers:
       - "yarl/event_handlers/index.md"
     - Interface:
-      - "message_log": "yarl/interface/message_log.md"
-      - "color": "yarl/interface/color.md"
-      - "renderer": "yarl/interface/renderer.md"
+      - "yarl/interface/message_log.md"
+      - "yarl/interface/color.md"
+      - "yarl/interface/renderer.md"
 
 
 extra:

@@ -1,4 +1,4 @@
-# Message Logging
+# Message Log
 
 ::: yarl.interface.message_log.Message
 
