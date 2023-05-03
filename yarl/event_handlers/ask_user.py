@@ -7,13 +7,16 @@ from tcod.event import KeyDown, MouseButtonDown
 from yarl.exceptions import ImpossibleActionException
 from yarl.interface import color
 
-from .switachable import SwitchableEventHandler
+from .event_handler import EventHandler
 
 if TYPE_CHECKING:
     from yarl.actions import Action
+    from yarl.engine import Engine
+
+    from .base_event_handler import ActionOrHandlerType, BaseEventHandler
 
 
-class AskUserEventHandler(SwitchableEventHandler):
+class AskUserEventHandler(EventHandler):
     IGNORE_KEYS: set[int] = {
         tcod.event.K_LSHIFT,
         tcod.event.K_RSHIFT,
@@ -23,18 +26,22 @@ class AskUserEventHandler(SwitchableEventHandler):
         tcod.event.K_RALT,
     }
 
-    def on_exit(self) -> Action | None:
-        self.switch_event_handler()
-        return None
+    def __init__(
+        self, engine: Engine, old_event_handler: BaseEventHandler | None = None
+    ) -> None:
+        super().__init__(engine)
+        self.old_event_handler = old_event_handler
+
+    def on_exit(self) -> ActionOrHandlerType | None:
+        return self.old_event_handler or self
 
     def handle_action(self, action: Action) -> None:
         try:
             super().handle_action(action=action)
-            self.switch_event_handler()
         except ImpossibleActionException as e:
             self.engine.add_to_message_log(text=e.args[0], fg=color.IMPOSSIBLE)
 
-    def ev_keydown(self, event: KeyDown) -> Action | None:
+    def ev_keydown(self, event: KeyDown) -> ActionOrHandlerType | None:
         key = event.sym
 
         if key in self.IGNORE_KEYS:
@@ -42,5 +49,5 @@ class AskUserEventHandler(SwitchableEventHandler):
 
         return self.on_exit()
 
-    def ev_mousebuttondown(self, event: MouseButtonDown) -> Action | None:
+    def ev_mousebuttondown(self, event: MouseButtonDown) -> ActionOrHandlerType | None:
         return self.on_exit()

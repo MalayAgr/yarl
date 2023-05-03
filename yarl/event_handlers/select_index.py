@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 import tcod
 from tcod.console import Console
 from tcod.event import KeyDown
+from yarl.event_handlers.base_event_handler import ActionOrHandlerType
 from yarl.exceptions import ImpossibleActionException
 from yarl.interface import color
 
@@ -15,7 +16,7 @@ if TYPE_CHECKING:
     from yarl.actions import Action
     from yarl.engine import Engine
 
-    from .event_handler import EventHandler
+    from .base_event_handler import BaseEventHandler
 
 
 class SelectIndexEventHandler(AskUserEventHandler):
@@ -23,9 +24,10 @@ class SelectIndexEventHandler(AskUserEventHandler):
     MESSAGE: str = ""
 
     def __init__(
-        self, engine: Engine, old_event_handler: EventHandler | None = None
+        self, engine: Engine, old_event_handler: BaseEventHandler | None = None
     ) -> None:
         super().__init__(engine=engine, old_event_handler=old_event_handler)
+
         self.mouse_location: tuple[int, int] = (
             self.engine.player.x,
             self.engine.player.y,
@@ -49,9 +51,7 @@ class SelectIndexEventHandler(AskUserEventHandler):
         except ImpossibleActionException as e:
             self.engine.add_to_message_log(text=e.args[0], fg=color.IMPOSSIBLE)
 
-        self.switch_event_handler()
-
-    def ev_keydown(self, event: KeyDown) -> Action | None:
+    def ev_keydown(self, event: KeyDown) -> ActionOrHandlerType | None:
         key = event.sym
 
         if key in self.CONFIRM_KEYS:
@@ -81,11 +81,15 @@ class SelectIndexEventHandler(AskUserEventHandler):
 
         return super().ev_keydown(event=event)
 
-    def ev_mousebuttondown(self, event: tcod.event.MouseButtonDown) -> Action | None:
+    def ev_mousebuttondown(
+        self, event: tcod.event.MouseButtonDown
+    ) -> ActionOrHandlerType | None:
         if not self.engine.game_map.in_bounds(*event.tile) or event.button != 1:
             return super().ev_mousebuttondown(event=event)
 
         return self.on_index_selected(event.tile)
 
-    def on_index_selected(self, location: tuple[int, int]) -> Action | None:
+    def on_index_selected(
+        self, location: tuple[int, int]
+    ) -> ActionOrHandlerType | None:
         raise NotImplementedError()

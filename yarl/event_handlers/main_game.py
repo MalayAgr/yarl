@@ -25,6 +25,8 @@ if TYPE_CHECKING:
     from yarl.actions import Action
     from yarl.engine import Engine
 
+    from .base_event_handler import ActionOrHandlerType
+
 
 class MainGameEventHandler(EventHandler):
     def __init__(self, engine: Engine, turn_interval: float = 0.5) -> None:
@@ -32,7 +34,7 @@ class MainGameEventHandler(EventHandler):
         self.turn_interval = turn_interval
         self.last_turn_time = time.monotonic()
 
-    def process_key(self, key: KeySym) -> Action | None:
+    def process_key(self, key: KeySym) -> ActionOrHandlerType | None:
         engine, entity = self.engine, self.engine.player
 
         if key in MOVE_KEYS:
@@ -49,29 +51,23 @@ class MainGameEventHandler(EventHandler):
                 logger.info("Game exited.")
                 raise SystemExit()
             case tcod.event.K_v:
-                engine.event_handler = HistoryEventHandler(
-                    engine=engine, old_event_handler=self
-                )
+                return HistoryEventHandler(engine=engine, old_event_handler=self)
             case tcod.event.K_i:
-                engine.event_handler = InventoryEventHandler(
-                    engine=engine, old_event_handler=self
-                )
+                return InventoryEventHandler(engine=engine, old_event_handler=self)
             case tcod.event.K_d:
-                engine.event_handler = InventoryDropEventHandler(
-                    engine=engine, old_event_handler=self
-                )
+                return InventoryDropEventHandler(engine=engine, old_event_handler=self)
             case tcod.event.K_c:
                 items = engine.game_map.get_items(x=entity.x, y=entity.y)
 
                 if not items or len(items) == 1:
-                    engine.event_handler = ConsumeSingleItemEventHandler(
+                    return ConsumeSingleItemEventHandler(
                         engine=engine,
                         item=None if not items else list(items)[0],
                         old_event_handler=self,
                     )
                     return None
 
-                engine.event_handler = SelectItemToConsumeEventHandler(
+                return SelectItemToConsumeEventHandler(
                     engine=engine, old_event_handler=self
                 )
             case tcod.event.K_e:
@@ -84,13 +80,11 @@ class MainGameEventHandler(EventHandler):
                         items=list(items),
                     )
 
-                engine.event_handler = SelectItemToPickupEventHandler(
+                return SelectItemToPickupEventHandler(
                     engine=engine, old_event_handler=self
                 )
             case tcod.event.K_SLASH:
-                engine.event_handler = LookEventHandler(
-                    engine=engine, old_event_handler=self
-                )
+                return LookEventHandler(engine=engine, old_event_handler=self)
 
         return None
 
@@ -111,6 +105,14 @@ class MainGameEventHandler(EventHandler):
             except ImpossibleActionException as e:
                 pass
 
+    def post_events(self, context: Context) -> None:
+        current_time = time.monotonic()
+
+        if current_time - self.last_turn_time > self.turn_interval:
+            self.handle_enemy_turns()
+            self.engine.update_fov()
+            self.last_turn_time = current_time
+
     def handle_events(self, context: Context) -> None:
         super().handle_events(context=context)
 
@@ -122,18 +124,14 @@ class MainGameEventHandler(EventHandler):
             self.last_turn_time = current_time
 
     def handle_action(self, action: Action) -> None:
-        try:
-            super().handle_action(action=action)
-            self.engine.update_fov()
-        except ImpossibleActionException as e:
-            logger.error(e.args[0])
-            self.engine.add_to_message_log(text=e.args[0], fg=color.IMPOSSIBLE)
-        finally:
-            self.handle_enemy_turns()
-            self.engine.update_fov()
-            self.last_turn_time = time.monotonic()
+        super().handle_action(action=action)
 
-    def ev_keydown(self, event: KeyDown) -> Action | None:
+        self.handle_enemy_turns()
+        self.last_turn_time = time.monotonic()
+
+        self.engine.update_fov()
+
+    def ev_keydown(self, event: KeyDown) -> ActionOrHandlerType | None:
         key = event.sym
 
         return self.process_key(key=key)

@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from yarl.event_handlers.base_event_handler import ActionOrHandlerType
+
 from .select_index import SelectIndexEventHandler
 
 if TYPE_CHECKING:
@@ -9,6 +11,5 @@ if TYPE_CHECKING:
 
 
 class LookEventHandler(SelectIndexEventHandler):
-    def on_index_selected(self, location: tuple[int, int]) -> Action | None:
-        self.switch_event_handler()
-        return None
+    def on_index_selected(self, location: tuple[int, int]) -> ActionOrHandlerType | None:
+        return self.old_event_handler

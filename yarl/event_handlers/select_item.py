@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from yarl.engine import Engine
     from yarl.entity import Item
 
-    from .event_handler import EventHandler
+    from .base_event_handler import ActionOrHandlerType, BaseEventHandler
 
 
 class SelectItemEventHandler(AskUserEventHandler):
@@ -23,7 +23,7 @@ class SelectItemEventHandler(AskUserEventHandler):
         self,
         engine: Engine,
         items: Iterable[Item],
-        old_event_handler: EventHandler | None = None,
+        old_event_handler: BaseEventHandler | None = None,
     ) -> None:
         super().__init__(engine=engine, old_event_handler=old_event_handler)
         self.items = list(items)
@@ -69,7 +69,7 @@ class SelectItemEventHandler(AskUserEventHandler):
             key = chr(ord("a") + i)
             console.print(x=x + 1, y=y + 1 + i, string=f"({key}) {item.name}")
 
-    def ev_keydown(self, event: tcod.event.KeyDown) -> Action | None:
+    def ev_keydown(self, event: tcod.event.KeyDown) -> ActionOrHandlerType | None:
         key = event.sym
         index = key - tcod.event.K_a
 
@@ -80,11 +80,11 @@ class SelectItemEventHandler(AskUserEventHandler):
             last_key = chr(ord("a") + len(self.items) - 1)
             text = f"Invalid entry. Press keys from (a) to ({last_key})."
             self.engine.add_to_message_log(text=text, fg=color.INVALID)
-            return None
+            return self
 
         item = self.items[index]
         return self.on_item_selected(item)
 
-    def on_item_selected(self, item: Item) -> Action | None:
+    def on_item_selected(self, item: Item) -> ActionOrHandlerType | None:
         """Called when the user selects a valid item."""
         raise NotImplementedError()
