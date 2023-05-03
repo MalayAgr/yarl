@@ -1403,6 +1403,18 @@ files = [
 ]
 
 [[package]]
+name = "types-pillow"
+version = "9.5.0.2"
+description = "Typing stubs for Pillow"
+category = "dev"
+optional = false
+python-versions = "*"
+files = [
+    {file = "types-Pillow-9.5.0.2.tar.gz", hash = "sha256:b3f9f621f259566c19c1deca21901017c8b1e3e200ed2e49e0a2d83c0a5175db"},
+    {file = "types_Pillow-9.5.0.2-py3-none-any.whl", hash = "sha256:58fdebd0ffa2353ecccdd622adde23bce89da5c0c8b96c34f2d1eca7b7e42d0e"},
+]
+
+[[package]]
 name = "typing-extensions"
 version = "4.5.0"
 description = "Backported and Experimental Type Hints for Python 3.7+"
@@ -1559,4 +1571,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.12"
-content-hash = "8e17ae9aad2fe306035c89c663d35e84553a374091ea55d5c882b35ea3a12971"
+content-hash = "01454c80a0f6513af8f437d935f331bc55c10a233d320f9268f3216bd5021d2e"
