@@ -13,10 +13,9 @@ from yarl.exceptions import ImpossibleActionException
 from yarl.interface import color
 
 if TYPE_CHECKING:
-    from yarl.actions import Action
     from yarl.engine import Engine
     from yarl.entity import ActiveEntity, Item
-    from yarl.event_handlers import EventHandler
+    from yarl.event_handlers import ActionOrHandlerType, BaseEventHandler
 
 
 class Consumable:
@@ -26,12 +25,12 @@ class Consumable:
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}()"
 
-    def get_action(
+    def get_action_or_handler(
         self,
         entity: ActiveEntity,
         engine: Engine,
-        old_event_handler: EventHandler | None = None,
-    ) -> Action | None:
+        old_event_handler: BaseEventHandler | None = None,
+    ) -> ActionOrHandlerType:
         return ConsumeItemAction(engine=engine, entity=entity, item=self.item)
 
     def consume(self, consumer: ActiveEntity) -> None:
@@ -138,16 +137,15 @@ class ConfusionSpell(Consumable):
     def __str__(self) -> str:
         return self.__repr__()
 
-    def get_action(
+    def get_action_or_handler(
         self,
         entity: ActiveEntity,
         engine: Engine,
-        old_event_handler: EventHandler | None = None,
-    ) -> Action | None:
-        engine.event_handler = SelectTargetIndexEventHandler(
+        old_event_handler: BaseEventHandler | None = None,
+    ) -> ActionOrHandlerType:
+        return SelectTargetIndexEventHandler(
             engine=engine, item=self.item, old_event_handler=old_event_handler
         )
-        return None
 
     def activate(
         self,
@@ -200,19 +198,18 @@ class FireballScroll(Consumable):
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(power={self.power}, radius={self.radius})"
 
-    def get_action(
+    def get_action_or_handler(
         self,
         entity: ActiveEntity,
         engine: Engine,
-        old_event_handler: EventHandler | None = None,
-    ) -> Action | None:
-        engine.event_handler = SelectTargetAreaEventHandler(
+        old_event_handler: BaseEventHandler | None = None,
+    ) -> ActionOrHandlerType:
+        return SelectTargetAreaEventHandler(
             engine=engine,
             radius=self.radius,
             item=self.item,
             old_event_handler=old_event_handler,
         )
-        return None
 
     def activate(
         self,

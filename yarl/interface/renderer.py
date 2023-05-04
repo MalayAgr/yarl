@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import textwrap
-from typing import Iterable, Protocol, Reversible
+from typing import Iterable
 
 from tcod.console import Console
 from yarl.interface import color

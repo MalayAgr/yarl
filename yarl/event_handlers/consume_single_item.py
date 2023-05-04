@@ -2,28 +2,28 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from tcod.context import Context
+from tcod.event import Event
 from yarl.exceptions import ImpossibleActionException
 from yarl.interface import color
 
-from .switachable import SwitchableEventHandler
+from .base_event_handler import BaseEventHandler
+from .event_handler import EventHandler
 
 if TYPE_CHECKING:
     from yarl.actions import Action
     from yarl.engine import Engine
     from yarl.entity import Item
 
-    from .event_handler import EventHandler
 
-
-class ConsumeSingleItemEventHandler(SwitchableEventHandler):
+class ConsumeSingleItemEventHandler(EventHandler):
     def __init__(
         self,
         engine: Engine,
         item: Item | None = None,
-        old_event_handler: EventHandler | None = None,
+        old_event_handler: BaseEventHandler | None = None,
     ) -> None:
-        super().__init__(engine, old_event_handler)
+        super().__init__(engine)
+        self.old_event_handler = old_event_handler
         self.item = item
 
     def handle_action(self, action: Action) -> None:
@@ -32,23 +32,21 @@ class ConsumeSingleItemEventHandler(SwitchableEventHandler):
         except ImpossibleActionException as e:
             self.engine.add_to_message_log(text=e.args[0], fg=color.IMPOSSIBLE)
 
-        self.switch_event_handler()
-
-    def handle_events(self, context: Context) -> None:
+    def handle_event(self, event: Event) -> BaseEventHandler:
         item = self.item
 
         if item is None:
             self.engine.add_to_message_log("There is no item to consume.")
-            self.switch_event_handler()
-            return
+            return self.old_event_handler or self
 
-        action = item.consumable.get_action(
+        action_or_handler = item.consumable.get_action_or_handler(
             entity=self.engine.player,
             engine=self.engine,
             old_event_handler=self.old_event_handler,
         )
 
-        if action is None:
-            return
+        if isinstance(action_or_handler, BaseEventHandler):
+            return action_or_handler
 
-        self.handle_action(action=action)
+        self.handle_action(action=action_or_handler)
+        return self.old_event_handler or self

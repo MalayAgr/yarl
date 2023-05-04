@@ -4,26 +4,26 @@ from typing import TYPE_CHECKING
 
 import tcod
 from tcod.event import KeyDown
-from yarl.interface.renderer import render_messages
 
 from .controls import HISTORY_SCROLL_KEYS
-from .switachable import SwitchableEventHandler
+from .event_handler import EventHandler
 
 if TYPE_CHECKING:
     from yarl.engine import Engine
 
-    from .event_handler import EventHandler
+    from .base_event_handler import ActionOrHandlerType
 
 
-class HistoryEventHandler(SwitchableEventHandler):
+class HistoryEventHandler(EventHandler):
     """Print the history on a larger window which can be navigated."""
 
     def __init__(
         self, engine: Engine, old_event_handler: EventHandler | None = None
     ) -> None:
-        super().__init__(engine=engine, old_event_handler=old_event_handler)
+        super().__init__(engine=engine)
         self.log_length = len(engine.message_log.messages)
         self.cursor = self.log_length - 1
+        self.old_event_handler = old_event_handler
 
     def on_render(self, console: tcod.Console) -> None:
         super().on_render(console)  # Draw the main state as the background.
@@ -43,12 +43,12 @@ class HistoryEventHandler(SwitchableEventHandler):
             y=1,
             width=log_console.width - 2,
             height=log_console.height - 2,
-            limit=self.cursor + 1
+            limit=self.cursor + 1,
         )
 
         log_console.blit(console, 3, 3)
 
-    def ev_keydown(self, event: KeyDown) -> None:
+    def ev_keydown(self, event: KeyDown) -> ActionOrHandlerType | None:
         # Fancy conditional movement to make it feel right.
         if event.sym in HISTORY_SCROLL_KEYS:
             adjust = HISTORY_SCROLL_KEYS[event.sym]
@@ -70,4 +70,6 @@ class HistoryEventHandler(SwitchableEventHandler):
             self.cursor = self.log_length - 1  # Move directly to the last message.
 
         else:
-            self.switch_event_handler()
+            return self.old_event_handler
+
+        return None

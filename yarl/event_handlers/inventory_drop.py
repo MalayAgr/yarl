@@ -10,11 +10,10 @@ from yarl.actions import DropItemFromInventoryAction
 from .select_item import SelectItemEventHandler
 
 if TYPE_CHECKING:
-    from yarl.actions import Action
     from yarl.engine import Engine
     from yarl.entity import Item
 
-    from .event_handler import EventHandler
+    from .base_event_handler import ActionOrHandlerType, BaseEventHandler
 
 
 class InventoryDropEventHandler(SelectItemEventHandler):
@@ -23,7 +22,7 @@ class InventoryDropEventHandler(SelectItemEventHandler):
     def __init__(
         self,
         engine: Engine,
-        old_event_handler: EventHandler | None = None,
+        old_event_handler: BaseEventHandler | None = None,
     ) -> None:
         inventory = engine.player.inventory
 
@@ -47,7 +46,7 @@ class InventoryDropEventHandler(SelectItemEventHandler):
 
         console.print(x=x + 1, y=y + 1 + len(self.items), string="(d) Drop everything")
 
-    def ev_keydown(self, event: KeyDown) -> Action | None:
+    def ev_keydown(self, event: KeyDown) -> ActionOrHandlerType | None:
         key = event.sym
 
         if key == tcod.event.K_d:
@@ -57,7 +56,7 @@ class InventoryDropEventHandler(SelectItemEventHandler):
 
         return super().ev_keydown(event)
 
-    def on_item_selected(self, item: Item) -> Action | None:
+    def on_item_selected(self, item: Item) -> ActionOrHandlerType | None:
         return DropItemFromInventoryAction(
             engine=self.engine, entity=self.engine.player, items=[item]
         )
