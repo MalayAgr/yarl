@@ -60,7 +60,7 @@ class MainMenuEventHandler(BaseEventHandler):
                 bg_blend=tcod.BKGND_ALPHA(64),
             )
 
-    def ev_keydown(self, event: KeyDown) -> ActionOrHandlerType:
+    def ev_keydown(self, event: KeyDown) -> ActionOrHandlerType | None:
         key = event.sym
 
         if key in (tcod.event.K_q, tcod.event.K_ESCAPE):

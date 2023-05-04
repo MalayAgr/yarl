@@ -50,7 +50,7 @@ class AskUserEventHandler(EventHandler):
 
         if action_or_handler is not None:
             self.handle_action(action=action_or_handler)
-            return self.old_event_handler
+            return self.old_event_handler or self
 
         return self
 

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, Any
+
 import tcod
 from tcod.console import Console
 from tcod.context import Context
@@ -10,6 +12,9 @@ from yarl.event_handlers import MainMenuEventHandler
 from yarl.exceptions import QuitWithoutSavingException
 from yarl.interface import color
 from yarl.mapgen import MapGenerator
+
+if TYPE_CHECKING:
+    from yarl.event_handlers import BaseEventHandler
 
 
 class Game:
@@ -40,8 +45,24 @@ class Game:
         self.player_inventory_capacity = player_inventory_capacity
 
     @classmethod
-    def fromdict(self, params: dict[str, int]) -> Game:
-        pass
+    def fromdict(cls, params: dict[str, Any]) -> Game:
+        expected = {
+            "map_width",
+            "map_height",
+            "room_min_size",
+            "max_enemies_per_room",
+            "max_items_per_room",
+            "player_max_hp",
+            "player_defense",
+            "player_power",
+            "player_speed",
+            "player_attack_speed",
+            "player_inventory_capacity",
+        }
+
+        params = {key: value for key, value in params.items() if key in expected}
+
+        return cls(**params)
 
     def get_engine(self) -> Engine:
         player = ActiveEntity(
@@ -83,7 +104,7 @@ class Game:
     ) -> None:
         engine = self.get_engine()
 
-        handler = MainMenuEventHandler(
+        handler: BaseEventHandler = MainMenuEventHandler(
             engine=engine, background_image_path=main_menu_background_path
         )
 
