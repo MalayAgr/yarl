@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import lzma
+import os
+import pickle
 from typing import TYPE_CHECKING, Any
 
 import tcod
@@ -8,7 +11,7 @@ from tcod.context import Context
 from yarl.components.ai import AttackingAI
 from yarl.engine import Engine
 from yarl.entity import ActiveEntity
-from yarl.event_handlers import MainMenuEventHandler
+from yarl.event_handlers import EventHandler, MainMenuEventHandler
 from yarl.exceptions import QuitWithoutSavingException
 from yarl.interface import color
 from yarl.mapgen import MapGenerator
@@ -22,6 +25,7 @@ class Game:
         self,
         map_width: int,
         map_height: int,
+        game_save_path: str = "",
         room_min_size: int = 5,
         max_enemies_per_room: int = 2,
         max_items_per_room: int = 2,
@@ -34,6 +38,7 @@ class Game:
     ) -> None:
         self.map_width = map_width
         self.map_height = map_height
+        self.game_save_path = game_save_path
         self.room_min_size = room_min_size
         self.max_enemies_per_room = max_enemies_per_room
         self.max_items_per_room = max_items_per_room
@@ -99,6 +104,17 @@ class Game:
 
         return engine
 
+    def save_game(self, engine: Engine, filename: str) -> None:
+        if not os.path.isdir(self.game_save_path):
+            os.makedirs(self.game_save_path)
+
+        path = os.path.join(self.game_save_path, filename)
+
+        data = lzma.compress(pickle.dumps(engine))
+
+        with open(path, "wb") as f:
+            f.write(data)
+
     def run(
         self, console: Console, context: Context, main_menu_background_path: str
     ) -> None:
@@ -123,8 +139,7 @@ class Game:
         except QuitWithoutSavingException:
             raise
         except SystemExit:  # Save and quit.
-            # TODO: Add the save function here
-            raise
+            self.save_game(engine=engine, filename="save.sav")
         except Exception:  # Save on any other unexpected exception.
             # TODO: Add the save function here
             raise
