@@ -5,8 +5,9 @@ from typing import TYPE_CHECKING
 
 import tcod
 from tcod.context import Context
-from tcod.event import KeyDown, KeySym
+from tcod.event import Event, KeyDown, KeySym
 from yarl.actions import BumpAction, PickupAction, WaitAction
+from yarl.event_handlers.base_event_handler import BaseEventHandler
 from yarl.exceptions import ImpossibleActionException
 from yarl.interface import color
 from yarl.logger import logger
@@ -14,6 +15,7 @@ from yarl.logger import logger
 from .consume_single_item import ConsumeSingleItemEventHandler
 from .controls import MOVE_KEYS, WAIT_KEYS
 from .event_handler import EventHandler
+from .game_over import GameOverEventHandler
 from .history import HistoryEventHandler
 from .inventory import InventoryEventHandler
 from .inventory_drop import InventoryDropEventHandler
@@ -65,7 +67,6 @@ class MainGameEventHandler(EventHandler):
                         item=None if not items else list(items)[0],
                         old_event_handler=self,
                     )
-                    return None
 
                 return SelectItemToConsumeEventHandler(
                     engine=engine, old_event_handler=self
@@ -101,7 +102,6 @@ class MainGameEventHandler(EventHandler):
 
             try:
                 entity.ai.perform()
-                logger.info(f"{entity.name} took a turn.")
             except ImpossibleActionException as e:
                 pass
 
@@ -113,15 +113,20 @@ class MainGameEventHandler(EventHandler):
             self.engine.update_fov()
             self.last_turn_time = current_time
 
-    def handle_events(self, context: Context) -> None:
-        super().handle_events(context=context)
+    def handle_event(self, event: Event) -> BaseEventHandler:
+        action_or_state = self.dispatch(event)
 
-        current_time = time.monotonic()
+        if isinstance(action_or_state, BaseEventHandler):
+            return action_or_state
 
-        if current_time - self.last_turn_time > self.turn_interval:
-            self.handle_enemy_turns()
-            self.engine.update_fov()
-            self.last_turn_time = current_time
+        if action_or_state is not None:
+            self.handle_action(action=action_or_state)
+
+            if not self.engine.player.is_alive:
+                logger.info("Player is dead. Switching to game over state.")
+                return GameOverEventHandler(self.engine)
+
+        return self
 
     def handle_action(self, action: Action) -> None:
         super().handle_action(action=action)

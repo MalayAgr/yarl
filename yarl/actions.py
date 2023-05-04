@@ -90,7 +90,6 @@ class MeleeAction(DirectedAction):
         if not target_alive:
             if target is self.engine.player:
                 self.engine.add_to_message_log(text="You died!", fg=color.PLAYER_DIE)
-                self.engine.handle_player_death()
             else:
                 self.engine.add_to_message_log(
                     text=f"{target.name} is dead!", fg=color.ENEMY_DIE

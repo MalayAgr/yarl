@@ -3,7 +3,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import tcod
-from tcod.event import KeyDown, MouseButtonDown
+from tcod.event import Event, KeyDown, MouseButtonDown
+from yarl.event_handlers.base_event_handler import BaseEventHandler
 from yarl.exceptions import ImpossibleActionException
 from yarl.interface import color
 
@@ -40,6 +41,18 @@ class AskUserEventHandler(EventHandler):
             super().handle_action(action=action)
         except ImpossibleActionException as e:
             self.engine.add_to_message_log(text=e.args[0], fg=color.IMPOSSIBLE)
+
+    def handle_event(self, event: Event) -> BaseEventHandler:
+        action_or_handler = self.dispatch(event=event)
+
+        if isinstance(action_or_handler, BaseEventHandler):
+            return action_or_handler
+
+        if action_or_handler is not None:
+            self.handle_action(action=action_or_handler)
+            return self.old_event_handler
+
+        return self
 
     def ev_keydown(self, event: KeyDown) -> ActionOrHandlerType | None:
         key = event.sym

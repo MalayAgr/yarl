@@ -6,7 +6,6 @@ import tcod
 from tcod.console import Console
 from tcod.event import KeyDown
 from yarl.actions import DropItemFromInventoryAction
-from yarl.entity import Item
 
 from .select_item import SelectItemEventHandler
 

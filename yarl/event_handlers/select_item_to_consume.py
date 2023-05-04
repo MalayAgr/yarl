@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from yarl.entity import Item
-
 from .consume_single_item import ConsumeSingleItemEventHandler
 from .select_item import SelectItemEventHandler
 

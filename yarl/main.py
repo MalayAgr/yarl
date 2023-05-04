@@ -1,14 +1,16 @@
 import os
 import time
+import traceback
 
 import tcod
 from yarl.components.ai import AttackingAI
 from yarl.engine import Engine
 from yarl.entity import ActiveEntity
+from yarl.event_handlers import EventHandler, MainGameEventHandler
+from yarl.exceptions import QuitWithoutSavingException
 from yarl.interface import color
-from yarl.mapgen import MapGenerator
-
 from yarl.logger import logger
+from yarl.mapgen import MapGenerator
 
 
 def get_tileset_path() -> str:
@@ -59,6 +61,8 @@ def main() -> None:
         fg=color.WELCOME_TEXT,
     )
 
+    handler = MainGameEventHandler(engine=engine)
+
     with tcod.context.new(
         columns=screen_width,
         rows=screen_height,
@@ -70,12 +74,25 @@ def main() -> None:
 
         root_console = tcod.Console(width=screen_width, height=screen_height, order="F")
 
-        while True:
-            root_console.clear()
-            engine.event_handler.on_render(console=root_console)
-            context.present(root_console)
+        try:
+            while True:
+                root_console.clear()
+                handler.on_render(console=root_console)
+                context.present(root_console)
 
-            engine.event_handler.handle_events(context=context)
+                for event in tcod.event.get():
+                    context.convert_event(event)
+                    handler = handler.handle_event(event=event)
+
+                handler.post_events(context=context)
+        except QuitWithoutSavingException:
+            raise
+        except SystemExit:  # Save and quit.
+            # TODO: Add the save function here
+            raise
+        except Exception:  # Save on any other unexpected exception.
+            # TODO: Add the save function here
+            raise
 
 
 if __name__ == "__main__":

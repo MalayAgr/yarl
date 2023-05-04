@@ -55,16 +55,6 @@ class EventHandler(BaseEventHandler):
 
         return self
 
-    def handle_events(self, context: Context) -> None:
-        for event in tcod.event.get():
-            context.convert_event(event)
-            action = self.dispatch(event)
-
-            if action is None:
-                continue
-
-            self.handle_action(action=action)
-
     def ev_mousemotion(self, event: tcod.event.MouseMotion) -> None:
         if self.engine.game_map.in_bounds(event.tile.x, event.tile.y):
             self.engine.mouse_location = event.tile.x, event.tile.y

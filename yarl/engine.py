@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from yarl.event_handlers import GameOverEventHandler, MainGameEventHandler
 from yarl.gamemap import GameMap
 from yarl.interface import color
 from yarl.interface.message_log import MessageLog
@@ -12,7 +11,6 @@ from yarl.logger import logger
 if TYPE_CHECKING:
     from tcod.console import Console
     from yarl.entity import ActiveEntity
-    from yarl.event_handlers import EventHandler
 
 
 class Engine:
@@ -21,7 +19,7 @@ class Engine:
         game_map: GameMap,
         player: ActiveEntity,
     ) -> None:
-        self.event_handler: EventHandler = MainGameEventHandler(engine=self)
+        # self.event_handler: EventHandler = MainGameEventHandler(engine=self)
         self.player = player
         self.game_map = game_map
         self.mouse_location: tuple[int, int] = (0, 0)
@@ -43,9 +41,9 @@ class Engine:
     def update_fov(self) -> None:
         self.game_map.update_fov(player=self.player)
 
-    def handle_player_death(self) -> None:
-        logger.info("Player has died. Switching to game over state.")
-        self.event_handler = GameOverEventHandler(engine=self)
+    # def handle_player_death(self) -> None:
+    #     logger.info("Player has died. Switching to game over state.")
+    #     self.event_handler = GameOverEventHandler(engine=self)
 
     def render(self, console: Console) -> None:
         self.game_map.render(console=console)
