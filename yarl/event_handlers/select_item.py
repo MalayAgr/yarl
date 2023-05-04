@@ -9,7 +9,6 @@ from yarl.interface import color
 from .ask_user import AskUserEventHandler
 
 if TYPE_CHECKING:
-    from yarl.actions import Action
     from yarl.engine import Engine
     from yarl.entity import Item
 

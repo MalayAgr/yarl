@@ -15,11 +15,6 @@ def get_background_img_path() -> str:
     return os.path.join(parent, "assets", "menu_background.png")
 
 
-def get_game_save_path() -> str:
-    parent = os.path.dirname(os.path.dirname(__file__))
-    return os.path.join(parent, "saved_games")
-
-
 def main() -> None:
     screen_width = 100
     screen_height = 50
@@ -35,7 +30,7 @@ def main() -> None:
         title="Yet Another RogueLike",
         vsync=True,
     ) as context:
-        game = Game(map_width=80, map_height=43, game_save_path=get_game_save_path())
+        game = Game(map_width=80, map_height=43)
 
         logger.info("Game started.")
 

@@ -2,10 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from yarl.interface import color
 
 if TYPE_CHECKING:
-    from yarl.engine import Engine
     from yarl.entity import ActiveEntity, Item
 
 

@@ -5,10 +5,9 @@ from typing import TYPE_CHECKING
 
 import tcod
 from tcod.console import Console
-from tcod.context import Context
-from tcod.event import Event
+from tcod.event import Event, Quit
 from yarl.actions import Action
-from yarl.event_handlers.base_event_handler import BaseEventHandler
+from yarl.event_handlers import ActionOrHandlerType, BaseEventHandler
 from yarl.exceptions import ImpossibleActionException
 from yarl.interface import color
 
@@ -59,5 +58,5 @@ class EventHandler(BaseEventHandler):
         if self.engine.game_map.in_bounds(event.tile.x, event.tile.y):
             self.engine.mouse_location = event.tile.x, event.tile.y
 
-    def ev_quit(self, event: tcod.event.Quit) -> Action | None:
+    def ev_quit(self, event: Quit) -> ActionOrHandlerType | None:
         raise SystemExit()

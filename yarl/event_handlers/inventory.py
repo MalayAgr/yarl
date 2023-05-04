@@ -12,7 +12,6 @@ if TYPE_CHECKING:
     from .base_event_handler import ActionOrHandlerType, BaseEventHandler
 
 
-
 class InventoryEventHandler(SelectItemEventHandler):
     title = "Select an item to use from the inventory."
 

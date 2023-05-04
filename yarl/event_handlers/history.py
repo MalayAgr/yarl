@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING
 
 import tcod
 from tcod.event import KeyDown
-from yarl.interface.renderer import render_messages
 
 from .controls import HISTORY_SCROLL_KEYS
 from .event_handler import EventHandler

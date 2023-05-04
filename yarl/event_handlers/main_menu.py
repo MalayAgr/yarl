@@ -12,8 +12,10 @@ from yarl.event_handlers import (
 )
 from yarl.interface import color
 
+from .popup_message import PopupMessageEventHandler
+from .utils import load_game
+
 if TYPE_CHECKING:
-    from yarl.actions import Action
     from yarl.engine import Engine
 
 
@@ -67,7 +69,12 @@ class MainMenuEventHandler(BaseEventHandler):
             raise SystemExit()
 
         if key == tcod.event.K_c:
-            pass
+            try:
+                engine = load_game()
+                return MainGameEventHandler(engine=engine)
+            except FileNotFoundError:
+                msg = "No saved game to load."
+                return PopupMessageEventHandler(parent_handler=self, message=msg)
 
         if key == tcod.event.K_n:
             return MainGameEventHandler(engine=self.engine)

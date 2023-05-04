@@ -13,7 +13,6 @@ from yarl.exceptions import ImpossibleActionException
 from yarl.interface import color
 
 if TYPE_CHECKING:
-    from yarl.actions import Action
     from yarl.engine import Engine
     from yarl.entity import ActiveEntity, Item
     from yarl.event_handlers import ActionOrHandlerType, BaseEventHandler

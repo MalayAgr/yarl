@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from tcod.context import Context
 from tcod.event import Event
 from yarl.exceptions import ImpossibleActionException
 from yarl.interface import color

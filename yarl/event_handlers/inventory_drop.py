@@ -10,7 +10,6 @@ from yarl.actions import DropItemFromInventoryAction
 from .select_item import SelectItemEventHandler
 
 if TYPE_CHECKING:
-    from yarl.actions import Action
     from yarl.engine import Engine
     from yarl.entity import Item
 

@@ -105,13 +105,19 @@ class MainGameEventHandler(EventHandler):
             except ImpossibleActionException as e:
                 pass
 
-    def post_events(self, context: Context) -> None:
+    def post_events(self, context: Context) -> BaseEventHandler:
         current_time = time.monotonic()
 
         if current_time - self.last_turn_time > self.turn_interval:
             self.handle_enemy_turns()
             self.engine.update_fov()
             self.last_turn_time = current_time
+
+            if not self.engine.player.is_alive:
+                logger.info("Player is dead. Switching to game over state.")
+                return GameOverEventHandler(self.engine)
+
+        return self
 
     def handle_event(self, event: Event) -> BaseEventHandler:
         action_or_state = self.dispatch(event)
