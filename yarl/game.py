@@ -124,4 +124,6 @@ class Game:
         except QuitWithoutSavingException:
             raise
         except (SystemExit, Exception):
-            save_game(engine=engine)
+            if hasattr(handler, "engine"):
+                engine_to_save: Engine = handler.engine
+                save_game(engine=engine_to_save)
