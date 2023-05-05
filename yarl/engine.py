@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from yarl.gamemap import GameMap
 from yarl.interface import color
 from yarl.interface.message_log import MessageLog
 from yarl.interface.renderer import render_fraction_bar
@@ -10,16 +9,18 @@ from yarl.interface.renderer import render_fraction_bar
 if TYPE_CHECKING:
     from tcod.console import Console
     from yarl.entity import ActiveEntity
+    from yarl.map import GameWorld
 
 
 class Engine:
     def __init__(
         self,
-        game_map: GameMap,
+        game_world: GameWorld,
         player: ActiveEntity,
     ) -> None:
         self.player = player
-        self.game_map = game_map
+        self.game_world = game_world
+        self.game_map = self.game_world.generate_floor(player=player)
         self.mouse_location: tuple[int, int] = (0, 0)
         self.message_log = MessageLog()
 
@@ -30,6 +31,9 @@ class Engine:
 
     def __str__(self) -> str:
         return self.__repr__()
+
+    def new_floor(self):
+        self.game_map = self.game_world.generate_floor(player=self.player)
 
     def add_to_message_log(
         self, text: str, fg: tuple[int, int, int] = color.WHITE, *, stack: bool = True

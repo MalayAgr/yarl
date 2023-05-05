@@ -8,7 +8,7 @@ from yarl.interface import color
 if TYPE_CHECKING:
     from yarl.engine import Engine
     from yarl.entity import ActiveEntity, Entity, Item
-    from yarl.gamemap import GameMap
+    from yarl.map.gamemap import GameMap
 
 
 class Action:
@@ -243,3 +243,17 @@ class DropItemFromInventoryAction(Action):
                 raise ImpossibleActionException(
                     f"{item.name} is not part of your inventory."
                 )
+
+
+class TakeStairsAction(Action):
+    def perform(self) -> None:
+        x, y = self.entity.x, self.entity.y
+
+        if (x, y) == self.game_map.stairs_location:
+            self.engine.new_floor()
+            self.engine.add_to_message_log(
+                "You descend the staircase.", fg=color.DESCEND
+            )
+            return
+
+        raise ImpossibleActionException("There are no stairs here.")

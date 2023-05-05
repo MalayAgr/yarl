@@ -42,6 +42,16 @@ class GameMap:
     def __str__(self) -> str:
         return self.__repr__()
 
+    def reset(self) -> None:
+        self.entities = set()
+        self._entity_map = defaultdict(set)
+
+        self.tiles = np.full(
+            (self.width, self.height), fill_value=tiles.wall, order="F"
+        )
+        self.visible = np.full((self.width, self.height), fill_value=False, order="F")
+        self.explored = np.full((self.width, self.height), fill_value=False, order="F")
+
     def in_bounds(self, x: int, y: int) -> bool:
         """Return True if x and y are inside of the bounds of this map."""
         return 0 <= x < self.width and 0 <= y < self.height

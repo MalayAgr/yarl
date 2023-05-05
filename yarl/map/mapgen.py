@@ -29,7 +29,7 @@ import yarl.tile_types as tiles
 from tcod.bsp import BSP
 from yarl.entity import ENTITY_FACTORY, ITEM_FACTORY, ActiveEntity, Entity, Item
 from yarl.exceptions import CollisionWithEntityException
-from yarl.gamemap import GameMap
+from yarl.map.gamemap import GameMap
 
 
 class RectangularRoom:
@@ -340,6 +340,7 @@ class MapGenerator:
         Returns:
             Generated game map.
         """
+        self.game_map.reset()
         bsp = self.create_bsp_tree()
 
         self.traverse_bsp(bsp)
