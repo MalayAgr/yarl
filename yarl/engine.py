@@ -19,11 +19,11 @@ class Engine:
         player: ActiveEntity,
     ) -> None:
         self.player = player
-        self.game_world = game_world
-        self.game_map = self.game_world.generate_floor(player=player)
         self.mouse_location: tuple[int, int] = (0, 0)
         self.message_log = MessageLog()
 
+        self.game_world = game_world
+        self.game_map = self.game_world.generate_floor(player=player)
         self.update_fov()
 
     def __repr__(self) -> str:

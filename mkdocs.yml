@@ -87,7 +87,8 @@ nav:
  - Download and Install: download-install.md
  - Reference:
     - "reference.md"
-    - "mapgen": "yarl/mapgen.md"
+    - Map:
+      - "yarl/map/mapgen.md"
     - Event handlers:
       - "yarl/event_handlers/index.md"
     - Interface:
