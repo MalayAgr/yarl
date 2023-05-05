@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from yarl.interface import color
 from yarl.interface.message_log import MessageLog
-from yarl.interface.renderer import render_fraction_bar
+from yarl.interface.renderer import render_fraction_bar, render_text_at_location
 
 if TYPE_CHECKING:
     from tcod.console import Console
@@ -57,6 +57,13 @@ class Engine:
             x=0,
             y=45,
             height=1,
+        )
+
+        render_text_at_location(
+            console=console,
+            text=f"Dungeon Level: {self.game_world.current_floor}",
+            x=0,
+            y=47,
         )
 
         x, y = self.mouse_location
