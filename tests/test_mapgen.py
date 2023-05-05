@@ -8,8 +8,7 @@ import yarl.tile_types as tiles
 from pytest import MonkeyPatch
 from tcod.bsp import BSP
 from yarl.entity import Entity
-from yarl.gamemap import GameMap
-from yarl.mapgen import MapGenerator, RectangularRoom
+from yarl.map import GameMap, MapGenerator, RectangularRoom
 
 
 @pytest.fixture

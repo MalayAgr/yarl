@@ -9,7 +9,7 @@ from yarl.components.ai import AttackingAI
 from yarl.components.consumable import Consumable
 from yarl.entity import ActiveEntity, Entity, Item
 from yarl.exceptions import CollisionWithEntityException
-from yarl.gamemap import GameMap
+from yarl.map import GameMap
 
 
 @pytest.fixture
