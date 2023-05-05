@@ -172,3 +172,5 @@ class TestMapGenerator:
         max_items = len(map_generator.rooms) * map_generator.max_items_per_room
 
         assert len(tuple(game_map.items)) <= max_items
+
+        assert game_map.tiles[game_map.stairs_location] == tiles.stair

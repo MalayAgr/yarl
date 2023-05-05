@@ -27,6 +27,7 @@ class GameMap:
         self.pov_radius = pov_radius
         self.entities = set(entities)
         self._entity_map: defaultdict[tuple[int, int], set[Entity]] = defaultdict(set)
+        self.stairs_location = (0, 0)
 
         for entity in entities:
             self._entity_map[(entity.x, entity.y)].add(entity)

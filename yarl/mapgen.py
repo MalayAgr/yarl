@@ -345,16 +345,19 @@ class MapGenerator:
         self.traverse_bsp(bsp)
 
         player_room = None
+        rooms = self.rooms
 
         if player is not None:
             player_room = random.choice(self.rooms)
             x, y = player_room.center
             self.game_map.add_entity(entity=player, x=x, y=y)
+            rooms = [room for room in rooms if room is not player_room]
 
-        for room in self.rooms:
-            if room is player_room:
-                continue
-
+        for room in rooms:
             self.place_objects(room=room)
+
+        stairs_room = random.choice(rooms)
+        self.game_map.tiles[stairs_room.center] = tiles.stair
+        self.game_map.stairs_location = stairs_room.center
 
         return self.game_map
