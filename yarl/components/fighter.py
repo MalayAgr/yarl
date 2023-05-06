@@ -3,21 +3,21 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from yarl.components import RenderOrder
+from yarl.entity import ActiveEntity
 
-if TYPE_CHECKING:
-    from yarl.entity import ActiveEntity
+from .base_component import Component
 
 
-class Fighter:
+class Fighter(Component[ActiveEntity]):
     def __init__(
         self,
-        entity: ActiveEntity,
         max_hp: int,
         defense: int,
         power: int,
         attack_speed: int,
+        entity: ActiveEntity | None = None,
     ) -> None:
-        self.entity = entity
+        super().__init__(owner=entity)
         self.max_hp = max_hp
         self._hp = max_hp
         self.defense = defense
@@ -68,8 +68,11 @@ class Fighter:
         self.hp -= damage
 
     def die(self) -> None:
-        self.entity.char = "%"
-        self.entity.color = (191, 0, 0)
-        self.entity.blocking = False
-        self.entity.ai = None
-        self.entity.render_order = RenderOrder.CORPSE
+        if self.owner is None:
+            raise AttributeError("No active entity has been assigned to the fighter.")
+
+        self.owner.char = "%"
+        self.owner.color = (191, 0, 0)
+        self.owner.blocking = False
+        self.owner.ai = None
+        self.owner.render_order = RenderOrder.CORPSE

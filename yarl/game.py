@@ -7,12 +7,12 @@ from tcod.console import Console
 from tcod.context import Context
 from yarl.components.ai import AttackingAI
 from yarl.engine import Engine
-from yarl.entity import ActiveEntity
 from yarl.event_handlers import MainMenuEventHandler
-from yarl.event_handlers.utils import save_game
 from yarl.exceptions import QuitWithoutSavingException
+from yarl.factories import player_factory
 from yarl.interface import color
 from yarl.map import GameWorld
+from yarl.utils import save_game
 
 if TYPE_CHECKING:
     from yarl.event_handlers import BaseEventHandler
@@ -66,11 +66,7 @@ class Game:
         return cls(**params)
 
     def get_engine(self) -> Engine:
-        player = ActiveEntity(
-            char="@",
-            color=(255, 255, 255),
-            name="Player",
-            ai_cls=AttackingAI,
+        player = player_factory(
             max_hp=self.player_max_hp,
             defense=self.player_defense,
             power=self.player_power,

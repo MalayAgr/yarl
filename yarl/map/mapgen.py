@@ -27,8 +27,9 @@ from typing import Iterator
 import tcod
 import yarl.tile_types as tiles
 from tcod.bsp import BSP
-from yarl.entity import ENTITY_FACTORY, ITEM_FACTORY, ActiveEntity, Entity, Item
+from yarl.entity import ActiveEntity, Entity, Item
 from yarl.exceptions import CollisionWithEntityException
+from yarl.factories import ENTITY_FACTORY, ITEM_FACTORY
 from yarl.map.gamemap import GameMap
 
 

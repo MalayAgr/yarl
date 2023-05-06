@@ -69,16 +69,18 @@ class TestActiveEntity:
     @pytest.fixture
     def entity(self) -> ActiveEntity:
         return ActiveEntity(
+            fighter=Fighter(
+                max_hp=30,
+                defense=2,
+                attack_speed=10,
+                power=5,
+            ),
             x=1,
             y=5,
             char="@",
             color=(255, 255, 255),
             name="Active Entity",
-            max_hp=30,
-            defense=2,
-            power=5,
             speed=8,
-            attack_speed=10,
         )
 
     def test_initialization(self, entity: ActiveEntity) -> None:
@@ -95,9 +97,7 @@ class TestActiveEntity:
         assert entity.ai is None
         assert entity.path == deque()
         assert entity.inventory is None
-
-        assert hasattr(entity, "fighter")
-        assert isinstance(entity.fighter, Fighter)
+        assert entity.fighter.owner is entity
 
     def test_move(self, entity: ActiveEntity) -> None:
         entity.move(dx=2, dy=3)
@@ -160,7 +160,7 @@ class TestItem:
     @pytest.fixture
     def item(self) -> Item:
         return Item(
-            consumable_cls=Consumable,
+            consumable=Consumable(),
             x=1,
             y=5,
             char="@",
@@ -176,5 +176,4 @@ class TestItem:
         assert item.name == "Item"
         assert item.blocking is False
         assert item.render_order is RenderOrder.ITEM
-        assert item.consumable_cls is Consumable
-        assert item.consumable.item is item
+        assert item.consumable.owner is item

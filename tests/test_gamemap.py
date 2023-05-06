@@ -7,6 +7,7 @@ import yarl.tile_types as tiles
 from tcod.map import compute_fov
 from yarl.components.ai import AttackingAI
 from yarl.components.consumable import Consumable
+from yarl.components.fighter import Fighter
 from yarl.entity import ActiveEntity, Entity, Item
 from yarl.exceptions import CollisionWithEntityException
 from yarl.map import GameMap
@@ -14,12 +15,20 @@ from yarl.map import GameMap
 
 @pytest.fixture
 def active_entities() -> list[ActiveEntity]:
-    return [ActiveEntity(x=i, y=i, ai_cls=AttackingAI) for i in range(10, 20)]
+    return [
+        ActiveEntity(
+            fighter=Fighter(max_hp=10, defense=1, power=1, attack_speed=1),
+            x=i,
+            y=i,
+            ai_cls=AttackingAI,
+        )
+        for i in range(10, 20)
+    ]
 
 
 @pytest.fixture
 def items() -> list[Item]:
-    return [Item(consumable_cls=Consumable, x=i, y=i) for i in range(20, 30)]
+    return [Item(consumable=Consumable(), x=i, y=i) for i in range(20, 30)]
 
 
 @pytest.fixture
@@ -239,7 +248,7 @@ def test_get_items_empty(game_map: GameMap) -> None:
 
 
 def test_get_items_single_item(game_map: GameMap) -> None:
-    item = Item(consumable_cls=Consumable)
+    item = Item(consumable=Consumable)
 
     game_map.add_entity(entity=item, x=50, y=40)
 
@@ -247,8 +256,8 @@ def test_get_items_single_item(game_map: GameMap) -> None:
 
 
 def test_get_items_multiple_items(game_map: GameMap) -> None:
-    item1 = Item(consumable_cls=Consumable)
-    item2 = Item(consumable_cls=Consumable)
+    item1 = Item(consumable=Consumable)
+    item2 = Item(consumable=Consumable)
 
     game_map.add_entity(entity=item1, x=50, y=22, check_blocking=False)
     game_map.add_entity(entity=item2, x=50, y=22, check_blocking=False)

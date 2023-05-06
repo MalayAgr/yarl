@@ -6,9 +6,9 @@ import tcod
 from tcod.event import KeyDown, Quit
 from yarl.exceptions import QuitWithoutSavingException
 from yarl.logger import logger
+from yarl.utils import clear_game
 
 from .event_handler import EventHandler
-from .utils import clear_game
 
 if TYPE_CHECKING:
     from .base_event_handler import ActionOrHandlerType
