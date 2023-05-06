@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from yarl.components import RenderOrder
 from yarl.entity import ActiveEntity
+from yarl.utils import RenderOrder
 
 from .base_component import Component
 

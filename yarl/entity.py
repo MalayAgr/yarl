@@ -5,13 +5,10 @@ import math
 from collections import deque
 from typing import TYPE_CHECKING, Iterable, Type, TypeVar
 
-from yarl.components import RenderOrder
+from yarl.utils import RenderOrder
 
 if TYPE_CHECKING:
-    from yarl.components.ai import BaseAI
-    from yarl.components.consumable import Consumable
-    from yarl.components.fighter import Fighter
-    from yarl.components.inventory import Inventory
+    from yarl.components import BaseAI, Consumable, Fighter, Inventory
 
 T = TypeVar("T", bound="Entity")
 

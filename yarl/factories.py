@@ -1,12 +1,12 @@
-from yarl.components.ai import AttackingAI
-from yarl.components.consumable import (
+from yarl.components import (
+    AttackingAI,
     ConfusionSpell,
+    Fighter,
     FireballScroll,
     HealingPotion,
+    Inventory,
     LightningScroll,
 )
-from yarl.components.fighter import Fighter
-from yarl.components.inventory import Inventory
 from yarl.entity import ActiveEntity, Item
 
 

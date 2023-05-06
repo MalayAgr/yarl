@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, Any
 import tcod
 from tcod.console import Console
 from tcod.context import Context
-from yarl.components.ai import AttackingAI
 from yarl.engine import Engine
 from yarl.event_handlers import MainMenuEventHandler
 from yarl.exceptions import QuitWithoutSavingException

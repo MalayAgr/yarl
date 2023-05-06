@@ -4,12 +4,9 @@ from typing import Iterable
 from unittest.mock import Mock
 
 import pytest
-from yarl.components.ai import AttackingAI, BaseAI
-from yarl.components.consumable import Consumable
-from yarl.components.fighter import Fighter
-from yarl.components.inventory import Inventory
-from yarl.components.render_order import RenderOrder
+from yarl.components import AttackingAI, Consumable, Fighter, Inventory
 from yarl.entity import ActiveEntity, Entity, Item
+from yarl.utils import RenderOrder
 
 
 class TestEntity:
@@ -144,7 +141,7 @@ class TestActiveEntity:
         assert entity.is_alive is True
 
     def test_ai(self, entity: ActiveEntity) -> None:
-        ai = Mock(spec=BaseAI)
+        ai = Mock(spec=AttackingAI)
         entity.ai = ai
 
         assert entity._ai is ai
