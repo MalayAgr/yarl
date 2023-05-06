@@ -137,9 +137,16 @@ class LightningScroll(Consumable):
 
         self.consume(consumer=consumer)
 
-        if not target.is_alive:
-            engine.add_to_message_log(text=f"{target.name} is dead!")
-            target.name = f"remains of {target.name}"
+        if target.is_alive:
+            return
+
+        engine.add_to_message_log(text=f"{target.name} is dead!")
+        target.name = f"remains of {target.name}"
+
+        if consumer is engine.player:
+            xp = target.level.xp_given
+            consumer.level.add_xp(xp=xp)
+            engine.message_log.add_message(f"You gain {xp} experience points.")
 
 
 class ConfusionSpell(Consumable):
@@ -267,6 +274,8 @@ class FireballScroll(Consumable):
         if not targets:
             raise ImpossibleActionException("There are no targets in the radius.")
 
+        xp = 0
+
         for target in targets:
             distance = target.distance(x=x, y=y)
             damage = max(0, self.power - target.fighter.defense)
@@ -283,5 +292,17 @@ class FireballScroll(Consumable):
             engine.add_to_message_log(
                 f"{target.name} is engulfed in a fiery explosion, taking {damage} damage!"
             )
+
+            if target.is_alive:
+                continue
+
+            engine.add_to_message_log(text=f"{target.name} is dead!")
+            target.name = f"remains of {target.name}"
+
+            xp += target.level.xp_given
+
+        if consumer is engine.player:
+            consumer.level.add_xp(xp=xp)
+            engine.message_log.add_message(f"You gain {xp} experience points.")
 
         self.consume(consumer=consumer)

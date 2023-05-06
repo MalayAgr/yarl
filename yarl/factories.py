@@ -5,6 +5,7 @@ from yarl.components import (
     FireballScroll,
     HealingPotion,
     Inventory,
+    Level,
     LightningScroll,
 )
 from yarl.entity import ActiveEntity, Item
@@ -21,10 +22,12 @@ def player_factory(
     fighter = Fighter(
         max_hp=max_hp, defense=defense, power=power, attack_speed=attack_speed
     )
+
     inventory = Inventory(capacity=inventory_capacity)
 
     return ActiveEntity(
         fighter=fighter,
+        level=Level(level_up_base=35),
         char="@",
         color=(255, 255, 255),
         name="Player",
@@ -37,6 +40,7 @@ def player_factory(
 ENTITY_FACTORY = {
     0.8: ActiveEntity(
         fighter=Fighter(max_hp=10, defense=0, power=3, attack_speed=10),
+        level=Level(xp_given=35),
         char="O",
         color=(63, 127, 63),
         name="Orc",
@@ -44,6 +48,7 @@ ENTITY_FACTORY = {
     ),
     0.2: ActiveEntity(
         fighter=Fighter(max_hp=16, defense=1, power=4, attack_speed=10),
+        level=Level(xp_given=200),
         char="T",
         color=(0, 127, 0),
         name="Troll",

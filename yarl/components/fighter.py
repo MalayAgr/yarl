@@ -49,6 +49,18 @@ class Fighter(Component[ActiveEntity]):
         self.attack_wait = max(0, self.attack_wait - 1)
         return self.attack_wait > 0
 
+    def increase_max_hp(self, amount: int, increase_hp: bool = False) -> None:
+        self.max_hp += amount
+
+        if increase_hp is True:
+            self.hp += amount
+
+    def increase_power(self, amount: int) -> None:
+        self.power += amount
+
+    def increase_defense(self, amount: int) -> None:
+        self.defense += amount
+
     def attack(self, target: ActiveEntity) -> tuple[bool, int]:
         damage = max(0, self.power - target.fighter.defense)
 

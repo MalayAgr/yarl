@@ -19,7 +19,9 @@ from .game_over import GameOverEventHandler
 from .history import HistoryEventHandler
 from .inventory import InventoryEventHandler
 from .inventory_drop import InventoryDropEventHandler
+from .level_up import LevelUpEventHandler
 from .look import LookEventHandler
+from .player_info import PlayerInfoEventHandler
 from .select_item_to_consume import SelectItemToConsumeEventHandler
 from .select_item_to_pick_up import SelectItemToPickupEventHandler
 
@@ -91,6 +93,8 @@ class MainGameEventHandler(EventHandler):
                     return TakeStairsAction(
                         engine=self.engine, entity=self.engine.player
                     )
+            case tcod.event.K_p:
+                return PlayerInfoEventHandler(engine=engine, old_event_handler=self)
 
         return None
 
@@ -136,6 +140,10 @@ class MainGameEventHandler(EventHandler):
             if not self.engine.player.is_alive:
                 logger.info("Player is dead. Switching to game over state.")
                 return GameOverEventHandler(self.engine)
+
+            if self.engine.player.level.can_level_up:
+                logger.info("Player has leveled up.")
+                return LevelUpEventHandler(engine=self.engine, old_event_handler=self)
 
         return self
 

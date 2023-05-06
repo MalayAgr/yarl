@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Iterable, Type, TypeVar
 from yarl.utils import RenderOrder
 
 if TYPE_CHECKING:
-    from yarl.components import BaseAI, Consumable, Fighter, Inventory
+    from yarl.components import BaseAI, Consumable, Fighter, Inventory, Level
 
 T = TypeVar("T", bound="Entity")
 
@@ -58,6 +58,7 @@ class ActiveEntity(Entity):
     def __init__(
         self,
         fighter: Fighter,
+        level: Level,
         x: int = 0,
         y: int = 0,
         char: str = "?",
@@ -83,6 +84,9 @@ class ActiveEntity(Entity):
 
         self.fighter = fighter
         self.fighter.owner = self
+
+        self.level = level
+        self.level.owner = self
 
         self.inventory = inventory if inventory is not None else None
 

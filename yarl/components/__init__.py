@@ -1,4 +1,4 @@
-from .ai import AttackingAI
+from .ai import AttackingAI, BaseAI
 from .consumable import (
     ConfusionSpell,
     Consumable,
@@ -8,3 +8,4 @@ from .consumable import (
 )
 from .fighter import Fighter
 from .inventory import Inventory
+from .level import Level

@@ -59,11 +59,22 @@ class Engine:
             height=1,
         )
 
+        render_fraction_bar(
+            console=console,
+            current_value=self.player.level.current_xp,
+            max_value=self.player.level.xp_to_next_level,
+            total_width=20,
+            string_prefix=f"Level {self.player.level.current_level}",
+            x=0,
+            y=47,
+            height=1,
+        )
+
         render_text_at_location(
             console=console,
             text=f"Dungeon Level: {self.game_world.current_floor}",
             x=0,
-            y=47,
+            y=49,
         )
 
         x, y = self.mouse_location

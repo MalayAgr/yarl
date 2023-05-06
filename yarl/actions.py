@@ -78,24 +78,30 @@ class MeleeAction(DirectedAction):
             color.PLAYER_ATTACK if entity is self.engine.player else color.ENEMY_ATTACK
         )
 
-        if damage <= 0:
-            self.engine.add_to_message_log(
-                f"{attack_desc} but does no damage.", fg=attack_color
-            )
-        else:
-            self.engine.add_to_message_log(
-                f"{attack_desc} for {damage} hit points.", fg=attack_color
-            )
+        msg = (
+            f"{attack_desc} but does no damage."
+            if damage <= 0
+            else f"{attack_desc} for {damage} hit points."
+        )
 
-        if not target_alive:
-            if target is self.engine.player:
-                self.engine.add_to_message_log(text="You died!", fg=color.PLAYER_DIE)
-            else:
-                self.engine.add_to_message_log(
-                    text=f"{target.name} is dead!", fg=color.ENEMY_DIE
-                )
+        self.engine.add_to_message_log(text=msg, fg=attack_color)
 
-            target.name = f"remains of {target.name}"
+        if target_alive:
+            return
+
+        msg, fg = (
+            ("You died!", color.PLAYER_DIE)
+            if target is self.engine.player
+            else (f"{target.name} is dead!", color.ENEMY_DIE)
+        )
+
+        self.engine.add_to_message_log(text=msg, fg=fg)
+        target.name = f"remains of {target.name}"
+
+        if entity is self.engine.player:
+            xp = target.level.xp_given
+            entity.level.add_xp(xp=xp)
+            self.engine.add_to_message_log(text=f"You gain {xp} experience points.")
 
 
 class MovementAction(DirectedAction):
