@@ -7,6 +7,7 @@ import pytest
 from yarl.components.ai import AttackingAI, BaseAI
 from yarl.components.consumable import Consumable
 from yarl.components.fighter import Fighter
+from yarl.components.inventory import Inventory
 from yarl.components.render_order import RenderOrder
 from yarl.entity import ActiveEntity, Entity, Item
 
@@ -98,6 +99,26 @@ class TestActiveEntity:
         assert entity.path == deque()
         assert entity.inventory is None
         assert entity.fighter.owner is entity
+
+    def test_initialization_inventory(self, entity: ActiveEntity) -> None:
+        entity = ActiveEntity(
+            fighter=Fighter(
+                max_hp=30,
+                defense=2,
+                attack_speed=10,
+                power=5,
+            ),
+            x=1,
+            y=5,
+            char="@",
+            color=(255, 255, 255),
+            name="Active Entity",
+            speed=8,
+            inventory=Inventory(capacity=5),
+        )
+
+        assert entity.inventory is not None
+        assert entity.inventory.owner is entity
 
     def test_move(self, entity: ActiveEntity) -> None:
         entity.move(dx=2, dy=3)
