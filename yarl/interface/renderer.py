@@ -113,3 +113,9 @@ def render_messages(
 
             if height <= 0:
                 return
+
+
+def render_text_at_location(
+    console: Console, text: str, x: int, y: int, fg: tuple[int, int, int] = color.WHITE
+) -> None:
+    console.print(x=x, y=y, string=text, fg=fg)

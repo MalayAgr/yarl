@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 
 from yarl.actions import ConsumeItemAction
 from yarl.components.ai import ConfusionAI
+from yarl.entity import Item
 from yarl.event_handlers import (
     SelectTargetAreaEventHandler,
     SelectTargetIndexEventHandler,
@@ -12,15 +13,17 @@ from yarl.event_handlers import (
 from yarl.exceptions import ImpossibleActionException
 from yarl.interface import color
 
+from .base_component import Component
+
 if TYPE_CHECKING:
     from yarl.engine import Engine
-    from yarl.entity import ActiveEntity, Item
+    from yarl.entity import ActiveEntity
     from yarl.event_handlers import ActionOrHandlerType, BaseEventHandler
 
 
-class Consumable:
-    def __init__(self, item: Item):
-        self.item = item
+class Consumable(Component[Item]):
+    def __init__(self, item: Item | None = None):
+        super().__init__(owner=item)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}()"
@@ -31,13 +34,19 @@ class Consumable:
         engine: Engine,
         old_event_handler: BaseEventHandler | None = None,
     ) -> ActionOrHandlerType:
-        return ConsumeItemAction(engine=engine, entity=entity, item=self.item)
+        if self.owner is None:
+            raise AttributeError("No item has been assigned to the consumable.")
+
+        return ConsumeItemAction(engine=engine, entity=entity, item=self.owner)
 
     def consume(self, consumer: ActiveEntity) -> None:
-        if consumer.inventory is None or self.item not in consumer.inventory.items:
+        if self.owner is None:
+            raise AttributeError("No item has been assigned to the consumable.")
+
+        if consumer.inventory is None or self.owner not in consumer.inventory.items:
             return
 
-        consumer.inventory.remove_item(item=self.item)
+        consumer.inventory.remove_item(item=self.owner)
 
     def activate(
         self,
@@ -49,8 +58,9 @@ class Consumable:
 
 
 class HealingPotion(Consumable):
-    def __init__(self, item: Item, amount: int):
+    def __init__(self, amount: int, item: Item | None = None):
         super().__init__(item=item)
+
         self.amount = amount
 
     def __repr__(self) -> str:
@@ -65,10 +75,13 @@ class HealingPotion(Consumable):
         engine: Engine,
         target_location: tuple[int, int] | None = None,
     ) -> None:
+        if self.owner is None:
+            raise AttributeError("No item has been assigned to the consumable.")
+
         recovered = consumer.fighter.heal(amount=self.amount)
 
         if recovered > 0:
-            text = f"You consume the {self.item.name}, and recover {recovered} amount of HP!"
+            text = f"You consume the {self.owner.name}, and recover {recovered} amount of HP!"
             engine.add_to_message_log(text=text, fg=color.HEALTH_RECOVERED)
             self.consume(consumer=consumer)
         else:
@@ -76,7 +89,7 @@ class HealingPotion(Consumable):
 
 
 class LightningScroll(Consumable):
-    def __init__(self, item: Item, power: int, range: int):
+    def __init__(self, power: int, range: int, item: Item | None = None):
         super().__init__(item)
         self.power = power
         self.range = range
@@ -90,6 +103,9 @@ class LightningScroll(Consumable):
         engine: Engine,
         target_location: tuple[int, int] | None = None,
     ) -> None:
+        if self.owner is None:
+            raise AttributeError("No item has been assigned to the consumable.")
+
         game_map = engine.game_map
 
         entities = {
@@ -121,13 +137,20 @@ class LightningScroll(Consumable):
 
         self.consume(consumer=consumer)
 
-        if not target.is_alive:
-            engine.add_to_message_log(text=f"{target.name} is dead!")
-            target.name = f"remains of {target.name}"
+        if target.is_alive:
+            return
+
+        engine.add_to_message_log(text=f"{target.name} is dead!")
+        target.name = f"remains of {target.name}"
+
+        if consumer is engine.player:
+            xp = target.level.xp_given
+            consumer.level.add_xp(xp=xp)
+            engine.message_log.add_message(f"You gain {xp} experience points.")
 
 
 class ConfusionSpell(Consumable):
-    def __init__(self, item: Item, number_of_turns: int):
+    def __init__(self, number_of_turns: int, item: Item | None = None):
         super().__init__(item=item)
         self.number_of_turns = number_of_turns
 
@@ -143,8 +166,11 @@ class ConfusionSpell(Consumable):
         engine: Engine,
         old_event_handler: BaseEventHandler | None = None,
     ) -> ActionOrHandlerType:
+        if self.owner is None:
+            raise AttributeError("No item has been assigned to the consumable.")
+
         return SelectTargetIndexEventHandler(
-            engine=engine, item=self.item, old_event_handler=old_event_handler
+            engine=engine, item=self.owner, old_event_handler=old_event_handler
         )
 
     def activate(
@@ -153,8 +179,11 @@ class ConfusionSpell(Consumable):
         engine: Engine,
         target_location: tuple[int, int] | None = None,
     ) -> None:
+        if self.owner is None:
+            raise AttributeError("No item has been assigned to the consumable.")
+
         if target_location is None:
-            raise ImpossibleActionException(f"No target selected for {self.item.name}")
+            raise ImpossibleActionException(f"No target selected for {self.owner.name}")
 
         x, y = target_location
         game_map = engine.game_map
@@ -190,7 +219,7 @@ class ConfusionSpell(Consumable):
 
 
 class FireballScroll(Consumable):
-    def __init__(self, item: Item, power: int, radius: int):
+    def __init__(self, power: int, radius: int, item: Item | None = None):
         super().__init__(item)
         self.power = power
         self.radius = radius
@@ -204,10 +233,13 @@ class FireballScroll(Consumable):
         engine: Engine,
         old_event_handler: BaseEventHandler | None = None,
     ) -> ActionOrHandlerType:
+        if self.owner is None:
+            raise AttributeError("No item has been assigned to the consumable.")
+
         return SelectTargetAreaEventHandler(
             engine=engine,
             radius=self.radius,
-            item=self.item,
+            item=self.owner,
             old_event_handler=old_event_handler,
         )
 
@@ -217,8 +249,13 @@ class FireballScroll(Consumable):
         engine: Engine,
         target_location: tuple[int, int] | None = None,
     ) -> None:
+        if self.owner is None:
+            raise AttributeError("No item has been assigned to the consumable.")
+
         if target_location is None:
-            raise ImpossibleActionException(f"No target selected for {self.item.name}.")
+            raise ImpossibleActionException(
+                f"No target selected for {self.owner.name}."
+            )
 
         x, y = target_location
         game_map = engine.game_map
@@ -237,6 +274,8 @@ class FireballScroll(Consumable):
         if not targets:
             raise ImpossibleActionException("There are no targets in the radius.")
 
+        xp = 0
+
         for target in targets:
             distance = target.distance(x=x, y=y)
             damage = max(0, self.power - target.fighter.defense)
@@ -253,5 +292,17 @@ class FireballScroll(Consumable):
             engine.add_to_message_log(
                 f"{target.name} is engulfed in a fiery explosion, taking {damage} damage!"
             )
+
+            if target.is_alive:
+                continue
+
+            engine.add_to_message_log(text=f"{target.name} is dead!")
+            target.name = f"remains of {target.name}"
+
+            xp += target.level.xp_given
+
+        if consumer is engine.player:
+            consumer.level.add_xp(xp=xp)
+            engine.message_log.add_message(f"You gain {xp} experience points.")
 
         self.consume(consumer=consumer)

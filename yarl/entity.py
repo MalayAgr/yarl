@@ -5,20 +5,10 @@ import math
 from collections import deque
 from typing import TYPE_CHECKING, Iterable, Type, TypeVar
 
-from yarl.components import RenderOrder
-from yarl.components.ai import AttackingAI
-from yarl.components.consumable import (
-    ConfusionSpell,
-    FireballScroll,
-    HealingPotion,
-    LightningScroll,
-)
-from yarl.components.fighter import Fighter
-from yarl.components.inventory import Inventory
+from yarl.utils import RenderOrder
 
 if TYPE_CHECKING:
-    from yarl.components.ai import BaseAI
-    from yarl.components.consumable import Consumable
+    from yarl.components import BaseAI, Consumable, Fighter, Inventory, Level
 
 T = TypeVar("T", bound="Entity")
 
@@ -67,18 +57,16 @@ class Entity:
 class ActiveEntity(Entity):
     def __init__(
         self,
+        fighter: Fighter,
+        level: Level,
         x: int = 0,
         y: int = 0,
         char: str = "?",
         color: tuple[int, int, int] = (255, 255, 255),
         name: str = "<Unnamed>",
         ai_cls: Type[BaseAI] | None = None,
-        max_hp: int = 100,
-        defense: int = 2,
-        power: int = 5,
+        inventory: Inventory | None = None,
         speed: int = 8,
-        attack_speed: int = 10,
-        inventory_capacity: int = 0,
     ) -> None:
         super().__init__(
             x=x,
@@ -94,19 +82,16 @@ class ActiveEntity(Entity):
         self._ai: BaseAI | None = None
         self._path: deque[tuple[int, int]] = deque()
 
-        self.fighter = Fighter(
-            entity=self,
-            max_hp=max_hp,
-            defense=defense,
-            power=power,
-            attack_speed=attack_speed,
-        )
+        self.fighter = fighter
+        self.fighter.owner = self
 
-        self.inventory = (
-            Inventory(entity=self, capacity=inventory_capacity)
-            if inventory_capacity != 0
-            else None
-        )
+        self.level = level
+        self.level.owner = self
+
+        self.inventory = inventory if inventory is not None else None
+
+        if self.inventory is not None:
+            self.inventory.owner = self
 
         self.speed = speed
         self.movement_wait = 0
@@ -152,13 +137,12 @@ class ActiveEntity(Entity):
 class Item(Entity):
     def __init__(
         self,
-        consumable_cls: Type[Consumable],
+        consumable: Consumable,
         x: int = 0,
         y: int = 0,
         char: str = "?",
         color: tuple[int, int, int] = (255, 255, 255),
         name: str = "<Unnamed>",
-        **kwargs,
     ) -> None:
         super().__init__(
             x=x,
@@ -170,60 +154,5 @@ class Item(Entity):
             render_order=RenderOrder.ITEM,
         )
 
-        self.consumable_cls = consumable_cls
-        self.consumable = consumable_cls(item=self, **kwargs)
-
-
-ENTITY_FACTORY = {
-    0.8: ActiveEntity(
-        char="O",
-        color=(63, 127, 63),
-        name="Orc",
-        ai_cls=AttackingAI,
-        max_hp=10,
-        defense=0,
-        power=3,
-    ),
-    0.2: ActiveEntity(
-        char="T",
-        color=(0, 127, 0),
-        name="Troll",
-        ai_cls=AttackingAI,
-        max_hp=16,
-        defense=1,
-        power=4,
-    ),
-}
-
-ITEM_FACTORY = {
-    0.4: Item(
-        consumable_cls=HealingPotion,
-        char="!",
-        color=(127, 0, 255),
-        name="Healing Potion",
-        amount=4,
-    ),
-    0.1: Item(
-        consumable_cls=LightningScroll,
-        char="~",
-        color=(255, 255, 0),
-        name="Lightning Scroll",
-        power=20,
-        range=5,
-    ),
-    0.3: Item(
-        consumable_cls=ConfusionSpell,
-        char="~",
-        color=(207, 63, 255),
-        name="Confusion Spell",
-        number_of_turns=10,
-    ),
-    0.2: Item(
-        consumable_cls=FireballScroll,
-        char="~",
-        color=(255, 0, 0),
-        name="Fireball Scroll",
-        power=12,
-        radius=3,
-    ),
-}
+        self.consumable = consumable
+        consumable.owner = self

@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING
 
 import tcod
 from tcod.context import Context
-from tcod.event import Event, KeyDown, KeySym
-from yarl.actions import BumpAction, PickupAction, WaitAction
+from tcod.event import Event, KeyDown, KeySym, Modifier
+from yarl.actions import BumpAction, PickupAction, TakeStairsAction, WaitAction
 from yarl.event_handlers.base_event_handler import BaseEventHandler
 from yarl.exceptions import ImpossibleActionException
 from yarl.interface import color
@@ -19,7 +19,9 @@ from .game_over import GameOverEventHandler
 from .history import HistoryEventHandler
 from .inventory import InventoryEventHandler
 from .inventory_drop import InventoryDropEventHandler
+from .level_up import LevelUpEventHandler
 from .look import LookEventHandler
+from .player_info import PlayerInfoEventHandler
 from .select_item_to_consume import SelectItemToConsumeEventHandler
 from .select_item_to_pick_up import SelectItemToPickupEventHandler
 
@@ -36,7 +38,7 @@ class MainGameEventHandler(EventHandler):
         self.turn_interval = turn_interval
         self.last_turn_time = time.monotonic()
 
-    def process_key(self, key: KeySym) -> ActionOrHandlerType | None:
+    def process_key(self, key: KeySym, mod: Modifier) -> ActionOrHandlerType | None:
         engine, entity = self.engine, self.engine.player
 
         if key in MOVE_KEYS:
@@ -86,6 +88,13 @@ class MainGameEventHandler(EventHandler):
                 )
             case tcod.event.K_SLASH:
                 return LookEventHandler(engine=engine, old_event_handler=self)
+            case tcod.event.K_PERIOD:
+                if mod & (tcod.event.KMOD_LSHIFT | tcod.event.KMOD_RSHIFT):
+                    return TakeStairsAction(
+                        engine=self.engine, entity=self.engine.player
+                    )
+            case tcod.event.K_p:
+                return PlayerInfoEventHandler(engine=engine, old_event_handler=self)
 
         return None
 
@@ -132,6 +141,10 @@ class MainGameEventHandler(EventHandler):
                 logger.info("Player is dead. Switching to game over state.")
                 return GameOverEventHandler(self.engine)
 
+            if self.engine.player.level.can_level_up:
+                logger.info("Player has leveled up.")
+                return LevelUpEventHandler(engine=self.engine, old_event_handler=self)
+
         return self
 
     def handle_action(self, action: Action) -> None:
@@ -144,5 +157,6 @@ class MainGameEventHandler(EventHandler):
 
     def ev_keydown(self, event: KeyDown) -> ActionOrHandlerType | None:
         key = event.sym
+        mod = event.mod
 
-        return self.process_key(key=key)
+        return self.process_key(key=key, mod=mod)

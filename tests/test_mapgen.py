@@ -8,8 +8,7 @@ import yarl.tile_types as tiles
 from pytest import MonkeyPatch
 from tcod.bsp import BSP
 from yarl.entity import Entity
-from yarl.gamemap import GameMap
-from yarl.mapgen import MapGenerator, RectangularRoom
+from yarl.map import GameMap, MapGenerator, RectangularRoom
 
 
 @pytest.fixture
@@ -172,3 +171,5 @@ class TestMapGenerator:
         max_items = len(map_generator.rooms) * map_generator.max_items_per_room
 
         assert len(tuple(game_map.items)) <= max_items
+
+        assert game_map.tiles[game_map.stairs_location] == tiles.stair

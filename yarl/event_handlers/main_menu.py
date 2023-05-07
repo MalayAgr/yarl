@@ -11,9 +11,9 @@ from yarl.event_handlers import (
     MainGameEventHandler,
 )
 from yarl.interface import color
+from yarl.utils import load_game
 
 from .popup_message import PopupMessageEventHandler
-from .utils import load_game
 
 if TYPE_CHECKING:
     from yarl.engine import Engine

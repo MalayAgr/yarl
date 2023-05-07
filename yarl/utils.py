@@ -3,6 +3,7 @@ from __future__ import annotations
 import lzma
 import os
 import pickle
+from enum import Enum, auto
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -10,6 +11,12 @@ if TYPE_CHECKING:
 
 
 GAME_SAVE_FILENAME = "save.sav"
+
+
+class RenderOrder(Enum):
+    CORPSE = auto()
+    ITEM = auto()
+    ACTIVE_ENTITY = auto()
 
 
 def get_game_save_path() -> str:

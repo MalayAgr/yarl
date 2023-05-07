@@ -2,14 +2,18 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from yarl.entity import ActiveEntity
+
+from .base_component import Component
 
 if TYPE_CHECKING:
-    from yarl.entity import ActiveEntity, Item
+    from yarl.entity import Item
 
 
-class Inventory:
-    def __init__(self, entity: ActiveEntity, capacity: int) -> None:
-        self.entity = entity
+class Inventory(Component[ActiveEntity]):
+    def __init__(self, capacity: int, entity: ActiveEntity | None = None) -> None:
+        super().__init__(owner=entity)
+
         self.capacity = capacity
         self.items: list[Item] = []
 

@@ -5,14 +5,13 @@ from typing import TYPE_CHECKING, Any
 import tcod
 from tcod.console import Console
 from tcod.context import Context
-from yarl.components.ai import AttackingAI
 from yarl.engine import Engine
-from yarl.entity import ActiveEntity
 from yarl.event_handlers import MainMenuEventHandler
-from yarl.event_handlers.utils import save_game
 from yarl.exceptions import QuitWithoutSavingException
+from yarl.factories import player_factory
 from yarl.interface import color
-from yarl.mapgen import MapGenerator
+from yarl.map import GameWorld
+from yarl.utils import save_game
 
 if TYPE_CHECKING:
     from yarl.event_handlers import BaseEventHandler
@@ -66,11 +65,7 @@ class Game:
         return cls(**params)
 
     def get_engine(self) -> Engine:
-        player = ActiveEntity(
-            char="@",
-            color=(255, 255, 255),
-            name="Player",
-            ai_cls=AttackingAI,
+        player = player_factory(
             max_hp=self.player_max_hp,
             defense=self.player_defense,
             power=self.player_power,
@@ -79,19 +74,15 @@ class Game:
             inventory_capacity=self.player_inventory_capacity,
         )
 
-        map_generator = MapGenerator(
+        game_world = GameWorld(
             map_width=self.map_width,
             map_height=self.map_height,
             room_min_size=self.room_min_size,
-            depth=10,
             max_enemies_per_room=self.max_enemies_per_room,
             max_items_per_room=self.max_items_per_room,
-            full_rooms=False,
         )
 
-        game_map = map_generator.generate_map(player=player)
-
-        engine = Engine(game_map=game_map, player=player)
+        engine = Engine(game_world=game_world, player=player)
 
         engine.add_to_message_log(
             text="Hello and welcome, adventurer, to yet another dungeon!",
@@ -123,7 +114,7 @@ class Game:
 
         except QuitWithoutSavingException:
             raise
-        except (SystemExit, Exception):
+        except (SystemExit, Exception) as e:
             if hasattr(handler, "engine"):
                 engine_to_save: Engine = handler.engine
                 save_game(engine=engine_to_save)

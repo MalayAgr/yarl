@@ -4,11 +4,9 @@ from typing import Iterable
 from unittest.mock import Mock
 
 import pytest
-from yarl.components.ai import AttackingAI, BaseAI
-from yarl.components.consumable import Consumable
-from yarl.components.fighter import Fighter
-from yarl.components.render_order import RenderOrder
+from yarl.components import AttackingAI, Consumable, Fighter, Inventory, Level
 from yarl.entity import ActiveEntity, Entity, Item
+from yarl.utils import RenderOrder
 
 
 class TestEntity:
@@ -69,16 +67,19 @@ class TestActiveEntity:
     @pytest.fixture
     def entity(self) -> ActiveEntity:
         return ActiveEntity(
+            fighter=Fighter(
+                max_hp=30,
+                defense=2,
+                attack_speed=10,
+                power=5,
+            ),
+            level=Level(),
             x=1,
             y=5,
             char="@",
             color=(255, 255, 255),
             name="Active Entity",
-            max_hp=30,
-            defense=2,
-            power=5,
             speed=8,
-            attack_speed=10,
         )
 
     def test_initialization(self, entity: ActiveEntity) -> None:
@@ -95,9 +96,29 @@ class TestActiveEntity:
         assert entity.ai is None
         assert entity.path == deque()
         assert entity.inventory is None
+        assert entity.fighter.owner is entity
+        assert entity.level.owner is entity
 
-        assert hasattr(entity, "fighter")
-        assert isinstance(entity.fighter, Fighter)
+    def test_initialization_inventory(self, entity: ActiveEntity) -> None:
+        entity = ActiveEntity(
+            fighter=Fighter(
+                max_hp=30,
+                defense=2,
+                attack_speed=10,
+                power=5,
+            ),
+            level=Level(),
+            x=1,
+            y=5,
+            char="@",
+            color=(255, 255, 255),
+            name="Active Entity",
+            speed=8,
+            inventory=Inventory(capacity=5),
+        )
+
+        assert entity.inventory is not None
+        assert entity.inventory.owner is entity
 
     def test_move(self, entity: ActiveEntity) -> None:
         entity.move(dx=2, dy=3)
@@ -123,7 +144,7 @@ class TestActiveEntity:
         assert entity.is_alive is True
 
     def test_ai(self, entity: ActiveEntity) -> None:
-        ai = Mock(spec=BaseAI)
+        ai = Mock(spec=AttackingAI)
         entity.ai = ai
 
         assert entity._ai is ai
@@ -160,7 +181,7 @@ class TestItem:
     @pytest.fixture
     def item(self) -> Item:
         return Item(
-            consumable_cls=Consumable,
+            consumable=Consumable(),
             x=1,
             y=5,
             char="@",
@@ -176,5 +197,4 @@ class TestItem:
         assert item.name == "Item"
         assert item.blocking is False
         assert item.render_order is RenderOrder.ITEM
-        assert item.consumable_cls is Consumable
-        assert item.consumable.item is item
+        assert item.consumable.owner is item

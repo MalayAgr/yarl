@@ -27,9 +27,10 @@ from typing import Iterator
 import tcod
 import yarl.tile_types as tiles
 from tcod.bsp import BSP
-from yarl.entity import ENTITY_FACTORY, ITEM_FACTORY, ActiveEntity, Entity, Item
+from yarl.entity import ActiveEntity, Entity, Item
 from yarl.exceptions import CollisionWithEntityException
-from yarl.gamemap import GameMap
+from yarl.factories import ENTITY_FACTORY, ITEM_FACTORY
+from yarl.map.gamemap import GameMap
 
 
 class RectangularRoom:
@@ -182,13 +183,32 @@ class MapGenerator:
 
         self.rooms: list[RectangularRoom] = []
 
-        self.game_map = GameMap(width=map_width, height=map_height)
+        self._game_map: GameMap | None = None
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(map_width={self.map_width}, map_height={self.map_height})"
 
     def __str__(self) -> str:
         return self.__repr__()
+
+    @property
+    def game_map(self) -> GameMap:
+        if self._game_map is None:
+            self._game_map = GameMap(width=self.map_width, height=self.map_height)
+
+        return self._game_map
+
+    @game_map.setter
+    def game_map(self, game_map: GameMap) -> None:
+        received = (game_map.width, game_map.height)
+        expected = (self.map_width, self.map_height)
+
+        if received != expected:
+            raise ValueError(
+                f"Given map does not match the expected dimensions: expected {expected}, got {received}"
+            )
+
+        self._game_map = game_map
 
     def create_bsp_tree(self) -> BSP:
         """Method to create a BSP tree and obtain its root node.
@@ -340,21 +360,26 @@ class MapGenerator:
         Returns:
             Generated game map.
         """
+        self.game_map = GameMap(width=self.map_width, height=self.map_height)
+
         bsp = self.create_bsp_tree()
 
         self.traverse_bsp(bsp)
 
         player_room = None
+        rooms = self.rooms
 
         if player is not None:
             player_room = random.choice(self.rooms)
             x, y = player_room.center
             self.game_map.add_entity(entity=player, x=x, y=y)
+            rooms = [room for room in rooms if room is not player_room]
 
-        for room in self.rooms:
-            if room is player_room:
-                continue
-
+        for room in rooms:
             self.place_objects(room=room)
+
+        stairs_room = random.choice(rooms)
+        self.game_map.tiles[stairs_room.center] = tiles.stair
+        self.game_map.stairs_location = stairs_room.center
 
         return self.game_map
