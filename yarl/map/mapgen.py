@@ -29,7 +29,7 @@ import yarl.tile_types as tiles
 from tcod.bsp import BSP
 from yarl.entity import ActiveEntity, Entity, Item
 from yarl.exceptions import CollisionWithEntityException
-from yarl.factories import ENTITY_FACTORY, ITEM_FACTORY
+from yarl.factories import ENEMY_FACTORY, ITEM_FACTORY
 from yarl.map.gamemap import GameMap
 
 
@@ -149,8 +149,6 @@ class MapGenerator:
         map_height: int,
         room_min_size: int = 5,
         depth: int = 10,
-        max_enemies_per_room: int = 2,
-        max_items_per_room: int = 2,
         *,
         full_rooms: bool = False,
     ) -> None:
@@ -165,10 +163,6 @@ class MapGenerator:
 
             depth: Depth of the BSP tree. Defaults to 10.
 
-            max_enemies_per_room: Number of enemies to spawn per room. Defaults to 2.
-
-            max_items_per_room: Number of consumable items to spawn per room. Defaults to 2.
-
             full_rooms: Indicates whether rooms should use the dimensions of the BSP nodes
                 they are created from (`True`) or have random sizes based on those dimensions (`False`).
                 More interesting maps are generated when set to `False`. Defaults to `False`.
@@ -177,8 +171,6 @@ class MapGenerator:
         self.map_width = map_width
         self.map_height = map_height
         self.depth = depth
-        self.max_enemies_per_room = max_enemies_per_room
-        self.max_items_per_room = max_items_per_room
         self.full_rooms = full_rooms
 
         self.rooms: list[RectangularRoom] = []
@@ -314,13 +306,26 @@ class MapGenerator:
         for x, y in self.tunnel_coordinates(room1.center, room2.center):
             self.game_map.tiles[x, y] = tiles.floor
 
-    def place_objects(self, room: RectangularRoom) -> None:
-        number_of_enemies = random.randint(0, self.max_enemies_per_room)
-        number_of_items = random.randint(0, self.max_items_per_room)
+    def place_objects(
+        self,
+        room: RectangularRoom,
+        max_enemies_per_room: int,
+        max_items_per_room: int,
+        enemy_factory: dict[ActiveEntity, float] | None = None,
+        item_factory: dict[Item, float] | None = None,
+    ) -> None:
+        number_of_enemies = random.randint(0, max_enemies_per_room)
+        number_of_items = random.randint(0, max_items_per_room)
+
+        if enemy_factory is None:
+            enemy_factory = ENEMY_FACTORY
+
+        if item_factory is None:
+            item_factory = ITEM_FACTORY
 
         enemies = random.choices(
-            population=list(ENTITY_FACTORY.values()),
-            weights=list(ENTITY_FACTORY.keys()),
+            population=list(enemy_factory.keys()),
+            weights=list(enemy_factory.values()),
             k=number_of_enemies,
         )
 
@@ -335,8 +340,8 @@ class MapGenerator:
                 pass
 
         items = random.choices(
-            population=list(ITEM_FACTORY.values()),
-            weights=list(ITEM_FACTORY.keys()),
+            population=list(item_factory.keys()),
+            weights=list(item_factory.values()),
             k=number_of_items,
         )
 
@@ -350,12 +355,31 @@ class MapGenerator:
             except CollisionWithEntityException:
                 pass
 
-    def generate_map(self, player: Entity | None = None) -> GameMap:
+    def generate_map(
+        self,
+        player: Entity | None = None,
+        enemy_factory: dict[ActiveEntity, float] | None = None,
+        max_enemies_per_room: int = 2,
+        item_factory: dict[Item, float] | None = None,
+        max_items_per_room: int = 2,
+    ) -> GameMap:
         """Method to generate a map using BSP and optionally place the
         player at the center of a random room in the generated map.
 
         Args:
             player: Player to be placed on the map. Defaults to None.
+
+            max_enemies_per_room: Number of enemies to spawn per room.
+
+            max_items_per_room: Number of consumable items to spawn per room.
+
+            enemy_factory: Population enemies will be sampled from. Each
+                key is the probability and the value is the entity. If set
+                to `None`, it falls back to using ENTITY_FACTORY.
+
+            item_factory: Population items will be sampled from. Each key
+                is the probability and the value is the item. If set to `None`,
+                it falls back to using ITEM_FACTORY.
 
         Returns:
             Generated game map.
@@ -376,7 +400,13 @@ class MapGenerator:
             rooms = [room for room in rooms if room is not player_room]
 
         for room in rooms:
-            self.place_objects(room=room)
+            self.place_objects(
+                room=room,
+                max_enemies_per_room=max_enemies_per_room,
+                max_items_per_room=max_items_per_room,
+                enemy_factory=enemy_factory,
+                item_factory=item_factory,
+            )
 
         stairs_room = random.choice(rooms)
         self.game_map.tiles[stairs_room.center] = tiles.stair

@@ -37,8 +37,8 @@ def player_factory(
     )
 
 
-ENTITY_FACTORY = {
-    0.8: ActiveEntity(
+ENEMIES = {
+    "orc": ActiveEntity(
         fighter=Fighter(max_hp=10, defense=0, power=3, attack_speed=10),
         level=Level(xp_given=35),
         char="O",
@@ -46,7 +46,7 @@ ENTITY_FACTORY = {
         name="Orc",
         ai_cls=AttackingAI,
     ),
-    0.2: ActiveEntity(
+    "troll": ActiveEntity(
         fighter=Fighter(max_hp=16, defense=1, power=4, attack_speed=10),
         level=Level(xp_given=200),
         char="T",
@@ -56,29 +56,39 @@ ENTITY_FACTORY = {
     ),
 }
 
-ITEM_FACTORY = {
-    0.4: Item(
+ITEMS = {
+    "healing_potion": Item(
         consumable=HealingPotion(amount=4),
         char="!",
         color=(127, 0, 255),
         name="Healing Potion",
     ),
-    0.1: Item(
+    "lightning_scroll": Item(
         consumable=LightningScroll(power=20, range=5),
         char="~",
         color=(255, 255, 0),
         name="Lightning Scroll",
     ),
-    0.3: Item(
+    "confusion_spell": Item(
         consumable=ConfusionSpell(number_of_turns=10),
         char="~",
         color=(207, 63, 255),
         name="Confusion Spell",
     ),
-    0.2: Item(
+    "fireball_scroll": Item(
         consumable=FireballScroll(power=12, radius=3),
         char="~",
         color=(255, 0, 0),
         name="Fireball Scroll",
     ),
+}
+
+
+ENEMY_FACTORY = {ENEMIES["orc"]: 0.8, ENEMIES["troll"]: 0.2}
+
+ITEM_FACTORY = {
+    ITEMS["healing_potion"]: 0.4,
+    ITEMS["lightning_scroll"]: 0.1,
+    ITEMS["confusion_spell"]: 0.3,
+    ITEMS["fireball_scroll"]: 0.2,
 }
