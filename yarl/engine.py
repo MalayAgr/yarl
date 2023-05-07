@@ -36,9 +36,9 @@ class Engine:
         self.game_map = self.game_world.generate_floor(player=self.player)
 
     def add_to_message_log(
-        self, text: str, fg: tuple[int, int, int] = color.WHITE, *, stack: bool = True
+        self, text: str, fg: tuple[int, int, int] = color.WHITE
     ) -> None:
-        self.message_log.add_message(text=text, fg=fg, stack=stack)
+        self.message_log.add_message(text=text, fg=fg)
 
     def update_fov(self) -> None:
         self.game_map.update_fov(player=self.player)
