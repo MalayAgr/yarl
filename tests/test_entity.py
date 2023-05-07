@@ -4,7 +4,7 @@ from typing import Iterable
 from unittest.mock import Mock
 
 import pytest
-from yarl.components import AttackingAI, Consumable, Fighter, Inventory
+from yarl.components import AttackingAI, Consumable, Fighter, Inventory, Level
 from yarl.entity import ActiveEntity, Entity, Item
 from yarl.utils import RenderOrder
 
@@ -73,6 +73,7 @@ class TestActiveEntity:
                 attack_speed=10,
                 power=5,
             ),
+            level=Level(),
             x=1,
             y=5,
             char="@",
@@ -96,6 +97,7 @@ class TestActiveEntity:
         assert entity.path == deque()
         assert entity.inventory is None
         assert entity.fighter.owner is entity
+        assert entity.level.owner is entity
 
     def test_initialization_inventory(self, entity: ActiveEntity) -> None:
         entity = ActiveEntity(
@@ -105,6 +107,7 @@ class TestActiveEntity:
                 attack_speed=10,
                 power=5,
             ),
+            level=Level(),
             x=1,
             y=5,
             char="@",

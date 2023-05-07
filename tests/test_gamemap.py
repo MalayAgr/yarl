@@ -5,7 +5,7 @@ import pytest
 import tcod
 import yarl.tile_types as tiles
 from tcod.map import compute_fov
-from yarl.components import AttackingAI, Consumable, Fighter
+from yarl.components import AttackingAI, Consumable, Fighter, Level
 from yarl.entity import ActiveEntity, Entity, Item
 from yarl.exceptions import CollisionWithEntityException
 from yarl.map import GameMap
@@ -16,6 +16,7 @@ def active_entities() -> list[ActiveEntity]:
     return [
         ActiveEntity(
             fighter=Fighter(max_hp=10, defense=1, power=1, attack_speed=1),
+            level=Level(),
             x=i,
             y=i,
             ai_cls=AttackingAI,
