@@ -7,6 +7,7 @@ from .consumable import (
     LightningScroll,
 )
 from .equipment import Equipment
+from .equippable import Equippable
 from .fighter import Fighter
 from .inventory import Inventory
 from .level import Level

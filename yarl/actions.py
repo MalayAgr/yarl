@@ -7,7 +7,7 @@ from yarl.interface import color
 
 if TYPE_CHECKING:
     from yarl.engine import Engine
-    from yarl.entity import ActiveEntity, ConsumableItem, Entity
+    from yarl.entity import ActiveEntity, Entity, Item
     from yarl.map.gamemap import GameMap
 
 
@@ -136,7 +136,7 @@ class BumpAction(DirectedAction):
 
 class ConsumeItemAction(Action):
     def __init__(
-        self, engine: Engine, entity: ActiveEntity, item: ConsumableItem | None = None
+        self, engine: Engine, entity: ActiveEntity, item: Item | None = None
     ) -> None:
         super().__init__(engine=engine, entity=entity)
         self.entity: ActiveEntity
@@ -148,8 +148,9 @@ class ConsumeItemAction(Action):
         if item is None:
             raise ImpossibleActionException("There is no item to consume.")
 
-        item.consumable.activate(consumer=self.entity, engine=self.engine)
-        self.game_map.remove_entity(entity=item)
+        if item.consumable is not None:
+            item.consumable.activate(consumer=self.entity, engine=self.engine)
+            self.game_map.remove_entity(entity=item)
 
 
 class ConsumeTargetedItemAction(Action):
@@ -158,7 +159,7 @@ class ConsumeTargetedItemAction(Action):
         engine: Engine,
         entity: ActiveEntity,
         target_location: tuple[int, int],
-        item: ConsumableItem | None = None,
+        item: Item | None = None,
     ) -> None:
         super().__init__(engine, entity)
         self.entity: ActiveEntity
@@ -177,17 +178,18 @@ class ConsumeTargetedItemAction(Action):
         if item is None:
             raise ImpossibleActionException("There is no item to consume.")
 
-        item.consumable.activate(
-            consumer=self.entity,
-            engine=self.engine,
-            target_location=self.target_location,
-        )
-        self.game_map.remove_entity(entity=item)
+        if item.consumable is not None:
+            item.consumable.activate(
+                consumer=self.entity,
+                engine=self.engine,
+                target_location=self.target_location,
+            )
+            self.game_map.remove_entity(entity=item)
 
 
 class PickupAction(Action):
     def __init__(
-        self, engine: Engine, entity: Entity, items: list[ConsumableItem] | None = None
+        self, engine: Engine, entity: Entity, items: list[Item] | None = None
     ) -> None:
         super().__init__(engine, entity)
         self.entity: ActiveEntity
@@ -216,13 +218,13 @@ class PickupAction(Action):
 
 class DropItemFromInventoryAction(Action):
     def __init__(
-        self, engine: Engine, entity: Entity, items: list[ConsumableItem] | None = None
+        self, engine: Engine, entity: Entity, items: list[Item] | None = None
     ) -> None:
         super().__init__(engine, entity)
         self.entity: ActiveEntity
         self.items = items or []
 
-    def place_item(self, item: ConsumableItem, x: int, y: int):
+    def place_item(self, item: Item, x: int, y: int):
         self.game_map.add_entity(entity=item, x=x, y=y, check_blocking=False)
 
     def perform(self) -> None:

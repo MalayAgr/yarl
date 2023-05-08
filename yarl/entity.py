@@ -8,7 +8,15 @@ from typing import TYPE_CHECKING, Iterable, Type, TypeVar
 from yarl.utils import EquipmentType, RenderOrder
 
 if TYPE_CHECKING:
-    from yarl.components import BaseAI, Consumable, Equipment, Fighter, Inventory, Level
+    from yarl.components import (
+        BaseAI,
+        Consumable,
+        Equipment,
+        Equippable,
+        Fighter,
+        Inventory,
+        Level,
+    )
 
 T = TypeVar("T", bound="Entity")
 
@@ -143,6 +151,8 @@ class ActiveEntity(Entity):
 class Item(Entity):
     def __init__(
         self,
+        consumable: Consumable | None = None,
+        equippable: Equippable | None = None,
         x: int = 0,
         y: int = 0,
         char: str = "?",
@@ -153,37 +163,12 @@ class Item(Entity):
             x, y, char, color, name, blocking=False, render_order=RenderOrder.ITEM
         )
 
-
-class ConsumableItem(Item):
-    def __init__(
-        self,
-        consumable: Consumable,
-        x: int = 0,
-        y: int = 0,
-        char: str = "?",
-        color: tuple[int, int, int] = (255, 255, 255),
-        name: str = "<Unnamed>",
-    ) -> None:
-        super().__init__(x=x, y=y, char=char, color=color, name=name)
-
         self.consumable = consumable
-        consumable.owner = self
 
+        if self.consumable is not None:
+            self.consumable.owner = self
 
-class EquippableItem(Item):
-    def __init__(
-        self,
-        power_bonus: int = 0,
-        defense_bonus: int = 0,
-        x: int = 0,
-        y: int = 0,
-        char: str = "?",
-        color: tuple[int, int, int] = (255, 255, 255),
-        name: str = "<Unnamed>",
-        equipment_type: EquipmentType = EquipmentType.WEAPON,
-    ) -> None:
-        super().__init__(x, y, char, color, name)
+        self.equippable = equippable
 
-        self.power_bonus = power_bonus
-        self.defense_bonus = defense_bonus
-        self.equipment_type = equipment_type
+        if self.equippable is not None:
+            self.equippable.owner = self

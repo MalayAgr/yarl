@@ -1,6 +1,8 @@
 from yarl.components import (
     AttackingAI,
     ConfusionSpell,
+    Equipment,
+    Equippable,
     Fighter,
     FireballScroll,
     HealingPotion,
@@ -8,7 +10,7 @@ from yarl.components import (
     Level,
     LightningScroll,
 )
-from yarl.entity import ActiveEntity, ConsumableItem, EquippableItem, Item
+from yarl.entity import ActiveEntity, Item
 from yarl.utils import EquipmentType
 
 
@@ -34,6 +36,7 @@ def player_factory(
         name="Player",
         ai_cls=AttackingAI,
         inventory=inventory,
+        equipment=Equipment(),
         speed=speed,
     )
 
@@ -58,25 +61,25 @@ ENEMIES = {
 }
 
 CONSUMABLE_ITEMS = {
-    "healing_potion": ConsumableItem(
+    "healing_potion": Item(
         consumable=HealingPotion(amount=4),
         char="!",
         color=(127, 0, 255),
         name="Healing Potion",
     ),
-    "lightning_scroll": ConsumableItem(
+    "lightning_scroll": Item(
         consumable=LightningScroll(power=20, range=5),
         char="~",
         color=(255, 255, 0),
         name="Lightning Scroll",
     ),
-    "confusion_spell": ConsumableItem(
+    "confusion_spell": Item(
         consumable=ConfusionSpell(number_of_turns=10),
         char="~",
         color=(207, 63, 255),
         name="Confusion Spell",
     ),
-    "fireball_scroll": ConsumableItem(
+    "fireball_scroll": Item(
         consumable=FireballScroll(power=12, radius=3),
         char="~",
         color=(255, 0, 0),
@@ -85,33 +88,29 @@ CONSUMABLE_ITEMS = {
 }
 
 EQUIPPABLE_ITEMS = {
-    "dagger": EquippableItem(
-        power_bonus=2,
+    "dagger": Item(
+        equippable=Equippable(power_bonus=2, equipment_type=EquipmentType.WEAPON),
         char="/",
         color=(0, 191, 255),
         name="Dagger",
-        equipment_type=EquipmentType.WEAPON,
     ),
-    "sword": EquippableItem(
-        power_bonus=4,
+    "sword": Item(
+        equippable=Equippable(power_bonus=4, equipment_type=EquipmentType.WEAPON),
         char="/",
         color=(0, 191, 255),
         name="Sword",
-        equipment_type=EquipmentType.WEAPON,
     ),
-    "leather_armor": EquippableItem(
-        defense_bonus=1,
+    "leather_armor": Item(
+        equippable=Equippable(defense_bonus=1, equipment_type=EquipmentType.ARMOR),
         char="[",
         color=(139, 69, 19),
         name="Leather Armor",
-        equipment_type=EquipmentType.ARMOR,
     ),
-    "steel_armor": EquippableItem(
-        defense_bonus=3,
+    "steel_armor": Item(
+        equippable=Equippable(defense_bonus=3, equipment_type=EquipmentType.ARMOR),
         char="[",
         color=(139, 69, 19),
         name="Steel Armor",
-        equipment_type=EquipmentType.ARMOR,
     ),
 }
 

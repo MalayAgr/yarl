@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from yarl.actions import ConsumeItemAction
 from yarl.components.ai import ConfusionAI
-from yarl.entity import ConsumableItem
+from yarl.entity import Item
 from yarl.event_handlers import (
     SelectTargetAreaEventHandler,
     SelectTargetIndexEventHandler,
@@ -21,8 +21,8 @@ if TYPE_CHECKING:
     from yarl.event_handlers import ActionOrHandlerType, BaseEventHandler
 
 
-class Consumable(Component[ConsumableItem]):
-    def __init__(self, owner: ConsumableItem | None = None):
+class Consumable(Component[Item]):
+    def __init__(self, owner: Item | None = None):
         super().__init__(owner=owner)
 
     def __repr__(self) -> str:
@@ -58,7 +58,7 @@ class Consumable(Component[ConsumableItem]):
 
 
 class HealingPotion(Consumable):
-    def __init__(self, amount: int, item: ConsumableItem | None = None):
+    def __init__(self, amount: int, item: Item | None = None):
         super().__init__(owner=item)
 
         self.amount = amount
@@ -89,7 +89,7 @@ class HealingPotion(Consumable):
 
 
 class LightningScroll(Consumable):
-    def __init__(self, power: int, range: int, item: ConsumableItem | None = None):
+    def __init__(self, power: int, range: int, item: Item | None = None):
         super().__init__(item)
         self.power = power
         self.range = range
@@ -150,7 +150,7 @@ class LightningScroll(Consumable):
 
 
 class ConfusionSpell(Consumable):
-    def __init__(self, number_of_turns: int, item: ConsumableItem | None = None):
+    def __init__(self, number_of_turns: int, item: Item | None = None):
         super().__init__(owner=item)
         self.number_of_turns = number_of_turns
 
@@ -219,7 +219,7 @@ class ConfusionSpell(Consumable):
 
 
 class FireballScroll(Consumable):
-    def __init__(self, power: int, radius: int, item: ConsumableItem | None = None):
+    def __init__(self, power: int, radius: int, item: Item | None = None):
         super().__init__(item)
         self.power = power
         self.radius = radius

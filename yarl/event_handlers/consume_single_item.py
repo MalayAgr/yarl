@@ -6,20 +6,20 @@ from tcod.event import Event
 from yarl.exceptions import ImpossibleActionException
 from yarl.interface import color
 
-from .base_event_handler import BaseEventHandler
+from .base_event_handler import ActionOrHandlerType, BaseEventHandler
 from .event_handler import EventHandler
 
 if TYPE_CHECKING:
     from yarl.actions import Action
     from yarl.engine import Engine
-    from yarl.entity import ConsumableItem
+    from yarl.entity import Item
 
 
 class ConsumeSingleItemEventHandler(EventHandler):
     def __init__(
         self,
         engine: Engine,
-        item: ConsumableItem | None = None,
+        item: Item | None = None,
         old_event_handler: BaseEventHandler | None = None,
     ) -> None:
         super().__init__(engine)
@@ -39,11 +39,14 @@ class ConsumeSingleItemEventHandler(EventHandler):
             self.engine.add_to_message_log("There is no item to consume.")
             return self.old_event_handler or self
 
-        action_or_handler = item.consumable.get_action_or_handler(
-            entity=self.engine.player,
-            engine=self.engine,
-            old_event_handler=self.old_event_handler,
-        )
+        action_or_handler: ActionOrHandlerType = self.old_event_handler or self
+
+        if item.consumable is not None:
+            action_or_handler = item.consumable.get_action_or_handler(
+                entity=self.engine.player,
+                engine=self.engine,
+                old_event_handler=self.old_event_handler,
+            )
 
         if isinstance(action_or_handler, BaseEventHandler):
             return action_or_handler

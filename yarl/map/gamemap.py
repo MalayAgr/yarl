@@ -8,7 +8,7 @@ import tcod
 import yarl.tile_types as tiles
 from tcod.console import Console
 from tcod.map import compute_fov
-from yarl.entity import ActiveEntity, ConsumableItem
+from yarl.entity import ActiveEntity, Item
 from yarl.exceptions import CollisionWithEntityException
 
 if TYPE_CHECKING:
@@ -157,16 +157,16 @@ class GameMap:
         )
 
     @property
-    def items(self) -> Iterable[ConsumableItem]:
+    def items(self) -> Iterable[Item]:
         """All items in the map.
 
         An item is an instance of `Item` (or subclasses).
         """
         yield from (
-            entity for entity in self.entities if isinstance(entity, ConsumableItem)
+            entity for entity in self.entities if isinstance(entity, Item)
         )
 
-    def get_items(self, x: int, y: int) -> set[ConsumableItem]:
+    def get_items(self, x: int, y: int) -> set[Item]:
         """Method to obtain the items at location `(x, y)`.
 
         An item is an instance of `Item` (or subclasses).
@@ -179,7 +179,7 @@ class GameMap:
             Items at location `(x, y)`.
         """
         entities = self.get_entities(x=x, y=y)
-        return {entity for entity in entities if isinstance(entity, ConsumableItem)}
+        return {entity for entity in entities if isinstance(entity, Item)}
 
     def get_active_entity(self, x: int, y: int) -> ActiveEntity | None:
         """Method to obtain the active entity at location `(x, y)`.

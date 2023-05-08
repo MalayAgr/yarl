@@ -11,7 +11,7 @@ from .select_item import SelectItemEventHandler
 
 if TYPE_CHECKING:
     from yarl.engine import Engine
-    from yarl.entity import ConsumableItem
+    from yarl.entity import Item
 
     from .base_event_handler import ActionOrHandlerType, BaseEventHandler
 
@@ -56,7 +56,7 @@ class InventoryDropEventHandler(SelectItemEventHandler):
 
         return super().ev_keydown(event)
 
-    def on_item_selected(self, item: ConsumableItem) -> ActionOrHandlerType | None:
+    def on_item_selected(self, item: Item) -> ActionOrHandlerType | None:
         return DropItemFromInventoryAction(
             engine=self.engine, entity=self.engine.player, items=[item]
         )

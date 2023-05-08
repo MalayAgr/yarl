@@ -10,7 +10,7 @@ from .ask_user import AskUserEventHandler
 
 if TYPE_CHECKING:
     from yarl.engine import Engine
-    from yarl.entity import ConsumableItem
+    from yarl.entity import Item
 
     from .base_event_handler import ActionOrHandlerType, BaseEventHandler
 
@@ -21,7 +21,7 @@ class SelectItemEventHandler(AskUserEventHandler):
     def __init__(
         self,
         engine: Engine,
-        items: Iterable[ConsumableItem],
+        items: Iterable[Item],
         old_event_handler: BaseEventHandler | None = None,
     ) -> None:
         super().__init__(engine=engine, old_event_handler=old_event_handler)
@@ -84,6 +84,6 @@ class SelectItemEventHandler(AskUserEventHandler):
         item = self.items[index]
         return self.on_item_selected(item)
 
-    def on_item_selected(self, item: ConsumableItem) -> ActionOrHandlerType | None:
+    def on_item_selected(self, item: Item) -> ActionOrHandlerType | None:
         """Called when the user selects a valid item."""
         raise NotImplementedError()
