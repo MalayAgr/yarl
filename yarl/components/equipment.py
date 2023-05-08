@@ -80,6 +80,8 @@ class Equipment(Component[ActiveEntity]):
             else "armor"
         )
 
+        removed_from_inventory = remove_from_inventory
+
         if (
             remove_from_inventory is True
             and self.owner is not None
