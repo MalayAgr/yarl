@@ -11,7 +11,7 @@ from .select_item import SelectItemEventHandler
 
 if TYPE_CHECKING:
     from yarl.engine import Engine
-    from yarl.entity import Item
+    from yarl.entity import ConsumableItem
 
     from .base_event_handler import ActionOrHandlerType, BaseEventHandler
 
@@ -58,5 +58,5 @@ class SelectItemToPickupEventHandler(SelectItemEventHandler):
 
         return super().ev_keydown(event)
 
-    def on_item_selected(self, item: Item) -> ActionOrHandlerType | None:
+    def on_item_selected(self, item: ConsumableItem) -> ActionOrHandlerType | None:
         return PickupAction(engine=self.engine, entity=self.engine.player, items=[item])

@@ -24,8 +24,6 @@ def map_generator() -> MapGenerator:
         map_height=45,
         depth=10,
         full_rooms=False,
-        max_items_per_room=2,
-        max_enemies_per_room=2,
     )
 
 
@@ -144,10 +142,12 @@ class TestMapGenerator:
         for x, y in coordinates:
             assert map_generator.game_map.tiles[x, y] == tiles.floor
 
-    def test_generate_map(self, map_generator: MapGenerator) -> None:
+    def test_generate_map_default_factories(self, map_generator: MapGenerator) -> None:
         player = Entity(x=0, y=0, char="@", color=(255, 255, 255))
 
-        game_map = map_generator.generate_map(player=player)
+        game_map = map_generator.generate_map(
+            player=player, max_items_per_room=2, max_enemies_per_room=2
+        )
 
         assert isinstance(game_map, GameMap)
 
@@ -164,11 +164,11 @@ class TestMapGenerator:
         assert player in game_map.entities
         assert (player.x, player.y) in game_map._entity_map
 
-        max_enemies = len(map_generator.rooms) * map_generator.max_enemies_per_room
+        max_enemies = len(map_generator.rooms) * 2
 
         assert len(tuple(game_map.active_entities)) <= max_enemies + 1
 
-        max_items = len(map_generator.rooms) * map_generator.max_items_per_room
+        max_items = len(map_generator.rooms) * 2
 
         assert len(tuple(game_map.items)) <= max_items
 

@@ -6,7 +6,7 @@ import tcod
 import yarl.tile_types as tiles
 from tcod.map import compute_fov
 from yarl.components import AttackingAI, Consumable, Fighter, Level
-from yarl.entity import ActiveEntity, Entity, Item
+from yarl.entity import ActiveEntity, ConsumableItem, Entity
 from yarl.exceptions import CollisionWithEntityException
 from yarl.map import GameMap
 
@@ -26,15 +26,15 @@ def active_entities() -> list[ActiveEntity]:
 
 
 @pytest.fixture
-def items() -> list[Item]:
-    return [Item(consumable=Consumable(), x=i, y=i) for i in range(20, 30)]
+def items() -> list[ConsumableItem]:
+    return [ConsumableItem(consumable=Consumable(), x=i, y=i) for i in range(20, 30)]
 
 
 @pytest.fixture
 def entities(
     active_entities: list[ActiveEntity],
-    items: list[Item],
-) -> list[ActiveEntity | Item]:
+    items: list[ConsumableItem],
+) -> list[ActiveEntity | ConsumableItem]:
     return active_entities + items
 
 
@@ -44,7 +44,7 @@ def game_map() -> GameMap:
 
 
 @pytest.fixture
-def game_map_with_entities(entities: list[ActiveEntity | Item]) -> GameMap:
+def game_map_with_entities(entities: list[ActiveEntity | ConsumableItem]) -> GameMap:
     return GameMap(width=100, height=45, pov_radius=5, entities=entities)
 
 
@@ -64,7 +64,7 @@ def test_initialization(game_map: GameMap) -> None:
 
 
 def test_initialization_with_entities(
-    game_map_with_entities: GameMap, entities: list[ActiveEntity | Item]
+    game_map_with_entities: GameMap, entities: list[ActiveEntity | ConsumableItem]
 ) -> None:
     assert all(entity in game_map_with_entities.entities for entity in entities)
     assert all(
@@ -77,16 +77,21 @@ def test_initialization_with_entities(
     )
 
 
-def test_inbounds(game_map: GameMap) -> None:
-    assert game_map.in_bounds(x=0, y=0) is True
-    assert game_map.in_bounds(x=50, y=22) is True
-    assert game_map.in_bounds(x=4, y=10) is True
-    assert game_map.in_bounds(x=99, y=44) is True
-
-    assert game_map.in_bounds(x=100, y=1) is False
-    assert game_map.in_bounds(x=1, y=45) is False
-    assert game_map.in_bounds(x=100, y=45) is False
-    assert game_map.in_bounds(x=-1, y=-20) is False
+@pytest.mark.parametrize(
+    ["x", "y", "expected"],
+    [
+        [0, 0, True],
+        [50, 22, True],
+        [4, 10, True],
+        [99, 44, True],
+        [100, 1, False],
+        [1, 45, False],
+        [100, 45, False],
+        [-1, 20, False],
+    ],
+)
+def test_inbounds(game_map: GameMap, x: int, y: int, expected: bool) -> None:
+    assert game_map.in_bounds(x=x, y=y) is expected
 
 
 def test_update_fov(game_map: GameMap) -> None:
@@ -119,7 +124,7 @@ def test_active_entities(
 
 
 def test_get_entities(
-    game_map_with_entities: GameMap, entities: list[ActiveEntity | Item]
+    game_map_with_entities: GameMap, entities: list[ActiveEntity | ConsumableItem]
 ) -> None:
     assert all(
         entity in game_map_with_entities.get_entities(x=entity.x, y=entity.y)
@@ -144,7 +149,7 @@ def test_get_active_entity_no_entity(
 
 
 def test_move_entity(
-    game_map_with_entities: GameMap, entities: list[ActiveEntity | Item]
+    game_map_with_entities: GameMap, entities: list[ActiveEntity | ConsumableItem]
 ) -> None:
     entity = entities[0]
 
@@ -247,7 +252,7 @@ def test_get_items_empty(game_map: GameMap) -> None:
 
 
 def test_get_items_single_item(game_map: GameMap) -> None:
-    item = Item(consumable=Consumable)
+    item = ConsumableItem(consumable=Consumable)
 
     game_map.add_entity(entity=item, x=50, y=40)
 
@@ -255,8 +260,8 @@ def test_get_items_single_item(game_map: GameMap) -> None:
 
 
 def test_get_items_multiple_items(game_map: GameMap) -> None:
-    item1 = Item(consumable=Consumable)
-    item2 = Item(consumable=Consumable)
+    item1 = ConsumableItem(consumable=Consumable)
+    item2 = ConsumableItem(consumable=Consumable)
 
     game_map.add_entity(entity=item1, x=50, y=22, check_blocking=False)
     game_map.add_entity(entity=item2, x=50, y=22, check_blocking=False)
@@ -267,7 +272,7 @@ def test_get_items_multiple_items(game_map: GameMap) -> None:
 def test_remove_entity(
     game_map_with_entities: GameMap,
     active_entities: list[ActiveEntity],
-    items: list[Item],
+    items: list[ConsumableItem],
 ) -> None:
     entity = active_entities[0]
 

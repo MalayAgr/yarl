@@ -137,7 +137,6 @@ class ActiveEntity(Entity):
 class Item(Entity):
     def __init__(
         self,
-        consumable: Consumable,
         x: int = 0,
         y: int = 0,
         char: str = "?",
@@ -145,14 +144,21 @@ class Item(Entity):
         name: str = "<Unnamed>",
     ) -> None:
         super().__init__(
-            x=x,
-            y=y,
-            char=char,
-            color=color,
-            name=name,
-            blocking=False,
-            render_order=RenderOrder.ITEM,
+            x, y, char, color, name, blocking=False, render_order=RenderOrder.ITEM
         )
+
+
+class ConsumableItem(Item):
+    def __init__(
+        self,
+        consumable: Consumable,
+        x: int = 0,
+        y: int = 0,
+        char: str = "?",
+        color: tuple[int, int, int] = (255, 255, 255),
+        name: str = "<Unnamed>",
+    ) -> None:
+        super().__init__(x=x, y=y, char=char, color=color, name=name)
 
         self.consumable = consumable
         consumable.owner = self

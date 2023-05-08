@@ -10,7 +10,7 @@ from .gamemap import GameMap
 from .mapgen import MapGenerator
 
 if TYPE_CHECKING:
-    from yarl.entity import ActiveEntity, Item
+    from yarl.entity import ActiveEntity, ConsumableItem
 
 
 T = TypeVar("T", bound=Entity)
@@ -49,7 +49,7 @@ class GameWorld:
         }
 
     @property
-    def item_floor_factories(self) -> dict[int, dict[Item, float]]:
+    def item_floor_factories(self) -> dict[int, dict[ConsumableItem, float]]:
         return {
             0: {ITEMS["healing_potion"]: 0.37},
             2: {ITEMS["confusion_spell"]: 0.11},

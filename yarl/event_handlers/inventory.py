@@ -7,7 +7,7 @@ from .select_item import SelectItemEventHandler
 
 if TYPE_CHECKING:
     from yarl.engine import Engine
-    from yarl.entity import Item
+    from yarl.entity import ConsumableItem
 
     from .base_event_handler import ActionOrHandlerType, BaseEventHandler
 
@@ -28,7 +28,7 @@ class InventoryEventHandler(SelectItemEventHandler):
             items=[] if inventory is None else inventory.items,
         )
 
-    def on_item_selected(self, item: Item) -> ActionOrHandlerType | None:
+    def on_item_selected(self, item: ConsumableItem) -> ActionOrHandlerType | None:
         return ConsumeSingleItemEventHandler(
             engine=self.engine, item=item, old_event_handler=self.old_event_handler
         )

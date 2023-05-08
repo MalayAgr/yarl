@@ -5,7 +5,7 @@ from unittest.mock import Mock
 
 import pytest
 from yarl.components import AttackingAI, Consumable, Fighter, Inventory, Level
-from yarl.entity import ActiveEntity, Entity, Item
+from yarl.entity import ActiveEntity, ConsumableItem, Entity
 from yarl.utils import RenderOrder
 
 
@@ -179,8 +179,8 @@ class TestActiveEntity:
 
 class TestItem:
     @pytest.fixture
-    def item(self) -> Item:
-        return Item(
+    def item(self) -> ConsumableItem:
+        return ConsumableItem(
             consumable=Consumable(),
             x=1,
             y=5,
@@ -189,7 +189,7 @@ class TestItem:
             name="Item",
         )
 
-    def test_initialization(self, item: Item) -> None:
+    def test_initialization(self, item: ConsumableItem) -> None:
         assert item.x == 1
         assert item.y == 5
         assert item.char == "@"

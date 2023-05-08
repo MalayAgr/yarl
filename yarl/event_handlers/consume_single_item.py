@@ -12,14 +12,14 @@ from .event_handler import EventHandler
 if TYPE_CHECKING:
     from yarl.actions import Action
     from yarl.engine import Engine
-    from yarl.entity import Item
+    from yarl.entity import ConsumableItem
 
 
 class ConsumeSingleItemEventHandler(EventHandler):
     def __init__(
         self,
         engine: Engine,
-        item: Item | None = None,
+        item: ConsumableItem | None = None,
         old_event_handler: BaseEventHandler | None = None,
     ) -> None:
         super().__init__(engine)

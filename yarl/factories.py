@@ -8,7 +8,7 @@ from yarl.components import (
     Level,
     LightningScroll,
 )
-from yarl.entity import ActiveEntity, Item
+from yarl.entity import ActiveEntity, ConsumableItem
 
 
 def player_factory(
@@ -57,25 +57,25 @@ ENEMIES = {
 }
 
 ITEMS = {
-    "healing_potion": Item(
+    "healing_potion": ConsumableItem(
         consumable=HealingPotion(amount=4),
         char="!",
         color=(127, 0, 255),
         name="Healing Potion",
     ),
-    "lightning_scroll": Item(
+    "lightning_scroll": ConsumableItem(
         consumable=LightningScroll(power=20, range=5),
         char="~",
         color=(255, 255, 0),
         name="Lightning Scroll",
     ),
-    "confusion_spell": Item(
+    "confusion_spell": ConsumableItem(
         consumable=ConfusionSpell(number_of_turns=10),
         char="~",
         color=(207, 63, 255),
         name="Confusion Spell",
     ),
-    "fireball_scroll": Item(
+    "fireball_scroll": ConsumableItem(
         consumable=FireballScroll(power=12, radius=3),
         char="~",
         color=(255, 0, 0),

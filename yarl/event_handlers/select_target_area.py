@@ -10,7 +10,7 @@ from .select_index import SelectIndexEventHandler
 
 if TYPE_CHECKING:
     from yarl.engine import Engine
-    from yarl.entity import Item
+    from yarl.entity import ConsumableItem
 
     from .base_event_handler import ActionOrHandlerType, BaseEventHandler
 
@@ -22,7 +22,7 @@ class SelectTargetAreaEventHandler(SelectIndexEventHandler):
         self,
         engine: Engine,
         radius: int,
-        item: Item,
+        item: ConsumableItem,
         old_event_handler: BaseEventHandler | None = None,
     ) -> None:
         super().__init__(engine, old_event_handler)

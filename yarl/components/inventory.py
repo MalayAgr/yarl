@@ -7,7 +7,7 @@ from yarl.entity import ActiveEntity
 from .base_component import Component
 
 if TYPE_CHECKING:
-    from yarl.entity import Item
+    from yarl.entity import ConsumableItem
 
 
 class Inventory(Component[ActiveEntity]):
@@ -15,15 +15,15 @@ class Inventory(Component[ActiveEntity]):
         super().__init__(owner=entity)
 
         self.capacity = capacity
-        self.items: list[Item] = []
+        self.items: list[ConsumableItem] = []
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(capacity={self.capacity})"
 
-    def remove_item(self, item: Item) -> None:
+    def remove_item(self, item: ConsumableItem) -> None:
         self.items.remove(item)
 
-    def add_item(self, item: Item) -> bool:
+    def add_item(self, item: ConsumableItem) -> bool:
         if len(self.items) == self.capacity:
             return False
 
