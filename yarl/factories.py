@@ -16,14 +16,17 @@ from yarl.utils import EquipmentType
 
 def player_factory(
     max_hp: int,
-    defense: int,
-    power: int,
+    base_defense: int,
+    base_power: int,
     speed: int,
     attack_speed: int,
     inventory_capacity: int,
 ) -> ActiveEntity:
     fighter = Fighter(
-        max_hp=max_hp, defense=defense, power=power, attack_speed=attack_speed
+        max_hp=max_hp,
+        base_defense=base_defense,
+        base_power=base_power,
+        attack_speed=attack_speed,
     )
 
     inventory = Inventory(capacity=inventory_capacity)
@@ -43,7 +46,7 @@ def player_factory(
 
 ENEMIES = {
     "orc": ActiveEntity(
-        fighter=Fighter(max_hp=10, defense=0, power=3, attack_speed=10),
+        fighter=Fighter(max_hp=10, base_defense=0, base_power=3, attack_speed=10),
         level=Level(xp_given=35),
         char="O",
         color=(63, 127, 63),
@@ -51,7 +54,7 @@ ENEMIES = {
         ai_cls=AttackingAI,
     ),
     "troll": ActiveEntity(
-        fighter=Fighter(max_hp=16, defense=1, power=4, attack_speed=10),
+        fighter=Fighter(max_hp=16, base_defense=1, base_power=4, attack_speed=10),
         level=Level(xp_given=200),
         char="T",
         color=(0, 127, 0),
@@ -122,4 +125,8 @@ ITEM_FACTORY: dict[Item, float] = {
     CONSUMABLE_ITEMS["lightning_scroll"]: 0.1,
     CONSUMABLE_ITEMS["confusion_spell"]: 0.3,
     CONSUMABLE_ITEMS["fireball_scroll"]: 0.2,
+    EQUIPPABLE_ITEMS["dagger"]: 0.3,
+    EQUIPPABLE_ITEMS["sword"]: 0.2,
+    EQUIPPABLE_ITEMS["leather_armor"]: 0.1,
+    EQUIPPABLE_ITEMS["steel_armor"]: 0.1,
 }

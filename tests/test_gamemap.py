@@ -15,7 +15,7 @@ from yarl.map import GameMap
 def active_entities() -> list[ActiveEntity]:
     return [
         ActiveEntity(
-            fighter=Fighter(max_hp=10, defense=1, power=1, attack_speed=1),
+            fighter=Fighter(max_hp=10, base_defense=1, base_power=1, attack_speed=1),
             level=Level(),
             x=i,
             y=i,

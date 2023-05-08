@@ -39,14 +39,15 @@ class ConsumeSingleItemEventHandler(EventHandler):
             self.engine.add_to_message_log("There is no item to consume.")
             return self.old_event_handler or self
 
-        action_or_handler: ActionOrHandlerType = self.old_event_handler or self
+        if item.consumable is None:
+            self.engine.add_to_message_log("This item is not consumable.")
+            return self.old_event_handler or self
 
-        if item.consumable is not None:
-            action_or_handler = item.consumable.get_action_or_handler(
-                entity=self.engine.player,
-                engine=self.engine,
-                old_event_handler=self.old_event_handler,
-            )
+        action_or_handler = item.consumable.get_action_or_handler(
+            entity=self.engine.player,
+            engine=self.engine,
+            old_event_handler=self.old_event_handler,
+        )
 
         if isinstance(action_or_handler, BaseEventHandler):
             return action_or_handler

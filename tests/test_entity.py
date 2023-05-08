@@ -69,9 +69,9 @@ class TestActiveEntity:
         return ActiveEntity(
             fighter=Fighter(
                 max_hp=30,
-                defense=2,
+                base_defense=2,
                 attack_speed=10,
-                power=5,
+                base_power=5,
             ),
             level=Level(),
             x=1,
@@ -103,9 +103,9 @@ class TestActiveEntity:
         entity = ActiveEntity(
             fighter=Fighter(
                 max_hp=30,
-                defense=2,
+                base_defense=2,
                 attack_speed=10,
-                power=5,
+                base_power=5,
             ),
             level=Level(),
             x=1,

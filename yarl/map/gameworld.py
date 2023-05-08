@@ -4,7 +4,7 @@ import itertools
 from typing import TYPE_CHECKING, TypeVar
 
 from yarl.entity import Entity
-from yarl.factories import CONSUMABLE_ITEMS, ENEMIES
+from yarl.factories import CONSUMABLE_ITEMS, ENEMIES, EQUIPPABLE_ITEMS
 
 from .gamemap import GameMap
 from .mapgen import MapGenerator
@@ -51,7 +51,11 @@ class GameWorld:
     @property
     def item_floor_factories(self) -> dict[int, dict[Item, float]]:
         return {
-            0: {CONSUMABLE_ITEMS["healing_potion"]: 0.37},
+            0: {
+                CONSUMABLE_ITEMS["healing_potion"]: 0.37,
+                EQUIPPABLE_ITEMS["dagger"]: 0.24,
+                EQUIPPABLE_ITEMS["leather_armor"]: 0.24,
+            },
             2: {CONSUMABLE_ITEMS["confusion_spell"]: 0.11},
             4: {CONSUMABLE_ITEMS["lightning_scroll"]: 0.26},
             6: {CONSUMABLE_ITEMS["fireball_scroll"]: 0.26},

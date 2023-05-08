@@ -61,8 +61,8 @@ class Game:
     def get_engine(self) -> Engine:
         player = player_factory(
             max_hp=self.player_max_hp,
-            defense=self.player_defense,
-            power=self.player_power,
+            base_defense=self.player_defense,
+            base_power=self.player_power,
             speed=self.player_speed,
             attack_speed=self.player_attack_speed,
             inventory_capacity=self.player_inventory_capacity,

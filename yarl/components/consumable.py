@@ -123,7 +123,7 @@ class LightningScroll(Consumable):
             entities, key=lambda entity: consumer.distance(x=entity.x, y=entity.y)
         )
 
-        damage = max(0, self.power - target.fighter.defense)
+        damage = max(0, self.power - target.fighter.base_defense)
 
         if damage == 0:
             raise ImpossibleActionException(
@@ -278,7 +278,7 @@ class FireballScroll(Consumable):
 
         for target in targets:
             distance = target.distance(x=x, y=y)
-            damage = max(0, self.power - target.fighter.defense)
+            damage = max(0, self.power - target.fighter.base_defense)
 
             if damage == 0:
                 continue

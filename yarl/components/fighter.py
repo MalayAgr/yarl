@@ -12,16 +12,16 @@ class Fighter(Component[ActiveEntity]):
     def __init__(
         self,
         max_hp: int,
-        defense: int,
-        power: int,
+        base_defense: int,
+        base_power: int,
         attack_speed: int,
         owner: ActiveEntity | None = None,
     ) -> None:
         super().__init__(owner=owner)
         self.max_hp = max_hp
         self._hp = max_hp
-        self.defense = defense
-        self.power = power
+        self.base_defense = base_defense
+        self.base_power = base_power
         self.attack_speed = attack_speed
         self.attack_wait = 0
 
@@ -45,6 +45,28 @@ class Fighter(Component[ActiveEntity]):
             self.die()
 
     @property
+    def defense_bonus(self) -> int:
+        if self.owner is None:
+            return 0
+
+        return 0 if self.owner.equipment is None else self.owner.equipment.defense_bonus
+
+    @property
+    def defense(self) -> int:
+        return self.base_defense + self.defense_bonus
+
+    @property
+    def power_bonus(self) -> int:
+        if self.owner is None:
+            return 0
+
+        return 0 if self.owner.equipment is None else self.owner.equipment.power_bonus
+
+    @property
+    def power(self) -> int:
+        return self.base_power + self.power_bonus
+
+    @property
     def is_waiting_to_attack(self) -> bool:
         self.attack_wait = max(0, self.attack_wait - 1)
         return self.attack_wait > 0
@@ -56,13 +78,13 @@ class Fighter(Component[ActiveEntity]):
             self.hp += amount
 
     def increase_power(self, amount: int) -> None:
-        self.power += amount
+        self.base_power += amount
 
     def increase_defense(self, amount: int) -> None:
-        self.defense += amount
+        self.base_defense += amount
 
     def attack(self, target: ActiveEntity) -> tuple[bool, int]:
-        damage = max(0, self.power - target.fighter.defense)
+        damage = max(0, self.power - target.fighter.base_defense)
 
         if damage > 0:
             target.fighter.take_damage(damage=damage)
