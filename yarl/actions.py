@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from yarl.engine import Engine
+from yarl.entity import Entity
 from yarl.exceptions import ImpossibleActionException
 from yarl.interface import color
 
@@ -148,8 +150,9 @@ class ConsumeItemAction(Action):
         if item is None:
             raise ImpossibleActionException("There is no item to consume.")
 
-        item.consumable.activate(consumer=self.entity, engine=self.engine)
-        self.game_map.remove_entity(entity=item)
+        if item.consumable is not None:
+            item.consumable.activate(consumer=self.entity, engine=self.engine)
+            self.game_map.remove_entity(entity=item)
 
 
 class ConsumeTargetedItemAction(Action):
@@ -177,12 +180,13 @@ class ConsumeTargetedItemAction(Action):
         if item is None:
             raise ImpossibleActionException("There is no item to consume.")
 
-        item.consumable.activate(
-            consumer=self.entity,
-            engine=self.engine,
-            target_location=self.target_location,
-        )
-        self.game_map.remove_entity(entity=item)
+        if item.consumable is not None:
+            item.consumable.activate(
+                consumer=self.entity,
+                engine=self.engine,
+                target_location=self.target_location,
+            )
+            self.game_map.remove_entity(entity=item)
 
 
 class PickupAction(Action):
@@ -206,6 +210,12 @@ class PickupAction(Action):
 
         for item in items:
             added = inventory.add_item(item=item)
+
+            if self.entity.equipment is not None:
+                try:
+                    self.entity.equipment.equip(item=item, engine=self.engine)
+                except AttributeError:
+                    pass
 
             if added is False:
                 raise ImpossibleActionException("Your inventory is full.")
@@ -241,6 +251,15 @@ class DropItemFromInventoryAction(Action):
         for item in items:
             try:
                 inventory.remove_item(item=item)
+
+                if self.entity.equipment is not None:
+                    try:
+                        self.entity.equipment.unequip(
+                            item=item, engine=self.engine, remove_from_inventory=False
+                        )
+                    except AttributeError:
+                        pass
+
                 self.place_item(item=item, x=self.entity.x, y=self.entity.y)
                 self.engine.add_to_message_log(
                     text=f"You dropped {item.name} from your inventory."

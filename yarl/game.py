@@ -23,8 +23,6 @@ class Game:
         map_width: int,
         map_height: int,
         room_min_size: int = 5,
-        max_enemies_per_room: int = 2,
-        max_items_per_room: int = 2,
         player_max_hp: int = 30,
         player_defense: int = 2,
         player_power: int = 5,
@@ -35,8 +33,6 @@ class Game:
         self.map_width = map_width
         self.map_height = map_height
         self.room_min_size = room_min_size
-        self.max_enemies_per_room = max_enemies_per_room
-        self.max_items_per_room = max_items_per_room
         self.player_max_hp = player_max_hp
         self.player_defense = player_defense
         self.player_power = player_power
@@ -50,8 +46,6 @@ class Game:
             "map_width",
             "map_height",
             "room_min_size",
-            "max_enemies_per_room",
-            "max_items_per_room",
             "player_max_hp",
             "player_defense",
             "player_power",
@@ -67,8 +61,8 @@ class Game:
     def get_engine(self) -> Engine:
         player = player_factory(
             max_hp=self.player_max_hp,
-            defense=self.player_defense,
-            power=self.player_power,
+            base_defense=self.player_defense,
+            base_power=self.player_power,
             speed=self.player_speed,
             attack_speed=self.player_attack_speed,
             inventory_capacity=self.player_inventory_capacity,
@@ -78,8 +72,6 @@ class Game:
             map_width=self.map_width,
             map_height=self.map_height,
             room_min_size=self.room_min_size,
-            max_enemies_per_room=self.max_enemies_per_room,
-            max_items_per_room=self.max_items_per_room,
         )
 
         engine = Engine(game_world=game_world, player=player)

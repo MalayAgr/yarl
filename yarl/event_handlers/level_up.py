@@ -48,12 +48,12 @@ class LevelUpEventHandler(AskUserEventHandler):
         console.print(
             x=x + 1,
             y=5,
-            string=f"b) Strength (+1 attack, from {player.fighter.power})",
+            string=f"b) Strength (+1 attack, from {player.fighter.base_power})",
         )
         console.print(
             x=x + 1,
             y=6,
-            string=f"c) Agility (+1 defense, from {player.fighter.defense})",
+            string=f"c) Agility (+1 defense, from {player.fighter.base_defense})",
         )
 
     def get_booster(

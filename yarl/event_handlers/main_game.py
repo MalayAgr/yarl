@@ -9,7 +9,6 @@ from tcod.event import Event, KeyDown, KeySym, Modifier
 from yarl.actions import BumpAction, PickupAction, TakeStairsAction, WaitAction
 from yarl.event_handlers.base_event_handler import BaseEventHandler
 from yarl.exceptions import ImpossibleActionException
-from yarl.interface import color
 from yarl.logger import logger
 
 from .consume_single_item import ConsumeSingleItemEventHandler

@@ -8,7 +8,15 @@ from typing import TYPE_CHECKING, Iterable, Type, TypeVar
 from yarl.utils import RenderOrder
 
 if TYPE_CHECKING:
-    from yarl.components import BaseAI, Consumable, Fighter, Inventory, Level
+    from yarl.components import (
+        BaseAI,
+        Consumable,
+        Equipment,
+        Equippable,
+        Fighter,
+        Inventory,
+        Level,
+    )
 
 T = TypeVar("T", bound="Entity")
 
@@ -66,6 +74,7 @@ class ActiveEntity(Entity):
         name: str = "<Unnamed>",
         ai_cls: Type[BaseAI] | None = None,
         inventory: Inventory | None = None,
+        equipment: Equipment | None = None,
         speed: int = 8,
     ) -> None:
         super().__init__(
@@ -88,10 +97,15 @@ class ActiveEntity(Entity):
         self.level = level
         self.level.owner = self
 
-        self.inventory = inventory if inventory is not None else None
+        self.inventory = inventory or None
 
         if self.inventory is not None:
             self.inventory.owner = self
+
+        self.equipment = equipment or None
+
+        if self.equipment is not None:
+            self.equipment.owner = self
 
         self.speed = speed
         self.movement_wait = 0
@@ -137,7 +151,8 @@ class ActiveEntity(Entity):
 class Item(Entity):
     def __init__(
         self,
-        consumable: Consumable,
+        consumable: Consumable | None = None,
+        equippable: Equippable | None = None,
         x: int = 0,
         y: int = 0,
         char: str = "?",
@@ -145,14 +160,15 @@ class Item(Entity):
         name: str = "<Unnamed>",
     ) -> None:
         super().__init__(
-            x=x,
-            y=y,
-            char=char,
-            color=color,
-            name=name,
-            blocking=False,
-            render_order=RenderOrder.ITEM,
+            x, y, char, color, name, blocking=False, render_order=RenderOrder.ITEM
         )
 
         self.consumable = consumable
-        consumable.owner = self
+
+        if self.consumable is not None:
+            self.consumable.owner = self
+
+        self.equippable = equippable
+
+        if self.equippable is not None:
+            self.equippable.owner = self

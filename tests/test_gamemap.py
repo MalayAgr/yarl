@@ -15,7 +15,7 @@ from yarl.map import GameMap
 def active_entities() -> list[ActiveEntity]:
     return [
         ActiveEntity(
-            fighter=Fighter(max_hp=10, defense=1, power=1, attack_speed=1),
+            fighter=Fighter(max_hp=10, base_defense=1, base_power=1, attack_speed=1),
             level=Level(),
             x=i,
             y=i,
@@ -27,7 +27,7 @@ def active_entities() -> list[ActiveEntity]:
 
 @pytest.fixture
 def items() -> list[Item]:
-    return [Item(consumable=Consumable(), x=i, y=i) for i in range(20, 30)]
+    return [Item(x=i, y=i) for i in range(20, 30)]
 
 
 @pytest.fixture
@@ -77,16 +77,21 @@ def test_initialization_with_entities(
     )
 
 
-def test_inbounds(game_map: GameMap) -> None:
-    assert game_map.in_bounds(x=0, y=0) is True
-    assert game_map.in_bounds(x=50, y=22) is True
-    assert game_map.in_bounds(x=4, y=10) is True
-    assert game_map.in_bounds(x=99, y=44) is True
-
-    assert game_map.in_bounds(x=100, y=1) is False
-    assert game_map.in_bounds(x=1, y=45) is False
-    assert game_map.in_bounds(x=100, y=45) is False
-    assert game_map.in_bounds(x=-1, y=-20) is False
+@pytest.mark.parametrize(
+    ["x", "y", "expected"],
+    [
+        [0, 0, True],
+        [50, 22, True],
+        [4, 10, True],
+        [99, 44, True],
+        [100, 1, False],
+        [1, 45, False],
+        [100, 45, False],
+        [-1, 20, False],
+    ],
+)
+def test_inbounds(game_map: GameMap, x: int, y: int, expected: bool) -> None:
+    assert game_map.in_bounds(x=x, y=y) is expected
 
 
 def test_update_fov(game_map: GameMap) -> None:

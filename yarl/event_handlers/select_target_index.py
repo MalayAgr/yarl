@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from yarl.engine import Engine
     from yarl.entity import Item
 
-    from .base_event_handler import BaseEventHandler, ActionOrHandlerType
+    from .base_event_handler import ActionOrHandlerType, BaseEventHandler
 
 
 class SelectTargetIndexEventHandler(SelectIndexEventHandler):

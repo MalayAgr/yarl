@@ -13,9 +13,9 @@ class Level(Component[ActiveEntity]):
         level_up_base: int = 0,
         level_up_factor: int = 150,
         xp_given: int = 0,
-        entity: ActiveEntity | None = None,
+        owner: ActiveEntity | None = None,
     ):
-        super().__init__(owner=entity)
+        super().__init__(owner=owner)
         self.current_level = current_level
         self.current_xp = current_xp
         self.level_up_base = level_up_base

@@ -22,8 +22,8 @@ if TYPE_CHECKING:
 
 
 class Consumable(Component[Item]):
-    def __init__(self, item: Item | None = None):
-        super().__init__(owner=item)
+    def __init__(self, owner: Item | None = None):
+        super().__init__(owner=owner)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}()"
@@ -59,7 +59,7 @@ class Consumable(Component[Item]):
 
 class HealingPotion(Consumable):
     def __init__(self, amount: int, item: Item | None = None):
-        super().__init__(item=item)
+        super().__init__(owner=item)
 
         self.amount = amount
 
@@ -151,7 +151,7 @@ class LightningScroll(Consumable):
 
 class ConfusionSpell(Consumable):
     def __init__(self, number_of_turns: int, item: Item | None = None):
-        super().__init__(item=item)
+        super().__init__(owner=item)
         self.number_of_turns = number_of_turns
 
     def __repr__(self) -> str:
