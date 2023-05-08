@@ -57,7 +57,7 @@ class GameWorld:
             6: {ITEMS["fireball_scroll"]: 0.26},
         }
 
-    def max_entities_by_floor(self, floor_counts: list[tuple[int, int]]) -> int:
+    def get_max_entities_by_floor(self, floor_counts: list[tuple[int, int]]) -> int:
         count_iterator = itertools.dropwhile(
             lambda x: x[0] > self.current_floor, reversed(floor_counts)
         )
@@ -85,10 +85,10 @@ class GameWorld:
     def generate_floor(self, player: ActiveEntity | None = None) -> GameMap:
         self.current_floor += 1
 
-        max_enemies_per_room = self.max_entities_by_floor(
+        max_enemies_per_room = self.get_max_entities_by_floor(
             floor_counts=self.enemies_floor_counts
         )
-        max_items_per_room = self.max_entities_by_floor(
+        max_items_per_room = self.get_max_entities_by_floor(
             floor_counts=self.enemies_floor_counts
         )
 
