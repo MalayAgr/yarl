@@ -268,8 +268,6 @@ class DropItemFromInventoryAction(Action):
                 raise ImpossibleActionException(
                     f"{item.name} is not part of your inventory."
                 )
-            except Exception as e:
-                print(e)
 
 
 class TakeStairsAction(Action):

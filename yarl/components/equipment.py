@@ -91,7 +91,7 @@ class Equipment(Component[ActiveEntity]):
                 self.owner.inventory.remove_item(item=item)
                 removed_from_inventory = True
             except ValueError:
-                pass
+                removed_from_inventory = False
 
         setattr(self, slot, None)
         engine.add_to_message_log(text=self.unequip_message(item_name=item.name))
