@@ -52,13 +52,19 @@ class GameWorld:
     def item_floor_factories(self) -> dict[int, dict[Item, float]]:
         return {
             0: {
-                CONSUMABLE_ITEMS["healing_potion"]: 0.37,
-                EQUIPPABLE_ITEMS["dagger"]: 0.24,
-                EQUIPPABLE_ITEMS["leather_armor"]: 0.24,
+                CONSUMABLE_ITEMS["healing_potion"]: 0.26,
+                EQUIPPABLE_ITEMS["dagger"]: 0.04,
+                EQUIPPABLE_ITEMS["leather_armor"]: 0.11,
             },
-            2: {CONSUMABLE_ITEMS["confusion_spell"]: 0.11},
-            4: {CONSUMABLE_ITEMS["lightning_scroll"]: 0.26},
-            6: {CONSUMABLE_ITEMS["fireball_scroll"]: 0.26},
+            2: {CONSUMABLE_ITEMS["confusion_spell"]: 0.07},
+            4: {
+                CONSUMABLE_ITEMS["lightning_scroll"]: 0.18,
+                EQUIPPABLE_ITEMS["sword"]: 0.04,
+            },
+            6: {
+                CONSUMABLE_ITEMS["fireball_scroll"]: 0.18,
+                EQUIPPABLE_ITEMS["steel_armor"]: 0.11,
+            },
         }
 
     def get_max_entities_by_floor(self, floor_counts: list[tuple[int, int]]) -> int:

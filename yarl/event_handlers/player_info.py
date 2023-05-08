@@ -27,7 +27,5 @@ class PlayerInfoEventHandler(AskUserEventHandler):
             bg=(0, 0, 0),
         )
 
-        console.print(x=x + 1, y=y + 1, string=f"Attack: {player.fighter.base_power}")
-        console.print(
-            x=x + 1, y=y + 2, string=f"Defense: {player.fighter.base_defense}"
-        )
+        console.print(x=x + 1, y=y + 1, string=f"Attack: {player.fighter.power}")
+        console.print(x=x + 1, y=y + 2, string=f"Defense: {player.fighter.defense}")
