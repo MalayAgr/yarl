@@ -8,7 +8,14 @@ from typing import TYPE_CHECKING, Iterable, Type, TypeVar
 from yarl.utils import RenderOrder
 
 if TYPE_CHECKING:
-    from yarl.components import BaseAI, Consumable, Fighter, Inventory, Level
+    from yarl.components import (
+        BaseAI,
+        Consumable,
+        Equippable,
+        Fighter,
+        Inventory,
+        Level,
+    )
 
 T = TypeVar("T", bound="Entity")
 
@@ -162,3 +169,19 @@ class ConsumableItem(Item):
 
         self.consumable = consumable
         consumable.owner = self
+
+
+class EquippableItem(Item):
+    def __init__(
+        self,
+        equippable: Equippable,
+        x: int = 0,
+        y: int = 0,
+        char: str = "?",
+        color: tuple[int, int, int] = (255, 255, 255),
+        name: str = "<Unnamed>",
+    ) -> None:
+        super().__init__(x=x, y=y, char=char, color=color, name=name)
+
+        self.equippable = equippable
+        self.equippable.owner = self

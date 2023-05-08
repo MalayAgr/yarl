@@ -4,13 +4,13 @@ import itertools
 from typing import TYPE_CHECKING, TypeVar
 
 from yarl.entity import Entity
-from yarl.factories import ENEMIES, ITEMS
+from yarl.factories import CONSUMABLE_ITEMS, ENEMIES
 
 from .gamemap import GameMap
 from .mapgen import MapGenerator
 
 if TYPE_CHECKING:
-    from yarl.entity import ActiveEntity, ConsumableItem
+    from yarl.entity import ActiveEntity, Item
 
 
 T = TypeVar("T", bound=Entity)
@@ -49,12 +49,12 @@ class GameWorld:
         }
 
     @property
-    def item_floor_factories(self) -> dict[int, dict[ConsumableItem, float]]:
+    def item_floor_factories(self) -> dict[int, dict[Item, float]]:
         return {
-            0: {ITEMS["healing_potion"]: 0.37},
-            2: {ITEMS["confusion_spell"]: 0.11},
-            4: {ITEMS["lightning_scroll"]: 0.26},
-            6: {ITEMS["fireball_scroll"]: 0.26},
+            0: {CONSUMABLE_ITEMS["healing_potion"]: 0.37},
+            2: {CONSUMABLE_ITEMS["confusion_spell"]: 0.11},
+            4: {CONSUMABLE_ITEMS["lightning_scroll"]: 0.26},
+            6: {CONSUMABLE_ITEMS["fireball_scroll"]: 0.26},
         }
 
     def get_max_entities_by_floor(self, floor_counts: list[tuple[int, int]]) -> int:

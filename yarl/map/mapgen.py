@@ -27,7 +27,7 @@ from typing import Iterator
 import tcod
 import yarl.tile_types as tiles
 from tcod.bsp import BSP
-from yarl.entity import ActiveEntity, ConsumableItem, Entity
+from yarl.entity import ActiveEntity, Entity, Item
 from yarl.exceptions import CollisionWithEntityException
 from yarl.factories import ENEMY_FACTORY, ITEM_FACTORY
 from yarl.map.gamemap import GameMap
@@ -312,7 +312,7 @@ class MapGenerator:
         max_enemies_per_room: int,
         max_items_per_room: int,
         enemy_factory: dict[ActiveEntity, float] | None = None,
-        item_factory: dict[ConsumableItem, float] | None = None,
+        item_factory: dict[Item, float] | None = None,
     ) -> None:
         number_of_enemies = random.randint(0, max_enemies_per_room)
         number_of_items = random.randint(0, max_items_per_room)
@@ -350,7 +350,7 @@ class MapGenerator:
             y = random.randint(room.y1 + 1, room.y2 - 1)
 
             try:
-                item = ConsumableItem.fromentity(other=item)
+                item = Item.fromentity(other=item)
                 self.game_map.add_entity(entity=item, x=x, y=y)
             except CollisionWithEntityException:
                 pass
@@ -360,7 +360,7 @@ class MapGenerator:
         player: Entity | None = None,
         enemy_factory: dict[ActiveEntity, float] | None = None,
         max_enemies_per_room: int = 2,
-        item_factory: dict[ConsumableItem, float] | None = None,
+        item_factory: dict[Item, float] | None = None,
         max_items_per_room: int = 2,
     ) -> GameMap:
         """Method to generate a map using BSP and optionally place the
@@ -369,9 +369,9 @@ class MapGenerator:
         Args:
             player: Player to be placed on the map. Defaults to None.
 
-            max_enemies_per_room: Number of enemies to spawn per room.
+            max_enemies_per_room: Maximum number of enemies to spawn per room.
 
-            max_items_per_room: Number of consumable items to spawn per room.
+            max_items_per_room: Maximum number of items to spawn per room.
 
             enemy_factory: Population enemies will be sampled from. Each
                 key is the probability and the value is the entity. If set
