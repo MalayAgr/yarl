@@ -6,6 +6,7 @@ from .consumable import (
     HealingPotion,
     LightningScroll,
 )
+from .equipment import Equipment
 from .fighter import Fighter
 from .inventory import Inventory
 from .level import Level

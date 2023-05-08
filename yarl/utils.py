@@ -19,6 +19,11 @@ class RenderOrder(Enum):
     ACTIVE_ENTITY = auto()
 
 
+class EquipmentType(Enum):
+    WEAPON = "weapon"
+    ARMOR = "armor"
+
+
 def get_game_save_path() -> str:
     parent = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
     return os.path.join(parent, "saved_games")

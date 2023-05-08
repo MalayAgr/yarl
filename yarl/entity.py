@@ -5,10 +5,10 @@ import math
 from collections import deque
 from typing import TYPE_CHECKING, Iterable, Type, TypeVar
 
-from yarl.utils import RenderOrder
+from yarl.utils import EquipmentType, RenderOrder
 
 if TYPE_CHECKING:
-    from yarl.components import BaseAI, Consumable, Fighter, Inventory, Level
+    from yarl.components import BaseAI, Consumable, Equipment, Fighter, Inventory, Level
 
 T = TypeVar("T", bound="Entity")
 
@@ -66,6 +66,7 @@ class ActiveEntity(Entity):
         name: str = "<Unnamed>",
         ai_cls: Type[BaseAI] | None = None,
         inventory: Inventory | None = None,
+        equipment: Equipment | None = None,
         speed: int = 8,
     ) -> None:
         super().__init__(
@@ -88,10 +89,15 @@ class ActiveEntity(Entity):
         self.level = level
         self.level.owner = self
 
-        self.inventory = inventory if inventory is not None else None
+        self.inventory = inventory or None
 
         if self.inventory is not None:
             self.inventory.owner = self
+
+        self.equipment = equipment or None
+
+        if self.equipment is not None:
+            self.equipment.owner = self
 
         self.speed = speed
         self.movement_wait = 0
@@ -162,3 +168,22 @@ class ConsumableItem(Item):
 
         self.consumable = consumable
         consumable.owner = self
+
+
+class EquippableItem(Item):
+    def __init__(
+        self,
+        power_bonus: int = 0,
+        defense_bonus: int = 0,
+        x: int = 0,
+        y: int = 0,
+        char: str = "?",
+        color: tuple[int, int, int] = (255, 255, 255),
+        name: str = "<Unnamed>",
+        equipment_type: EquipmentType = EquipmentType.WEAPON,
+    ) -> None:
+        super().__init__(x, y, char, color, name)
+
+        self.power_bonus = power_bonus
+        self.defense_bonus = defense_bonus
+        self.equipment_type = equipment_type

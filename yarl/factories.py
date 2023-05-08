@@ -8,7 +8,8 @@ from yarl.components import (
     Level,
     LightningScroll,
 )
-from yarl.entity import ActiveEntity, ConsumableItem, Item
+from yarl.entity import ActiveEntity, ConsumableItem, EquippableItem, Item
+from yarl.utils import EquipmentType
 
 
 def player_factory(
@@ -80,6 +81,37 @@ CONSUMABLE_ITEMS = {
         char="~",
         color=(255, 0, 0),
         name="Fireball Scroll",
+    ),
+}
+
+EQUIPPABLE_ITEMS = {
+    "dagger": EquippableItem(
+        power_bonus=2,
+        char="/",
+        color=(0, 191, 255),
+        name="Dagger",
+        equipment_type=EquipmentType.WEAPON,
+    ),
+    "sword": EquippableItem(
+        power_bonus=4,
+        char="/",
+        color=(0, 191, 255),
+        name="Sword",
+        equipment_type=EquipmentType.WEAPON,
+    ),
+    "leather_armor": EquippableItem(
+        defense_bonus=1,
+        char="[",
+        color=(139, 69, 19),
+        name="Leather Armor",
+        equipment_type=EquipmentType.ARMOR,
+    ),
+    "steel_armor": EquippableItem(
+        defense_bonus=3,
+        char="[",
+        color=(139, 69, 19),
+        name="Steel Armor",
+        equipment_type=EquipmentType.ARMOR,
     ),
 }
 

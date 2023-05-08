@@ -11,8 +11,8 @@ if TYPE_CHECKING:
 
 
 class Inventory(Component[ActiveEntity]):
-    def __init__(self, capacity: int, entity: ActiveEntity | None = None) -> None:
-        super().__init__(owner=entity)
+    def __init__(self, capacity: int, owner: ActiveEntity | None = None) -> None:
+        super().__init__(owner=owner)
 
         self.capacity = capacity
         self.items: list[ConsumableItem] = []

@@ -15,9 +15,9 @@ class Fighter(Component[ActiveEntity]):
         defense: int,
         power: int,
         attack_speed: int,
-        entity: ActiveEntity | None = None,
+        owner: ActiveEntity | None = None,
     ) -> None:
-        super().__init__(owner=entity)
+        super().__init__(owner=owner)
         self.max_hp = max_hp
         self._hp = max_hp
         self.defense = defense
