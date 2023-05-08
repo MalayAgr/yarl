@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from yarl.entity import ActiveEntity
-from yarl.exceptions import ImpossibleActionException
 from yarl.utils import EquipmentType
 
 from .base_component import Component

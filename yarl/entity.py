@@ -5,7 +5,7 @@ import math
 from collections import deque
 from typing import TYPE_CHECKING, Iterable, Type, TypeVar
 
-from yarl.utils import EquipmentType, RenderOrder
+from yarl.utils import RenderOrder
 
 if TYPE_CHECKING:
     from yarl.components import (

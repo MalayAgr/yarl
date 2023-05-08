@@ -6,7 +6,7 @@ from tcod.event import Event
 from yarl.exceptions import ImpossibleActionException
 from yarl.interface import color
 
-from .base_event_handler import ActionOrHandlerType, BaseEventHandler
+from .base_event_handler import BaseEventHandler
 from .event_handler import EventHandler
 
 if TYPE_CHECKING:

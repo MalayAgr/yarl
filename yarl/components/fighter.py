@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from yarl.entity import ActiveEntity
 from yarl.utils import RenderOrder
 
