@@ -8,7 +8,7 @@ from yarl.components import (
     Level,
     LightningScroll,
 )
-from yarl.entity import ActiveEntity, ConsumableItem
+from yarl.entity import ActiveEntity, ConsumableItem, Item
 
 
 def player_factory(
@@ -56,7 +56,7 @@ ENEMIES = {
     ),
 }
 
-ITEMS = {
+CONSUMABLE_ITEMS = {
     "healing_potion": ConsumableItem(
         consumable=HealingPotion(amount=4),
         char="!",
@@ -86,9 +86,9 @@ ITEMS = {
 
 ENEMY_FACTORY = {ENEMIES["orc"]: 0.8, ENEMIES["troll"]: 0.2}
 
-ITEM_FACTORY = {
-    ITEMS["healing_potion"]: 0.4,
-    ITEMS["lightning_scroll"]: 0.1,
-    ITEMS["confusion_spell"]: 0.3,
-    ITEMS["fireball_scroll"]: 0.2,
+ITEM_FACTORY: dict[Item, float] = {
+    CONSUMABLE_ITEMS["healing_potion"]: 0.4,
+    CONSUMABLE_ITEMS["lightning_scroll"]: 0.1,
+    CONSUMABLE_ITEMS["confusion_spell"]: 0.3,
+    CONSUMABLE_ITEMS["fireball_scroll"]: 0.2,
 }
