@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from yarl.interface import color
+from yarl.interface.color import COLORS
 from yarl.interface.message_log import MessageLog
 from yarl.interface.renderer import render_fraction_bar, render_text_at_location
 
@@ -36,7 +36,7 @@ class Engine:
         self.game_map = self.game_world.generate_floor(player=self.player)
 
     def add_to_message_log(
-        self, text: str, fg: tuple[int, int, int] = color.WHITE1
+        self, text: str, fg: tuple[int, int, int] = COLORS["white1"]
     ) -> None:
         self.message_log.add_message(text=text, fg=fg)
 

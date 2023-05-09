@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from tcod.event import Event
 from yarl.exceptions import ImpossibleActionException
-from yarl.interface import color
+from yarl.interface.color import COLORS
 
 from .base_event_handler import BaseEventHandler
 from .event_handler import EventHandler
@@ -30,7 +30,7 @@ class ConsumeSingleItemEventHandler(EventHandler):
         try:
             action.perform()
         except ImpossibleActionException as e:
-            self.engine.add_to_message_log(text=e.args[0], fg=color.GRAY)
+            self.engine.add_to_message_log(text=e.args[0], fg=COLORS["gray"])
 
     def handle_event(self, event: Event) -> BaseEventHandler:
         item = self.item

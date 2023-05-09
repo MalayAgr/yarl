@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from yarl.engine import Engine
 from yarl.entity import Entity
 from yarl.exceptions import ImpossibleActionException
-from yarl.interface import color
+from yarl.interface.color import COLORS
 
 if TYPE_CHECKING:
     from yarl.engine import Engine
@@ -76,7 +76,9 @@ class MeleeAction(DirectedAction):
         target_alive, damage = entity.fighter.attack(target)
 
         attack_desc = f"{entity.name.capitalize()} attacks {target.name}"
-        attack_color = color.GRAY88 if entity is self.engine.player else color.SNOW1
+        attack_color = (
+            COLORS["gray88"] if entity is self.engine.player else COLORS["snow1"]
+        )
 
         msg = (
             f"{attack_desc} but does no damage."
@@ -90,9 +92,9 @@ class MeleeAction(DirectedAction):
             return
 
         msg, fg = (
-            ("You died!", color.INDIANRED)
+            ("You died!", COLORS["indianred"])
             if target is self.engine.player
-            else (f"{target.name} is dead!", color.CORAL)
+            else (f"{target.name} is dead!", COLORS["coral"])
         )
 
         self.engine.add_to_message_log(text=msg, fg=fg)
@@ -275,7 +277,7 @@ class TakeStairsAction(Action):
         if (x, y) == self.game_map.stairs_location:
             self.engine.new_floor()
             self.engine.add_to_message_log(
-                "You descend the staircase.", fg=color.MEDIUMPURPLE
+                "You descend the staircase.", fg=COLORS["mediumpurple"]
             )
             return
 

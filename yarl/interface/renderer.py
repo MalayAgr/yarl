@@ -4,7 +4,7 @@ import textwrap
 from typing import Iterable
 
 from tcod.console import Console
-from yarl.interface import color
+from yarl.interface.color import COLORS
 
 
 def render_fraction_bar(
@@ -17,8 +17,8 @@ def render_fraction_bar(
     y: int = 0,
     height: int = 1,
     *,
-    bar_empty_bg: tuple[int, int, int] = color.MAROON,
-    bar_filled_bg: tuple[int, int, int] = color.GREEN1,
+    bar_empty_bg: tuple[int, int, int] = COLORS["maroon"],
+    bar_filled_bg: tuple[int, int, int] = COLORS["green1"],
 ) -> None:
     """Function to render a bar which has a current value and maximum value.
 
@@ -68,12 +68,16 @@ def render_fraction_bar(
         x=x + 1,
         y=y,
         string=f"{string_prefix}: {current_value}/{max_value}",
-        fg=color.WHITE1,
+        fg=COLORS["white1"],
     )
 
 
 def render_text_at_location(
-    console: Console, text: str, x: int, y: int, fg: tuple[int, int, int] = color.WHITE1
+    console: Console,
+    text: str,
+    x: int,
+    y: int,
+    fg: tuple[int, int, int] = COLORS["white1"],
 ) -> None:
     """Function to render text at location `(x, y)` with color `fg`.
 

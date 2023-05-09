@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Iterable
 
 import tcod
 from tcod.console import Console
-from yarl.interface import color
+from yarl.interface.color import COLORS
 
 from .ask_user import AskUserEventHandler
 
@@ -83,7 +83,7 @@ class SelectItemEventHandler(AskUserEventHandler):
         if index >= len(self.items):
             last_key = chr(ord("a") + len(self.items) - 1)
             text = f"Invalid entry. Press keys from (a) to ({last_key})."
-            self.engine.add_to_message_log(text=text, fg=color.YELLOW1)
+            self.engine.add_to_message_log(text=text, fg=COLORS["yellow1"])
             return self
 
         item = self.items[index]

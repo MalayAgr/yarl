@@ -9,7 +9,7 @@ from yarl.engine import Engine
 from yarl.event_handlers import MainMenuEventHandler
 from yarl.exceptions import QuitWithoutSavingException
 from yarl.factories import player_factory
-from yarl.interface import color
+from yarl.interface.color import COLORS
 from yarl.map import GameWorld
 from yarl.utils import save_game
 
@@ -78,7 +78,7 @@ class Game:
 
         engine.add_to_message_log(
             text="Hello and welcome, adventurer, to yet another dungeon!",
-            fg=color.DEEPSKYBLUE1,
+            fg=COLORS["deepskyblue1"],
         )
 
         return engine

@@ -10,7 +10,7 @@ from yarl.event_handlers import (
     BaseEventHandler,
     MainGameEventHandler,
 )
-from yarl.interface import color
+from yarl.interface.color import COLORS
 from yarl.utils import load_game
 
 from .popup_message import PopupMessageEventHandler
@@ -37,14 +37,14 @@ class MainMenuEventHandler(BaseEventHandler):
             console.width // 2,
             console.height // 2 - 4,
             "DUNGEON OF DOOM",
-            fg=color.YELLOW1,
+            fg=COLORS["yellow1"],
             alignment=tcod.CENTER,
         )
         console.print(
             console.width // 2,
             console.height - 2,
             "By Malay and Jashwanth",
-            fg=color.YELLOW1,
+            fg=COLORS["yellow1"],
             alignment=tcod.CENTER,
         )
 
@@ -56,8 +56,8 @@ class MainMenuEventHandler(BaseEventHandler):
                 console.width // 2,
                 console.height // 2 - 2 + i,
                 text.ljust(menu_width),
-                fg=color.WHITE1,
-                bg=color.BLACK,
+                fg=COLORS["white1"],
+                bg=COLORS["black"],
                 alignment=tcod.CENTER,
                 bg_blend=tcod.BKGND_ALPHA(64),
             )

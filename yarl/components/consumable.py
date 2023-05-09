@@ -11,7 +11,7 @@ from yarl.event_handlers import (
     SelectTargetIndexEventHandler,
 )
 from yarl.exceptions import ImpossibleActionException
-from yarl.interface import color
+from yarl.interface.color import COLORS
 
 from .base_component import Component
 
@@ -82,7 +82,7 @@ class HealingPotion(Consumable):
 
         if recovered > 0:
             text = f"You consume the {self.owner.name}, and recover {recovered} amount of HP!"
-            engine.add_to_message_log(text=text, fg=color.GREEN1)
+            engine.add_to_message_log(text=text, fg=COLORS["green1"])
             self.consume(consumer=consumer)
         else:
             raise ImpossibleActionException("Your health is already full.")
@@ -205,7 +205,7 @@ class ConfusionSpell(Consumable):
 
         engine.message_log.add_message(
             f"The eyes of {target.name} look vacant, as it starts to stumble around!",
-            color.LIMEGREEN,
+            COLORS["limegreen"],
         )
 
         target.ai = ConfusionAI(

@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Callable
 import tcod
 from tcod.console import Console
 from tcod.event import KeyDown, MouseButtonDown
-from yarl.interface import color
+from yarl.interface.color import COLORS
 
 from .ask_user import AskUserEventHandler
 
@@ -74,7 +74,7 @@ class LevelUpEventHandler(AskUserEventHandler):
         boost_func, amount = self.get_booster(player=player, index=index)
 
         if boost_func is None:
-            self.engine.add_to_message_log(text="Invalid entry", fg=color.YELLOW1)
+            self.engine.add_to_message_log(text="Invalid entry", fg=COLORS["yellow1"])
             return None
 
         boost_func(amount)

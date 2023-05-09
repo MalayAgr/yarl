@@ -7,7 +7,7 @@ from tcod.console import Console
 from tcod.event import KeyDown
 from yarl.event_handlers.base_event_handler import ActionOrHandlerType
 from yarl.exceptions import ImpossibleActionException
-from yarl.interface import color
+from yarl.interface.color import COLORS
 
 from .ask_user import AskUserEventHandler
 from .controls import MOVE_KEYS
@@ -34,7 +34,7 @@ class SelectIndexEventHandler(AskUserEventHandler):
         )
 
         if self.MESSAGE:
-            self.engine.add_to_message_log(text=self.MESSAGE, fg=color.AQUA)
+            self.engine.add_to_message_log(text=self.MESSAGE, fg=COLORS["aqua"])
 
     def on_render(self, console: Console) -> None:
         """Highlight the tile under the cursor."""
@@ -42,14 +42,14 @@ class SelectIndexEventHandler(AskUserEventHandler):
 
         x, y = self.mouse_location
 
-        console.tiles_rgb["bg"][x, y] = color.WHITE1
-        console.tiles_rgb["fg"][x, y] = color.BLACK
+        console.tiles_rgb["bg"][x, y] = COLORS["white1"]
+        console.tiles_rgb["fg"][x, y] = COLORS["black"]
 
     def handle_action(self, action: Action) -> None:
         try:
             action.perform()
         except ImpossibleActionException as e:
-            self.engine.add_to_message_log(text=e.args[0], fg=color.GRAY)
+            self.engine.add_to_message_log(text=e.args[0], fg=COLORS["gray"])
 
     def ev_keydown(self, event: KeyDown) -> ActionOrHandlerType | None:
         key = event.sym

@@ -3,7 +3,7 @@ from __future__ import annotations
 import tcod
 from tcod.console import Console
 from yarl.event_handlers import ActionOrHandlerType, BaseEventHandler
-from yarl.interface import color
+from yarl.interface.color import COLORS
 
 
 class PopupMessageEventHandler(BaseEventHandler):
@@ -20,8 +20,8 @@ class PopupMessageEventHandler(BaseEventHandler):
             console.width // 2,
             console.height // 2,
             self.message,
-            fg=color.WHITE1,
-            bg=color.BLACK,
+            fg=COLORS["white1"],
+            bg=COLORS["black"],
             alignment=tcod.CENTER,
         )
 

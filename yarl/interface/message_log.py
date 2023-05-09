@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 from tcod.console import Console
-from yarl.interface import color
+from yarl.interface.color import COLORS
 from yarl.interface.renderer import render_messages
 
 
@@ -72,7 +72,11 @@ class MessageLog:
         return self.__repr__()
 
     def add_message(
-        self, text: str, fg: tuple[int, int, int] = color.WHITE1, *, stack: bool = True
+        self,
+        text: str,
+        fg: tuple[int, int, int] = COLORS["white1"],
+        *,
+        stack: bool = True,
     ) -> None:
         """Add a message to the message log with optional stacking.
 

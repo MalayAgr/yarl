@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from tcod.console import Console
 from yarl.actions import ConsumeTargetedItemAction
-from yarl.interface import color
+from yarl.interface.color import COLORS
 
 from .select_index import SelectIndexEventHandler
 
@@ -45,7 +45,7 @@ class SelectTargetAreaEventHandler(SelectIndexEventHandler):
             y=y - self.radius - 1,
             width=self.radius**2,
             height=self.radius**2,
-            fg=color.RED1,
+            fg=COLORS["red1"],
             clear=False,
         )
 

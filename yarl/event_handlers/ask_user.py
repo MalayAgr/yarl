@@ -6,7 +6,7 @@ import tcod
 from tcod.event import Event, KeyDown, MouseButtonDown
 from yarl.event_handlers.base_event_handler import BaseEventHandler
 from yarl.exceptions import ImpossibleActionException
-from yarl.interface import color
+from yarl.interface.color import COLORS
 
 from .event_handler import EventHandler
 
@@ -40,7 +40,7 @@ class AskUserEventHandler(EventHandler):
         try:
             super().handle_action(action=action)
         except ImpossibleActionException as e:
-            self.engine.add_to_message_log(text=e.args[0], fg=color.GRAY)
+            self.engine.add_to_message_log(text=e.args[0], fg=COLORS["gray"])
 
     def handle_event(self, event: Event) -> BaseEventHandler:
         action_or_handler = self.dispatch(event=event)
