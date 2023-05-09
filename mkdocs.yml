@@ -81,6 +81,7 @@ plugins:
             - "!^_"
             - "^__init__$"
             - "!^can_replace$"
+          line-length: 88
 
 
 watch:

@@ -1,17 +1,13 @@
 from __future__ import annotations
 
 import itertools
-from typing import TYPE_CHECKING, TypeVar
+from typing import Iterable, TypeVar
 
-from yarl.entity import Entity
+from yarl.entity import ActiveEntity, Entity, Item
 from yarl.factories import CONSUMABLE_ITEMS, ENEMIES, EQUIPPABLE_ITEMS
 
 from .gamemap import GameMap
 from .mapgen import MapGenerator
-
-if TYPE_CHECKING:
-    from yarl.entity import ActiveEntity, Item
-
 
 T = TypeVar("T", bound=Entity)
 
@@ -52,6 +48,34 @@ class GameWorld:
         )
         self.current_floor = current_floor
 
+        self._enemies_floor_counts = [(1, 2), (4, 3), (6, 5)]
+
+        self._enemies_floor_factories = {
+            0: {ENEMIES["orc"]: 0.43},
+            3: {ENEMIES["troll"]: 0.08},
+            5: {ENEMIES["troll"]: 0.15},
+            7: {ENEMIES["troll"]: 0.32},
+        }
+
+        self._items_floor_counts = [(1, 1), (4, 2)]
+
+        self._items_floor_factories = {
+            0: {
+                CONSUMABLE_ITEMS["healing_potion"]: 0.26,
+                EQUIPPABLE_ITEMS["dagger"]: 0.04,
+                EQUIPPABLE_ITEMS["leather_armor"]: 0.11,
+            },
+            2: {CONSUMABLE_ITEMS["confusion_spell"]: 0.07},
+            4: {
+                CONSUMABLE_ITEMS["lightning_scroll"]: 0.18,
+                EQUIPPABLE_ITEMS["sword"]: 0.04,
+            },
+            6: {
+                CONSUMABLE_ITEMS["fireball_scroll"]: 0.18,
+                EQUIPPABLE_ITEMS["steel_armor"]: 0.11,
+            },
+        }
+
     @property
     def enemies_floor_counts(self) -> list[tuple[int, int]]:
         """Maximum number of items per room by floor.
@@ -72,7 +96,14 @@ class GameWorld:
             [(1, 2), (4, 3), (6, 5)]
             ```
         """
-        return [(1, 2), (4, 3), (6, 5)]
+        return self._enemies_floor_counts
+
+    @enemies_floor_counts.setter
+    def enemies_floor_counts(self, counts: Iterable[tuple[int, int]]) -> None:
+        if not isinstance(counts, list):
+            counts = list(counts)
+
+        self._enemies_floor_counts = counts
 
     @property
     def items_floor_counts(self) -> list[tuple[int, int]]:
@@ -94,7 +125,14 @@ class GameWorld:
             [(1, 1), (4, 2)]
             ```
         """
-        return [(1, 1), (4, 2)]
+        return self._items_floor_counts
+
+    @items_floor_counts.setter
+    def items_floor_counts(self, counts: Iterable[tuple[int, int]]) -> None:
+        if not isinstance(counts, list):
+            counts = list(counts)
+
+        self._items_floor_counts = counts
 
     @property
     def enemies_floor_factories(self) -> dict[int, dict[ActiveEntity, float]]:
@@ -132,12 +170,13 @@ class GameWorld:
             }
             ```
         """
-        return {
-            0: {ENEMIES["orc"]: 0.43},
-            3: {ENEMIES["troll"]: 0.08},
-            5: {ENEMIES["troll"]: 0.15},
-            7: {ENEMIES["troll"]: 0.32},
-        }
+        return self._enemies_floor_factories
+
+    @enemies_floor_factories.setter
+    def enemies_floor_factories(
+        self, factories: dict[int, dict[ActiveEntity, float]]
+    ) -> None:
+        self._enemies_floor_factories = factories
 
     @property
     def items_floor_factories(self) -> dict[int, dict[Item, float]]:
@@ -185,22 +224,11 @@ class GameWorld:
             }
             ```
         """
-        return {
-            0: {
-                CONSUMABLE_ITEMS["healing_potion"]: 0.26,
-                EQUIPPABLE_ITEMS["dagger"]: 0.04,
-                EQUIPPABLE_ITEMS["leather_armor"]: 0.11,
-            },
-            2: {CONSUMABLE_ITEMS["confusion_spell"]: 0.07},
-            4: {
-                CONSUMABLE_ITEMS["lightning_scroll"]: 0.18,
-                EQUIPPABLE_ITEMS["sword"]: 0.04,
-            },
-            6: {
-                CONSUMABLE_ITEMS["fireball_scroll"]: 0.18,
-                EQUIPPABLE_ITEMS["steel_armor"]: 0.11,
-            },
-        }
+        return self._items_floor_factories
+
+    @items_floor_factories.setter
+    def items_floor_factories(self, factories: dict[int, dict[Item, float]]) -> None:
+        self._items_floor_factories = factories
 
     def get_max_entities_by_floor(self, floor_counts: list[tuple[int, int]]) -> int:
         """Method to obtain the maximum number of items, enemies, etc, per room

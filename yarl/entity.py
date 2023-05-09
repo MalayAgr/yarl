@@ -164,7 +164,7 @@ class ActiveEntity(Entity):
             for equipment capabilities.
 
         movement_delay (int): Movement delay of the entity. After moving once,
-        the entity will wait for `movement_delay` turns before moving again.
+            the entity will wait for `movement_delay` turns before moving again.
 
         movement_wait (int): Current number of turns the entity needs to wait before
             making its next move.
@@ -288,15 +288,48 @@ class ActiveEntity(Entity):
         return self.movement_wait > 0
 
     def move(self, dx: int, dy: int) -> None:
+        """See [`Entity.move()`][yarl.entity.Entity.move].
+
+        The method also resets `self.movement_wait` to `self.movement_delay`
+        so that `self.is_waiting_to_move` becomes `True`.
+        """
         super().move(dx, dy)
         self.movement_wait = self.movement_delay
 
     def place(self, x: int, y: int) -> None:
+        """See [`Entity.place()`][yarl.entity.Entity.place].
+
+        The method also resets `self.movement_wait` to `self.movement_delay`
+        so that `self.is_waiting_to_move` becomes `True`.
+        """
         super().place(x, y)
         self.movement_wait = self.movement_delay
 
 
 class Item(Entity):
+    """Class to represent a consumable and/or equippable item.
+
+    Attributes:
+        consumable (Consumable): Optional Consumable instance to handle item consumption.
+
+        equippable (Equippable): Optional Equippable instance to handle item equipment.
+
+        x (int): x-coordinate of the current location of the entity.
+
+        y (int): y-coordinate of the current location of the entity.
+
+        char (str): Character used to represent the entity.
+
+        color (tuple[int, int, int]): Color used to represent the entity.
+
+        name (str): Name of the entity.
+
+        blocking (bool): Indicates if this entity is blocking. Always `False`.
+
+        render_order (RenderOrder): Priority for rendering the entity.
+            Always [`RenderOrder.ITEM`][yarl.utils.RenderOrder.ITEM].
+    """
+
     def __init__(
         self,
         consumable: Consumable | None = None,
@@ -307,6 +340,23 @@ class Item(Entity):
         color: tuple[int, int, int] = (255, 255, 255),
         name: str = "<Unnamed>",
     ) -> None:
+        """Create an item.
+
+        Args:
+            consumable: Optional Consumable instance to handle item consumption.
+
+            equippable: Optional Equippable instance to handle item equipment.
+
+            x: x-coordinate of the current location of the entity.
+
+            y: y-coordinate of the current location of the entity.
+
+            char: Character used to represent the entity.
+
+            color: Color used to represent the entity.
+
+            name: Name of the entity.
+        """
         super().__init__(
             x, y, char, color, name, blocking=False, render_order=RenderOrder.ITEM
         )
