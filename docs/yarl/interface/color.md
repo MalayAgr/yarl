@@ -1,3 +1,0 @@
-# Color
-
-::: yarl.interface.color

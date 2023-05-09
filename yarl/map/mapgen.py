@@ -6,9 +6,11 @@ Examples:
 
     Creating a map of width 10 and height 10:
 
+    ```pycon
     >>> from yarl.mapgen import MapGenerator
     >>> generator = MapGenerator(map_width=100, map_height=45)
     >>> game_map = generator.generate_map()
+    ```
 
     To control the number of rooms that are generated, change the `depth`:
 
@@ -374,11 +376,11 @@ class MapGenerator:
             max_items_per_room: Number of consumable items to spawn per room.
 
             enemy_factory: Population enemies will be sampled from. Each
-                key is the probability and the value is the entity. If set
-                to `None`, it falls back to using ENTITY_FACTORY.
+                key is the entity and the value is the probability. If set
+                to `None`, it falls back to using ENEMY_FACTORY.
 
             item_factory: Population items will be sampled from. Each key
-                is the probability and the value is the item. If set to `None`,
+                is the item and the value is the probability. If set to `None`,
                 it falls back to using ITEM_FACTORY.
 
         Returns:

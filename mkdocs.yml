@@ -43,6 +43,8 @@ markdown_extensions:
       custom_checkbox: true
   - pymdownx.highlight:
       anchor_linenums: true
+      use_pygments: true
+      pygments_lang_class: true
   - pymdownx.inlinehilite
   - pymdownx.superfences
   - pymdownx.snippets
@@ -53,6 +55,12 @@ markdown_extensions:
 plugins:
   search:
   autorefs:
+  gen-files:
+    scripts:
+      - docs/gen_ref_pages.py
+  literate-nav:
+    nav_file: SUMMARY.md
+  section-index:
   mkdocstrings:
     custom_templates: docs/_templates
     default_handler: python
@@ -86,17 +94,7 @@ extra_css:
 nav:
  - Introduction: index.md
  - Download and Install: download-install.md
- - Reference:
-    - "reference.md"
-    - Map:
-      - "yarl/map/mapgen.md"
-      - "yarl/map/gamemap.md"
-    - Event handlers:
-      - "yarl/event_handlers/index.md"
-    - Interface:
-      - "yarl/interface/message_log.md"
-      - "yarl/interface/color.md"
-      - "yarl/interface/renderer.md"
+ - Code Reference: reference/
 
 
 extra:

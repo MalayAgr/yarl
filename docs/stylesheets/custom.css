@@ -73,3 +73,7 @@ td code {
   opacity: 0.85;
 
 }
+
+.highlight .gp, .highlight .go { /* Generic.Prompt, Generic.Output */
+  user-select: none;
+}
