@@ -8,6 +8,8 @@ from typing import TYPE_CHECKING
 import numpy as np
 import tcod
 from yarl.actions import Action, BumpAction, MeleeAction, MovementAction
+from yarl.engine import Engine
+from yarl.entity import ActiveEntity
 
 if TYPE_CHECKING:
     from yarl.engine import Engine
@@ -17,7 +19,6 @@ if TYPE_CHECKING:
 class BaseAI(Action):
     def __init__(self, engine: Engine, entity: ActiveEntity) -> None:
         super().__init__(engine=engine, entity=entity)
-
         self.entity: ActiveEntity
 
     def __repr__(self) -> str:
@@ -50,6 +51,11 @@ class BaseAI(Action):
 
 
 class AttackingAI(BaseAI):
+    def __init__(self, engine: Engine, entity: ActiveEntity) -> None:
+        super().__init__(engine, entity)
+        self.path: deque[tuple[int, int]] = deque()
+        self.entity: ActiveEntity
+
     def perform(self) -> None:
         engine, entity = self.engine, self.entity
 
@@ -63,20 +69,20 @@ class AttackingAI(BaseAI):
         game_map = self.game_map
 
         if game_map.visible[entity.x, entity.y]:
-            if distance <= 1:
+            if distance <= 1 and not entity.fighter.is_waiting_to_attack:
                 return MeleeAction(engine=engine, entity=entity, dx=dx, dy=dy).perform()
 
-            entity.path = self.get_path_to(target.x, target.y)
+            self.path = self.get_path_to(target.x, target.y)
 
         # Even if there is no path or the path is too long
         # The entity should try to move towards the target
         # By taking a normalized step
-        if not entity.path or len(entity.path) > 25:
+        if not self.path or len(self.path) > 25:
             distance = math.sqrt(dx**2 + dy**2)
             dx, dy = int(dx // distance), int(dy // distance)
             return MovementAction(engine=engine, entity=entity, dx=dx, dy=dy).perform()
 
-        dest_x, dest_y = entity.path.popleft()
+        dest_x, dest_y = self.path.popleft()
         action = MovementAction(
             engine=engine, entity=entity, dx=dest_x - entity.x, dy=dest_y - entity.y
         )

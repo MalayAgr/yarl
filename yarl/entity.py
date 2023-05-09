@@ -166,6 +166,9 @@ class ActiveEntity(Entity):
         movement_delay (int): Movement delay of the entity. After moving once,
         the entity will wait for `movement_delay` turns before moving again.
 
+        movement_wait (int): Current number of turns the entity needs to wait before
+            making its next move.
+
         blocking (bool): Indicates if this entity is blocking. Always `True`.
 
         render_order (RenderOrder): Priority for rendering the entity.
@@ -247,19 +250,40 @@ class ActiveEntity(Entity):
 
     @property
     def is_alive(self) -> bool:
+        """Indicates whether the entity is alive or not."""
         return self.fighter.hp != 0
 
     @property
     def ai(self) -> BaseAI | None:
+        """Instance of `ai_cls` associated with the entity.
+
+        This is initially `None` and initialized either when the entity
+        is controlled for the first time via the AI or when the property
+        is explicitly set via its setter.
+        """
         return self._ai
 
     @ai.setter
     def ai(self, ai: BaseAI | None) -> None:
+        """Setter for `ai`.
+
+        It sets `ai` to the given AI instance and also changes `ai_cls`
+        to the class of the given AI instance.
+
+        Args:
+            ai: Instance of `BaseAI` or a subclass that should be assigned to `ai`.
+                Can be set to `None` to disable AI behavior.
+        """
         self._ai = ai
         self.ai_cls = ai.__class__ if ai is not None else None
 
     @property
     def is_waiting_to_move(self) -> bool:
+        """Indicates whether the entity is waiting to move at the moment.
+
+        Checking this also reduces the number of turns the entity has to wait
+        by 1.
+        """
         self.movement_wait = max(0, self.movement_wait - 1)
         return self.movement_wait > 0
 

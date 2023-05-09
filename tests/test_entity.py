@@ -94,7 +94,6 @@ class TestActiveEntity:
         assert entity.movement_wait == 0
         assert entity.ai_cls is None
         assert entity.ai is None
-        assert entity.path == deque()
         assert entity.inventory is None
         assert entity.fighter.owner is entity
         assert entity.level.owner is entity
@@ -137,11 +136,11 @@ class TestActiveEntity:
         assert entity.movement_wait == entity.movement_delay
 
     def test_is_alive(self, entity: ActiveEntity) -> None:
-        assert entity.is_alive is False
-
-        entity.ai_cls = AttackingAI
-
         assert entity.is_alive is True
+
+        entity.fighter.hp = 0
+
+        assert entity.is_alive is False
 
     def test_ai(self, entity: ActiveEntity) -> None:
         ai = Mock(spec=AttackingAI)
@@ -156,17 +155,6 @@ class TestActiveEntity:
         assert entity._ai is None
         assert entity.ai is None
         assert entity.ai_cls is None
-
-    @pytest.mark.parametrize(
-        "path",
-        [deque([(1, 6), (2, 6), (2, 5), (3, 4)]), [(1, 6), (2, 6), (2, 5), (3, 4)]],
-    )
-    def test_path(self, entity: ActiveEntity, path: Iterable[tuple[int, int]]) -> None:
-        entity.path = path
-
-        assert isinstance(entity._path, deque)
-        assert entity._path == deque(path)
-        assert entity.path == deque(path)
 
     def test_is_waiting_to_move(self, entity: ActiveEntity) -> None:
         assert entity.is_waiting_to_move is False
