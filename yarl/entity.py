@@ -287,17 +287,6 @@ class ActiveEntity(Entity):
         self.movement_wait = max(0, self.movement_wait - 1)
         return self.movement_wait > 0
 
-    @property
-    def path(self) -> deque[tuple[int, int]]:
-        return self._path
-
-    @path.setter
-    def path(self, path: Iterable[tuple[int, int]]) -> None:
-        if not isinstance(path, deque):
-            path = deque(path)
-
-        self._path = path
-
     def move(self, dx: int, dy: int) -> None:
         super().move(dx, dy)
         self.movement_wait = self.movement_delay
