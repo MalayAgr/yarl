@@ -203,7 +203,7 @@ class ActiveEntity(Entity):
 
             name: Name of the entity.
 
-            ai_cls: Optional AI class that should be used for the entity.
+            ai_cls: Optional AI class that should be used to control the entity.
 
             inventory: Optional inventory instance for the entity for inventory capabilities.
 
@@ -247,7 +247,7 @@ class ActiveEntity(Entity):
 
     @property
     def is_alive(self) -> bool:
-        return self.ai_cls is not None
+        return self.fighter.hp != 0
 
     @property
     def ai(self) -> BaseAI | None:

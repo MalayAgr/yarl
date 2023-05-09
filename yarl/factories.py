@@ -37,7 +37,6 @@ def player_factory(
         char="@",
         color=(255, 255, 255),
         name="Player",
-        ai_cls=AttackingAI,
         inventory=inventory,
         equipment=Equipment(),
         movement_delay=movement_delay,
