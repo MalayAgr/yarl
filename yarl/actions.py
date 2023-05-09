@@ -76,9 +76,7 @@ class MeleeAction(DirectedAction):
         target_alive, damage = entity.fighter.attack(target)
 
         attack_desc = f"{entity.name.capitalize()} attacks {target.name}"
-        attack_color = (
-            color.PLAYER_ATTACK if entity is self.engine.player else color.ENEMY_ATTACK
-        )
+        attack_color = color.GRAY88 if entity is self.engine.player else color.SNOW1
 
         msg = (
             f"{attack_desc} but does no damage."
@@ -92,9 +90,9 @@ class MeleeAction(DirectedAction):
             return
 
         msg, fg = (
-            ("You died!", color.PLAYER_DIE)
+            ("You died!", color.INDIANRED)
             if target is self.engine.player
-            else (f"{target.name} is dead!", color.ENEMY_DIE)
+            else (f"{target.name} is dead!", color.CORAL)
         )
 
         self.engine.add_to_message_log(text=msg, fg=fg)
@@ -277,7 +275,7 @@ class TakeStairsAction(Action):
         if (x, y) == self.game_map.stairs_location:
             self.engine.new_floor()
             self.engine.add_to_message_log(
-                "You descend the staircase.", fg=color.DESCEND
+                "You descend the staircase.", fg=color.MEDIUMPURPLE
             )
             return
 

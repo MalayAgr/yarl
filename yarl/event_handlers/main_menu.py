@@ -37,14 +37,14 @@ class MainMenuEventHandler(BaseEventHandler):
             console.width // 2,
             console.height // 2 - 4,
             "DUNGEON OF DOOM",
-            fg=color.MENU_TITLE,
+            fg=color.YELLOW1,
             alignment=tcod.CENTER,
         )
         console.print(
             console.width // 2,
             console.height - 2,
             "By Malay and Jashwanth",
-            fg=color.MENU_TITLE,
+            fg=color.YELLOW1,
             alignment=tcod.CENTER,
         )
 
@@ -56,7 +56,7 @@ class MainMenuEventHandler(BaseEventHandler):
                 console.width // 2,
                 console.height // 2 - 2 + i,
                 text.ljust(menu_width),
-                fg=color.MENU_TEXT,
+                fg=color.WHITE1,
                 bg=color.BLACK,
                 alignment=tcod.CENTER,
                 bg_blend=tcod.BKGND_ALPHA(64),

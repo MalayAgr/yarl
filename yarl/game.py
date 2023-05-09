@@ -78,7 +78,7 @@ class Game:
 
         engine.add_to_message_log(
             text="Hello and welcome, adventurer, to yet another dungeon!",
-            fg=color.WELCOME_TEXT,
+            fg=color.DEEPSKYBLUE1,
         )
 
         return engine

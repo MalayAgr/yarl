@@ -34,7 +34,7 @@ class SelectIndexEventHandler(AskUserEventHandler):
         )
 
         if self.MESSAGE:
-            self.engine.add_to_message_log(text=self.MESSAGE, fg=color.NEEDS_TARGET)
+            self.engine.add_to_message_log(text=self.MESSAGE, fg=color.AQUA)
 
     def on_render(self, console: Console) -> None:
         """Highlight the tile under the cursor."""
@@ -42,14 +42,14 @@ class SelectIndexEventHandler(AskUserEventHandler):
 
         x, y = self.mouse_location
 
-        console.tiles_rgb["bg"][x, y] = color.WHITE
+        console.tiles_rgb["bg"][x, y] = color.WHITE1
         console.tiles_rgb["fg"][x, y] = color.BLACK
 
     def handle_action(self, action: Action) -> None:
         try:
             action.perform()
         except ImpossibleActionException as e:
-            self.engine.add_to_message_log(text=e.args[0], fg=color.IMPOSSIBLE)
+            self.engine.add_to_message_log(text=e.args[0], fg=color.GRAY)
 
     def ev_keydown(self, event: KeyDown) -> ActionOrHandlerType | None:
         key = event.sym

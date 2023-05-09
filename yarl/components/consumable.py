@@ -82,7 +82,7 @@ class HealingPotion(Consumable):
 
         if recovered > 0:
             text = f"You consume the {self.owner.name}, and recover {recovered} amount of HP!"
-            engine.add_to_message_log(text=text, fg=color.HEALTH_RECOVERED)
+            engine.add_to_message_log(text=text, fg=color.GREEN1)
             self.consume(consumer=consumer)
         else:
             raise ImpossibleActionException("Your health is already full.")
@@ -205,7 +205,7 @@ class ConfusionSpell(Consumable):
 
         engine.message_log.add_message(
             f"The eyes of {target.name} look vacant, as it starts to stumble around!",
-            color.STATUS_EFFECT_APPLIED,
+            color.LIMEGREEN,
         )
 
         target.ai = ConfusionAI(

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-
 import tcod
 from tcod.console import Console
 from yarl.event_handlers import ActionOrHandlerType, BaseEventHandler
@@ -21,7 +20,7 @@ class PopupMessageEventHandler(BaseEventHandler):
             console.width // 2,
             console.height // 2,
             self.message,
-            fg=color.WHITE,
+            fg=color.WHITE1,
             bg=color.BLACK,
             alignment=tcod.CENTER,
         )

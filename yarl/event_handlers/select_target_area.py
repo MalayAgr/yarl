@@ -45,7 +45,7 @@ class SelectTargetAreaEventHandler(SelectIndexEventHandler):
             y=y - self.radius - 1,
             width=self.radius**2,
             height=self.radius**2,
-            fg=color.RED,
+            fg=color.RED1,
             clear=False,
         )
 

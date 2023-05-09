@@ -72,7 +72,7 @@ class MessageLog:
         return self.__repr__()
 
     def add_message(
-        self, text: str, fg: tuple[int, int, int] = color.WHITE, *, stack: bool = True
+        self, text: str, fg: tuple[int, int, int] = color.WHITE1, *, stack: bool = True
     ) -> None:
         """Add a message to the message log with optional stacking.
 

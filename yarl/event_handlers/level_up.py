@@ -74,7 +74,7 @@ class LevelUpEventHandler(AskUserEventHandler):
         boost_func, amount = self.get_booster(player=player, index=index)
 
         if boost_func is None:
-            self.engine.add_to_message_log(text="Invalid entry", fg=color.INVALID)
+            self.engine.add_to_message_log(text="Invalid entry", fg=color.YELLOW1)
             return None
 
         boost_func(amount)

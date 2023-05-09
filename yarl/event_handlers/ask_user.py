@@ -40,7 +40,7 @@ class AskUserEventHandler(EventHandler):
         try:
             super().handle_action(action=action)
         except ImpossibleActionException as e:
-            self.engine.add_to_message_log(text=e.args[0], fg=color.IMPOSSIBLE)
+            self.engine.add_to_message_log(text=e.args[0], fg=color.GRAY)
 
     def handle_event(self, event: Event) -> BaseEventHandler:
         action_or_handler = self.dispatch(event=event)

@@ -17,8 +17,8 @@ def render_fraction_bar(
     y: int = 0,
     height: int = 1,
     *,
-    bar_empty_bg: tuple[int, int, int] = color.BAR_EMPTY,
-    bar_filled_bg: tuple[int, int, int] = color.BAR_FILLED,
+    bar_empty_bg: tuple[int, int, int] = color.MAROON,
+    bar_filled_bg: tuple[int, int, int] = color.GREEN1,
 ) -> None:
     """Function to render a bar which has a current value and maximum value.
 
@@ -68,8 +68,27 @@ def render_fraction_bar(
         x=x + 1,
         y=y,
         string=f"{string_prefix}: {current_value}/{max_value}",
-        fg=color.BAR_TEXT,
+        fg=color.WHITE1,
     )
+
+
+def render_text_at_location(
+    console: Console, text: str, x: int, y: int, fg: tuple[int, int, int] = color.WHITE1
+) -> None:
+    """Function to render text at location `(x, y)` with color `fg`.
+
+    Args:
+        console: Console to render the text to.
+
+        text: Text to render.
+
+        x: x-coordinate of the location to render the text at.
+
+        y: y-coordinate of the location to render the text at.
+
+        fg: Color of the text.
+    """
+    console.print(x=x, y=y, string=text, fg=fg)
 
 
 def render_messages(
@@ -108,14 +127,10 @@ def render_messages(
         lines = reversed(textwrap.wrap(text=message, width=width))
 
         for line in lines:
-            console.print(x=x, y=y + height - 1, string=line, fg=color)
+            render_text_at_location(
+                console=console, text=line, x=x, y=y + height - 1, fg=color
+            )
             height -= 1
 
             if height <= 0:
                 return
-
-
-def render_text_at_location(
-    console: Console, text: str, x: int, y: int, fg: tuple[int, int, int] = color.WHITE
-) -> None:
-    console.print(x=x, y=y, string=text, fg=fg)

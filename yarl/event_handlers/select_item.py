@@ -83,7 +83,7 @@ class SelectItemEventHandler(AskUserEventHandler):
         if index >= len(self.items):
             last_key = chr(ord("a") + len(self.items) - 1)
             text = f"Invalid entry. Press keys from (a) to ({last_key})."
-            self.engine.add_to_message_log(text=text, fg=color.INVALID)
+            self.engine.add_to_message_log(text=text, fg=color.YELLOW1)
             return self
 
         item = self.items[index]

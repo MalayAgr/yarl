@@ -36,7 +36,7 @@ class Engine:
         self.game_map = self.game_world.generate_floor(player=self.player)
 
     def add_to_message_log(
-        self, text: str, fg: tuple[int, int, int] = color.WHITE
+        self, text: str, fg: tuple[int, int, int] = color.WHITE1
     ) -> None:
         self.message_log.add_message(text=text, fg=fg)
 
