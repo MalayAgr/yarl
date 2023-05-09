@@ -1,23 +1,6 @@
 """Module to handle map generation using BSP.
 
 For details on BSP, see [Binary Space Partitioning](https://en.wikipedia.org/wiki/Binary_space_partitioning).
-
-Examples:
-
-    Creating a map of width 10 and height 10:
-
-    ```pycon
-    >>> from yarl.mapgen import MapGenerator
-    >>> generator = MapGenerator(map_width=100, map_height=45)
-    >>> game_map = generator.generate_map()
-    ```
-
-    To control the number of rooms that are generated, change the `depth`:
-
-    >>> from yarl.mapgen import MapGenerator
-    >>> generator = MapGenerator(map_width=100, map_height=45, depth=5)
-    >>> game_map = generator.generate_map()
-
 """
 
 
@@ -371,9 +354,9 @@ class MapGenerator:
         Args:
             player: Player to be placed on the map. Defaults to None.
 
-            max_enemies_per_room: Number of enemies to spawn per room.
+            max_enemies_per_room: Maximum number of enemies to spawn per room.
 
-            max_items_per_room: Number of consumable items to spawn per room.
+            max_items_per_room: Maximum number of consumable items to spawn per room.
 
             enemy_factory: Population enemies will be sampled from. Each
                 key is the entity and the value is the probability. If set
@@ -385,6 +368,22 @@ class MapGenerator:
 
         Returns:
             Generated game map.
+
+        Examples:
+
+            Creating a map of width 10 and height 10:
+
+            ```pycon
+            >>> from yarl.mapgen import MapGenerator
+            >>> generator = MapGenerator(map_width=100, map_height=45)
+            >>> game_map = generator.generate_map()
+            ```
+
+            To control the number of rooms that are generated, change the `depth`:
+
+            >>> from yarl.mapgen import MapGenerator
+            >>> generator = MapGenerator(map_width=100, map_height=45, depth=5)
+            >>> game_map = generator.generate_map()
         """
         self.game_map = GameMap(width=self.map_width, height=self.map_height)
 

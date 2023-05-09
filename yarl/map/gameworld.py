@@ -1,3 +1,9 @@
+"""This module defines the class that will be used to handle map generation by floor.
+
+The class is a thin wrapper around [`MapGenerator`][yarl.map.mapgen.MapGenerator].
+"""
+
+
 from __future__ import annotations
 
 import itertools

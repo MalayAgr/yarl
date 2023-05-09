@@ -1,3 +1,5 @@
+"""This module defines the class that will be used to represent game maps."""
+
 from __future__ import annotations
 
 from collections import defaultdict
@@ -162,9 +164,7 @@ class GameMap:
 
         An item is an instance of `Item` (or subclasses).
         """
-        yield from (
-            entity for entity in self.entities if isinstance(entity, Item)
-        )
+        yield from (entity for entity in self.entities if isinstance(entity, Item))
 
     def get_items(self, x: int, y: int) -> set[Item]:
         """Method to obtain the items at location `(x, y)`.
