@@ -80,7 +80,7 @@ class Entity:
         self.render_order = render_order
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(x={self.x}, y={self.y}, name={self.name}, char={self.char})"
+        return f"{self.__class__.__name__}(x={self.x!r}, y={self.y!r}, name={self.name!r}, char={self.char!r})"
 
     def __str__(self) -> str:
         return self.__repr__()

@@ -71,6 +71,7 @@ plugins:
           - https://python-tcod.readthedocs.io/en/stable/objects.inv
           - https://numpy.org/doc/stable/objects.inv
         options:
+          members_order: source
           show_signature_annotations: false
           separate_signature: true
           merge_init_into_class: true

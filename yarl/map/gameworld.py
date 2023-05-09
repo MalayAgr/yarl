@@ -80,16 +80,8 @@ class GameWorld:
     def enemies_floor_counts(self) -> list[tuple[int, int]]:
         """Maximum number of items per room by floor.
 
-        It has a cascading effect. For example, if the value is
-        `[(1, 2), (3, 3), (5, 4)]`, then:
-
-        - Floors 1 and 2 will have at most 2 enemies
-
-        - Floors 3 and 4 will have at most 3 enemies
-
-        - Floors 5 and above will have at most 4 enemies.
-
-        The cascading effect allows selectively providing the maximum items.
+        See [`GameWorld.get_max_entities_by_floor()`][yarl.map.gameworld.GameWorld.get_max_entities_by_floor]
+        for more details.
 
         Default:
             ``` python
@@ -109,16 +101,8 @@ class GameWorld:
     def items_floor_counts(self) -> list[tuple[int, int]]:
         """Maximum number of items per room by floor.
 
-        It has a cascading effect. For example, if the value is
-        `[(1, 2), (3, 3), (5, 4)]`, then:
-
-        - Floors 1 and 2 will have at most 2 items
-
-        - Floors 3 and 4 will have at most 3 items
-
-        - Floors 5 and above will have at most 4 items.
-
-        The cascading effect allows selectively providing the maximum items.
+        See [`GameWorld.get_max_entities_by_floor()`][yarl.map.gameworld.GameWorld.get_max_entities_by_floor]
+        for more details.
 
         Default:
             ``` python
@@ -138,25 +122,8 @@ class GameWorld:
     def enemies_floor_factories(self) -> dict[int, dict[ActiveEntity, float]]:
         """Probability distributions to be used for sampling enemies by floor.
 
-        Each key in the outer dictionary is the floor number and
-        value is a dictionary where each key is the enemy and the value is
-        the probability that it's added to the map.
-
-        It has a cascading effect. For example, if the value is
-        `{0: {<e1>: 0.43}, 3: {<e2>: 0.08}, 5: {<e2>: 0.15, <e3>: 0.2}, 7: {<e3>: 0.32}}`, then:
-
-        - Floors 1 and 2 will have enemy `<e1>` with probability 0.43
-
-        - Floors 3 and 4 will have enemies `<e1>` and
-            `<e2> with probability 0.43 and 0.08
-
-        - Floors 5 and 6 will have enemies `<e1>` `<e2>` and `<e3>` with
-            probability 0.43, 0.15 and 0.2.
-
-        - Floors 7 and above will have enemies `<e1>`, `<e2>` and `<e3>`
-            with probability 0.43, 0.15 and 0.32.
-
-        The cascading effect allows selectively providing the probability distributions.
+        See [`GameWorld.get_factory_by_floor()`][yarl.map.gameworld.GameWorld.get_factory_by_floor]
+        for more details.
 
         Default:
             ``` python
@@ -182,25 +149,8 @@ class GameWorld:
     def items_floor_factories(self) -> dict[int, dict[Item, float]]:
         """Probability distributions to be used for sampling items by floor.
 
-        Each key in the outer dictionary is the floor number, and
-        value is a dictionary where each key is the item and the value is
-        the probability that it's added to the map.
-
-        It has a cascading effect. For example, if the value is
-        `{0: {<i1>: 0.43}, 3: {<i2>: 0.08}, 5: {<i2>: 0.15, <e3>: 0.2}, 7: {<i3>: 0.32}}`, then:
-
-        - Floors 1 and 2 will have entity `<i1>` with probability 0.43
-
-        - Floors 3 and 4 will have entities `<i1>` and
-            `<i2> with probability 0.43 and 0.08
-
-        - Floors 5 and 6 will have entities `<i1>` `<i2>` and `<i3>` with
-            probability 0.43, 0.15 and 0.2.
-
-        - Floors 7 and above will have entities `<i1>`, `<i2>` and `<i3>`
-            with probability 0.43, 0.15 and 0.32.
-
-        The cascading effect allows selectively providing the probability distributions.
+        See [`GameWorld.get_factory_by_floor()`][yarl.map.gameworld.GameWorld.get_factory_by_floor]
+        for more details.
 
         Default:
             ``` python
@@ -237,9 +187,51 @@ class GameWorld:
         Args:
             floor_counts: Maximum number of items, enemies, etc, per room by floor.
 
+                The first `int` in each tuple represents the floor
+                and the second `int` represents the maximum number of items
+                on that floor.
+
+                Given the current floor, the maximum number of items per room
+                for the floor is the second `int` of the tuple with the largest
+                first `int` less than or equal to the floor. It there is no such
+                `int`, it is set to 0.
+
         Returns:
-            Probability distribution that will be used for the floor to sample
-            enemies, items, etc, for each room in the map.
+            Maximum number of items, enemies, etc, per room for the current floor.
+
+        Examples:
+
+            ``` pycon
+            >>> from yarl.map import GameWorld
+            >>> game_world = GameWorld(map_width=10, map_height=10)
+            >>> floor_counts = game_world.enemies_floor_counts
+            >>> game_world.get_max_entities_by_floor(floor_counts=floor_counts)
+            0
+            ```
+
+            ```pycon
+            >>> from yarl.map import GameWorld
+            >>> game_world = GameWorld(map_width=10, map_height=10, current_floor=1)
+            >>> floor_counts = game_world.enemies_floor_counts
+            >>> game_world.get_max_entities_by_floor(floor_counts=floor_counts)
+            2
+            ```
+
+            ``` pycon
+            >>> from yarl.map import GameWorld
+            >>> game_world = GameWorld(map_width=10, map_height=10, current_floor=3)
+            >>> floor_counts = game_world.enemies_floor_counts
+            >>> game_world.get_max_entities_by_floor(floor_counts=floor_counts)
+            2
+            ```
+
+            ``` pycon
+            >>> from yarl.map import GameWorld
+            >>> game_world = GameWorld(map_width=10, map_height=10, current_floor=4)
+            >>> floor_counts = game_world.enemies_floor_counts
+            >>> game_world.get_max_entities_by_floor(floor_counts=floor_counts)
+            3
+            ```
         """
         count_iterator = itertools.dropwhile(
             lambda x: x[0] > self.current_floor, reversed(floor_counts)
@@ -260,9 +252,92 @@ class GameWorld:
         Args:
             floor_factories: Probability distributions available for the floors.
 
+                Each key in the outer dictionary is the floor number, and
+                value is a dictionary where each key is the item and the value is
+                the probability that it's added to the map.
+
+                It has a cascading effect. For example, if the value is
+                `{0: {<e1>: 0.43}, 3: {<e2>: 0.08}, 5: {<e2>: 0.15, <e3>: 0.2}, 7: {<e3>: 0.32}}`, then:
+
+                - Floors 1 and 2 will have entity `<e1>` with probability 0.43
+
+                - Floors 3 and 4 will have entities `<e1>` and
+                    `<e2> with probability 0.43 and 0.08
+
+                - Floors 5 and 6 will have entities `<e1>` `<e2>` and `<e3>` with
+                    probability 0.43, 0.15 and 0.2.
+
+                - Floors 7 and above will have entities `<e1>`, `<e2>` and `<e3>`
+                    with probability 0.43, 0.15 and 0.32.
+
+                The cascading effect allows selectively providing the probability distributions.
+
         Returns:
             Probability distribution that will be used for the floor to sample
                 enemies, items, etc, for each room in the map.
+
+        Examples:
+
+            Example 1: Enemies
+
+            ``` pycon
+            >>> from yarl.map import GameWorld
+            >>> game_world = GameWorld(map_width=10, map_height=10)
+            >>> floor_factories = game_world.enemies_floor_factories
+            >>> game_world.get_factory_by_floor(floor_factories=floor_factories)
+            {ActiveEntity(x=0, y=0, name='Orc', char='O'): 0.43}
+            ```
+
+            ``` pycon
+            >>> from yarl.map import GameWorld
+            >>> game_world = GameWorld(map_width=10, map_height=10, current_floor=4)
+            >>> floor_factories = game_world.enemies_floor_factories
+            >>> game_world.get_factory_by_floor(floor_factories=floor_factories)
+            {
+                ActiveEntity(x=0, y=0, name="Orc", char="O"): 0.43,
+                ActiveEntity(x=0, y=0, name="Troll", char="T"): 0.08,
+            }
+            ```
+
+            ```pycon
+            >>> from yarl.map import GameWorld
+            >>> game_world = GameWorld(map_width=10, map_height=10, current_floor=7)
+            >>> floor_factories = game_world.enemies_floor_factories
+            >>> game_world.get_factory_by_floor(floor_factories=floor_factories)
+            {
+                ActiveEntity(x=0, y=0, name="Orc", char="O"): 0.43,
+                ActiveEntity(x=0, y=0, name="Troll", char="T"): 0.32,
+            }
+            ```
+
+            Example 2: Items
+
+            ``` pycon
+            >>> from yarl.map import GameWorld
+            >>> game_world = GameWorld(map_width=10, map_height=10)
+            >>> floor_factories = game_world.items_floor_factories
+            >>> game_world.get_factory_by_floor(floor_factories=floor_factories)
+            {
+                Item(x=0, y=0, name="Healing Potion", char="!"): 0.26,
+                Item(x=0, y=0, name="Dagger", char="/"): 0.04,
+                Item(x=0, y=0, name="Leather Armor", char="["): 0.11,
+            }
+            ```
+
+            ``` pycon
+            >>> from yarl.map import GameWorld
+            >>> game_world = GameWorld(map_width=10, map_height=10, current_floor=4)
+            >>> floor_factories = game_world.items_floor_factories
+            >>> game_world.get_factory_by_floor(floor_factories=floor_factories)
+            {
+                Item(x=0, y=0, name="Healing Potion", char="!"): 0.26,
+                Item(x=0, y=0, name="Dagger", char="/"): 0.04,
+                Item(x=0, y=0, name="Leather Armor", char="["): 0.11,
+                Item(x=0, y=0, name="Confusion Spell", char="~"): 0.07,
+                Item(x=0, y=0, name="Lightning Scroll", char="~"): 0.18,
+                Item(x=0, y=0, name="Sword", char="/"): 0.04,
+            }
+            ```
         """
         floor_factory: dict[T, float] = {}
 
@@ -270,8 +345,7 @@ class GameWorld:
             if floor > self.current_floor:
                 break
 
-            for entity, prob in factory.items():
-                floor_factory[entity] = prob
+            floor_factory.update(factory)
 
         return floor_factory
 
