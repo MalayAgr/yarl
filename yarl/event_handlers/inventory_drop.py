@@ -36,6 +36,14 @@ class InventoryDropEventHandler(SelectItemEventHandler):
     def menu_height(self) -> int:
         return max(len(self.items) + 3, 3)
 
+    def item_name(self, item: Item) -> str:
+        player = self.engine.player
+
+        if player.equipment is not None and player.equipment.is_equipped(item=item):
+            return f"{item.name} (E)"
+
+        return super().item_name(item=item)
+
     def on_render(self, console: Console) -> None:
         super().on_render(console)
 

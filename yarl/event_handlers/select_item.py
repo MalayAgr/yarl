@@ -41,6 +41,9 @@ class SelectItemEventHandler(AskUserEventHandler):
         y = 0
         return x, y
 
+    def item_name(self, item: Item) -> str:
+        return f"{item.name}"
+
     def on_render(self, console: Console) -> None:
         super().on_render(console=console)
 
@@ -66,7 +69,9 @@ class SelectItemEventHandler(AskUserEventHandler):
 
         for i, item in enumerate(self.items):
             key = chr(ord("a") + i)
-            console.print(x=x + 1, y=y + 1 + i, string=f"({key}) {item.name}")
+            console.print(
+                x=x + 1, y=y + 1 + i, string=f"({key}) {self.item_name(item=item)}"
+            )
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> ActionOrHandlerType | None:
         key = event.sym
