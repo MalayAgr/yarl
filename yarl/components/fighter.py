@@ -12,7 +12,7 @@ class Fighter(Component[ActiveEntity]):
         max_hp: int,
         base_defense: int,
         base_power: int,
-        attack_speed: int,
+        attack_delay: int,
         owner: ActiveEntity | None = None,
     ) -> None:
         super().__init__(owner=owner)
@@ -20,7 +20,7 @@ class Fighter(Component[ActiveEntity]):
         self._hp = max_hp
         self.base_defense = base_defense
         self.base_power = base_power
-        self.attack_speed = attack_speed
+        self.attack_delay = attack_delay
         self.attack_wait = 0
 
     def __repr__(self) -> str:
@@ -87,7 +87,7 @@ class Fighter(Component[ActiveEntity]):
         if damage > 0:
             target.fighter.take_damage(damage=damage)
 
-        self.attack_wait = self.attack_speed
+        self.attack_wait = self.attack_delay
         return target.is_alive, damage
 
     def heal(self, amount: int) -> int:

@@ -26,7 +26,7 @@ class Game:
         player_max_hp: int = 30,
         player_defense: int = 2,
         player_power: int = 5,
-        player_speed: int = 0,
+        player_movement_delay: int = 0,
         player_attack_speed: int = 8,
         player_inventory_capacity: int = 26,
     ) -> None:
@@ -36,7 +36,7 @@ class Game:
         self.player_max_hp = player_max_hp
         self.player_defense = player_defense
         self.player_power = player_power
-        self.player_speed = player_speed
+        self.player_movement_delay = player_movement_delay
         self.player_attack_speed = player_attack_speed
         self.player_inventory_capacity = player_inventory_capacity
 
@@ -63,7 +63,7 @@ class Game:
             max_hp=self.player_max_hp,
             base_defense=self.player_defense,
             base_power=self.player_power,
-            speed=self.player_speed,
+            movement_delay=self.player_movement_delay,
             attack_speed=self.player_attack_speed,
             inventory_capacity=self.player_inventory_capacity,
         )

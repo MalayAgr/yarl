@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from yarl.engine import Engine
-from yarl.entity import Entity
 from yarl.exceptions import ImpossibleActionException
 from yarl.interface.color import COLORS
 

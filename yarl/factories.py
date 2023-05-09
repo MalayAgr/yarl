@@ -18,7 +18,7 @@ def player_factory(
     max_hp: int,
     base_defense: int,
     base_power: int,
-    speed: int,
+    movement_delay: int,
     attack_speed: int,
     inventory_capacity: int,
 ) -> ActiveEntity:
@@ -26,7 +26,7 @@ def player_factory(
         max_hp=max_hp,
         base_defense=base_defense,
         base_power=base_power,
-        attack_speed=attack_speed,
+        attack_delay=attack_speed,
     )
 
     inventory = Inventory(capacity=inventory_capacity)
@@ -40,13 +40,13 @@ def player_factory(
         ai_cls=AttackingAI,
         inventory=inventory,
         equipment=Equipment(),
-        speed=speed,
+        movement_delay=movement_delay,
     )
 
 
 ENEMIES = {
     "orc": ActiveEntity(
-        fighter=Fighter(max_hp=10, base_defense=0, base_power=3, attack_speed=10),
+        fighter=Fighter(max_hp=10, base_defense=0, base_power=3, attack_delay=10),
         level=Level(xp_given=35),
         char="O",
         color=(63, 127, 63),
@@ -54,7 +54,7 @@ ENEMIES = {
         ai_cls=AttackingAI,
     ),
     "troll": ActiveEntity(
-        fighter=Fighter(max_hp=16, base_defense=1, base_power=4, attack_speed=10),
+        fighter=Fighter(max_hp=16, base_defense=1, base_power=4, attack_delay=10),
         level=Level(xp_given=200),
         char="T",
         color=(0, 127, 0),

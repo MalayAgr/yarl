@@ -70,7 +70,7 @@ class TestActiveEntity:
             fighter=Fighter(
                 max_hp=30,
                 base_defense=2,
-                attack_speed=10,
+                attack_delay=10,
                 base_power=5,
             ),
             level=Level(),
@@ -79,7 +79,7 @@ class TestActiveEntity:
             char="@",
             color=(255, 255, 255),
             name="Active Entity",
-            speed=8,
+            movement_delay=8,
         )
 
     def test_initialization(self, entity: ActiveEntity) -> None:
@@ -90,7 +90,7 @@ class TestActiveEntity:
         assert entity.name == "Active Entity"
         assert entity.blocking is True
         assert entity.render_order is RenderOrder.ACTIVE_ENTITY
-        assert entity.speed == 8
+        assert entity.movement_delay == 8
         assert entity.movement_wait == 0
         assert entity.ai_cls is None
         assert entity.ai is None
@@ -104,7 +104,7 @@ class TestActiveEntity:
             fighter=Fighter(
                 max_hp=30,
                 base_defense=2,
-                attack_speed=10,
+                attack_delay=10,
                 base_power=5,
             ),
             level=Level(),
@@ -113,7 +113,7 @@ class TestActiveEntity:
             char="@",
             color=(255, 255, 255),
             name="Active Entity",
-            speed=8,
+            movement_delay=8,
             inventory=Inventory(capacity=5),
         )
 
@@ -126,7 +126,7 @@ class TestActiveEntity:
         assert entity.x == 3
         assert entity.y == 8
 
-        assert entity.movement_wait == entity.speed
+        assert entity.movement_wait == entity.movement_delay
 
     def test_place(self, entity: ActiveEntity) -> None:
         entity.place(x=5, y=3)
@@ -134,7 +134,7 @@ class TestActiveEntity:
         assert entity.x == 5
         assert entity.y == 3
 
-        assert entity.movement_wait == entity.speed
+        assert entity.movement_wait == entity.movement_delay
 
     def test_is_alive(self, entity: ActiveEntity) -> None:
         assert entity.is_alive is False
@@ -173,7 +173,7 @@ class TestActiveEntity:
 
         entity.move(dx=3, dy=4)
 
-        assert entity.movement_wait == entity.speed
+        assert entity.movement_wait == entity.movement_delay
         assert entity.is_waiting_to_move is True
 
 

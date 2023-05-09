@@ -14,14 +14,34 @@ GAME_SAVE_FILENAME = "save.sav"
 
 
 class RenderOrder(Enum):
+    """Priorities for rendering entities.
+
+    Entities with priority `CORPSE` will be rendered first
+    and those with priority `ACTIVE_ENTITY` will be rendered last.
+
+    This ensures that entities with `ACTIVE_ENTITY` priority are rendered
+    on top of entities with `ITEM` priority, those with `ITEM` priority
+    are rendered on top of entities with `CORPSE` priority and so on.
+    """
+
     CORPSE = auto()
+    """Highest priority."""
+
     ITEM = auto()
+    """Highest priority after `CORPSE`."""
+
     ACTIVE_ENTITY = auto()
+    """Highest priority after `ITEM`."""
 
 
 class EquipmentType(Enum):
+    """Valid equipment types."""
+
     WEAPON = "weapon"
+    """Equippable that can be used as a weapon."""
+
     ARMOR = "armor"
+    """Equippable that can be used as armor."""
 
 
 def get_game_save_path() -> str:
