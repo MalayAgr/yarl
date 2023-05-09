@@ -92,7 +92,7 @@ class GameMap:
         """
         return 0 <= x < self.width and 0 <= y < self.height
 
-    def update_fov(self, player: Entity) -> None:
+    def update_fov(self, pov: tuple[int, int]) -> None:
         """Method to update the field-of-view (FOV) with respect to the player's location.
 
         Args:
@@ -100,7 +100,7 @@ class GameMap:
         """
         self.visible[:] = compute_fov(
             transparency=self.tiles["transparent"],
-            pov=(player.x, player.y),
+            pov=pov,
             radius=self.pov_radius,
             algorithm=tcod.FOV_BASIC,
         )
@@ -277,9 +277,6 @@ class GameMap:
     def get_names_at_location(self, x: int, y: int) -> str:
         """Method to obtain the names of the entities at location `(x, y)`.
 
-        For example, if the entities at `(x, y)` are named `Orc`, `Player`,
-        `Troll` and `Confusion Spell`, the method returns `"Orc, Player, Troll, Confusion Spell"`.
-
         Args:
             x: x-coordinate of the location.
 
@@ -287,6 +284,46 @@ class GameMap:
 
         Returns:
             Comma-separated string with the names.
+
+        Examples:
+
+            No entities:
+
+            ``` pycon
+            >>> from yarl.map import GameMap
+            >>> game_map = GameMap(width=10, height=10)
+            >>> game_map.get_names_at_location(x=0, y=0)
+            ''
+            ```
+
+            Single entity:
+
+            ``` pycon
+            >>> from yarl.entity import Entity
+            >>> from yarl.map import GameMap
+            >>> e1 = Entity(name="e1")
+            >>> game_map = GameMap(width=10, height=10)
+            >>> game_map.update_fov(pov=(0, 0))
+            >>> game_map.add_entity(entity=e1, x=0, y=0)
+            >>> game_map.get_names_at_location(x=0, y=0)
+            'E1'
+            ```
+
+            Multiple entities:
+
+            ``` pycon
+            >>> from yarl.entity import Entity
+            >>> from yarl.map import GameMap
+            >>> game_map = GameMap(width=10, height=10)
+            >>> game_map.update_fov(pov=(0, 0))
+            >>> for i in range(5):
+            ...     e = Entity(name=f"e{i}")
+            ...     game_map.add_entity(entity=e, x=0, y=0)
+            ...
+            >>> game_map.get_names_at_location(x=0, y=0)
+            'E0, E2, E1, E3, E4'
+            ```
+
         """
         if not self.in_bounds(x, y) or not self.visible[x, y]:
             return ""

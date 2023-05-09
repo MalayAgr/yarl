@@ -41,7 +41,7 @@ class Engine:
         self.message_log.add_message(text=text, fg=fg)
 
     def update_fov(self) -> None:
-        self.game_map.update_fov(player=self.player)
+        self.game_map.update_fov(pov=(self.player.x, self.player.y))
 
     def render(self, console: Console) -> None:
         self.game_map.render(console=console)

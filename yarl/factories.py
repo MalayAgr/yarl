@@ -18,15 +18,36 @@ def player_factory(
     max_hp: int,
     base_defense: int,
     base_power: int,
-    movement_delay: int,
-    attack_speed: int,
-    inventory_capacity: int,
+    movement_delay: int = 0,
+    attack_delay: int = 0,
+    inventory_capacity: int = 26,
 ) -> ActiveEntity:
+    """Function to create a player.
+
+    `name` of the player will be set to `"Player"` and `char` will
+    be set to `"@"`.
+
+    Args:
+        max_hp: Maximum health of the player.
+
+        base_defense: Base defense of the player.
+
+        base_power: Base power of the player.
+
+        movement_delay: Movement delay for the player.
+
+        attack_delay: Attack delay for the player.
+
+        inventory_capacity: Capacity of player's inventory.
+
+    Returns:
+        Created player.
+    """
     fighter = Fighter(
         max_hp=max_hp,
         base_defense=base_defense,
         base_power=base_power,
-        attack_delay=attack_speed,
+        attack_delay=attack_delay,
     )
 
     inventory = Inventory(capacity=inventory_capacity)
@@ -61,6 +82,7 @@ ENEMIES = {
         ai_cls=AttackingAI,
     ),
 }
+"""Dictionary of pre-defined enemies."""
 
 CONSUMABLE_ITEMS = {
     "healing_potion": Item(
@@ -88,6 +110,7 @@ CONSUMABLE_ITEMS = {
         name="Fireball Scroll",
     ),
 }
+"""Dictionary of pre-defined consumable items."""
 
 EQUIPPABLE_ITEMS = {
     "dagger": Item(
@@ -115,9 +138,11 @@ EQUIPPABLE_ITEMS = {
         name="Steel Armor",
     ),
 }
+"""Dictionary of pre-defined equippable items."""
 
 
 ENEMY_FACTORY = {ENEMIES["orc"]: 0.8, ENEMIES["troll"]: 0.2}
+"""Default probability distribution used to place enemies in rooms."""
 
 ITEM_FACTORY: dict[Item, float] = {
     CONSUMABLE_ITEMS["healing_potion"]: 0.4,
@@ -129,3 +154,4 @@ ITEM_FACTORY: dict[Item, float] = {
     EQUIPPABLE_ITEMS["leather_armor"]: 0.1,
     EQUIPPABLE_ITEMS["steel_armor"]: 0.1,
 }
+"""Default probability distribution used to place items in rooms."""

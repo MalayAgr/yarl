@@ -360,11 +360,11 @@ class MapGenerator:
 
             enemy_factory: Population enemies will be sampled from. Each
                 key is the entity and the value is the probability. If set
-                to `None`, it falls back to using ENEMY_FACTORY.
+                to `None`, it falls back to using [`ENEMY_FACTORY`][yarl.factories.ENEMY_FACTORY].
 
             item_factory: Population items will be sampled from. Each key
                 is the item and the value is the probability. If set to `None`,
-                it falls back to using ITEM_FACTORY.
+                it falls back to using [`ITEM_FACTORY`][yarl.factories.ITEM_FACTORY].
 
         Returns:
             Generated game map.

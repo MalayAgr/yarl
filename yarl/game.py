@@ -64,7 +64,7 @@ class Game:
             base_defense=self.player_defense,
             base_power=self.player_power,
             movement_delay=self.player_movement_delay,
-            attack_speed=self.player_attack_speed,
+            attack_delay=self.player_attack_speed,
             inventory_capacity=self.player_inventory_capacity,
         )
 
