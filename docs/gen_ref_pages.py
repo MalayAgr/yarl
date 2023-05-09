@@ -25,8 +25,8 @@ for path in sorted(Path("yarl").rglob("*.py")):  #
 
     nav[parts] = doc_path.as_posix()
 
-    with mkdocs_gen_files.open(full_doc_path, "w") as fd:
-        identifier = ".".join(parts)  #
+    with mkdocs_gen_files.open(full_doc_path, "w+") as fd:
+        identifier = ".".join(parts)
         fd.write(f"::: yarl.{identifier}")
 
     mkdocs_gen_files.set_edit_path(full_doc_path, path)
