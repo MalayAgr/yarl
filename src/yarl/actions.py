@@ -195,6 +195,37 @@ class PickupAction(Action):
         self.entity: ActiveEntity
         self.items = items or []
 
+    def handle_equip(self, item: Item) -> bool:
+        entity = self.entity
+        equipment = entity.equipment
+
+        if equipment is None:
+            return False
+
+        try:
+            previous_item = equipment.equip(item=item)
+
+            if previous_item is not None and entity.inventory is not None:
+                try:
+                    entity.inventory.remove_item(item=previous_item)
+
+                    self.engine.game_map.add_entity(
+                        entity=previous_item,
+                        x=self.entity.x,
+                        y=self.entity.y,
+                        check_blocking=False,
+                    )
+                    self.engine.add_to_message_log(
+                        text=equipment.unequip_message(item=previous_item)
+                    )
+                except ValueError:
+                    pass
+
+            self.engine.add_to_message_log(text=equipment.equip_message(item=item))
+            return True
+        except AttributeError:
+            return False
+
     def perform(self) -> None:
         items = self.items
 
@@ -207,19 +238,18 @@ class PickupAction(Action):
             raise ImpossibleActionException("There is no inventory to add items to.")
 
         for item in items:
+            equipped = self.handle_equip(item=item)
             added = inventory.add_item(item=item)
-
-            if self.entity.equipment is not None:
-                try:
-                    self.entity.equipment.equip(item=item, engine=self.engine)
-                except AttributeError:
-                    pass
 
             if added is False:
                 raise ImpossibleActionException("Your inventory is full.")
 
             self.game_map.remove_entity(entity=item)
-            self.engine.add_to_message_log(text=f"You picked up the item {item.name}.")
+
+            if equipped is False:
+                self.engine.add_to_message_log(
+                    text=f"You picked up the item {item.name}."
+                )
 
 
 class DropItemFromInventoryAction(Action):
@@ -233,8 +263,27 @@ class DropItemFromInventoryAction(Action):
     def place_item(self, item: Item, x: int, y: int):
         self.game_map.add_entity(entity=item, x=x, y=y, check_blocking=False)
 
+    def handle_unequip(self, item: Item) -> bool:
+        equipment = self.entity.equipment
+
+        if equipment is None:
+            return False
+
+        try:
+            unequipped = equipment.unequip(item=item)
+
+            if unequipped:
+                self.engine.add_to_message_log(
+                    text=equipment.unequip_message(item=item)
+                )
+
+            return unequipped
+        except AttributeError:
+            return False
+
     def perform(self) -> None:
         items = self.items
+        engine = self.engine
 
         if not items:
             raise ImpossibleActionException("There are no items to drop.")
@@ -249,19 +298,14 @@ class DropItemFromInventoryAction(Action):
         for item in items:
             try:
                 inventory.remove_item(item=item)
-
-                if self.entity.equipment is not None:
-                    try:
-                        self.entity.equipment.unequip(
-                            item=item, engine=self.engine, remove_from_inventory=False
-                        )
-                    except AttributeError:
-                        pass
+                unequipped = self.handle_unequip(item=item)
 
                 self.place_item(item=item, x=self.entity.x, y=self.entity.y)
-                self.engine.add_to_message_log(
-                    text=f"You dropped {item.name} from your inventory."
-                )
+
+                if unequipped is False:
+                    engine.add_to_message_log(
+                        text=f"You dropped {item.name} from your inventory."
+                    )
             except ValueError:
                 raise ImpossibleActionException(
                     f"{item.name} is not part of your inventory."
