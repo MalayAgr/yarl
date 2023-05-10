@@ -1,3 +1,5 @@
+"""This module defines the class that is used represent the game engine."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

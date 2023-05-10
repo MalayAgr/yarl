@@ -1,3 +1,5 @@
+"""This module defines some constants and functions that can be used to obtain entities."""
+
 from yarl.components import (
     AttackingAI,
     ConfusionSpell,

@@ -6,6 +6,8 @@ T = TypeVar("T")
 
 
 class Component(Generic[T]):
+    """Generic class"""
+
     def __init__(self, owner: T | None = None):
         self.owner = owner
 

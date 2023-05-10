@@ -1,3 +1,7 @@
+"""This module defines some generic rendering functions that can be used to
+render common things like.
+"""
+
 from __future__ import annotations
 
 import textwrap

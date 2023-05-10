@@ -1,3 +1,5 @@
+"""This module defines some utilities that are used throughout the game."""
+
 from __future__ import annotations
 
 import lzma

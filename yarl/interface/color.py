@@ -1,10 +1,11 @@
 """
-Module which provides some RGB color constants and a `namedtuple` to represent colors.
+This module provides some RGB color constants and a `namedtuple` to represent colors.
 """
 
-from collections import OrderedDict, namedtuple
 from enum import Enum
 from typing import NamedTuple
+
+import tcod
 
 
 class RGB(NamedTuple):
@@ -32,61 +33,59 @@ class RGB(NamedTuple):
 class ColorConstants(Enum):
     """Enum of all the colors.
 
-    If the name of a color is `xyz` in the above table,
-    it's corresponding enum is `XYZ`. For example,
-    `white1` is `ColorConstants.WHITE1`.
+    A color's key in [`COLORS`][yarl.interface.color.COLORS] is shown below.
     """
 
     ALICEBLUE = RGB(240, 248, 255)
-    """Key - `aliceblue`."""
+    """`aliceblue`"""
 
     ANTIQUEWHITE = RGB(250, 235, 215)
-    """Key - `antiquewhite`."""
+    """`antiquewhite`"""
 
     ANTIQUEWHITE1 = RGB(255, 239, 219)
-    """Key - `antiquewhite1`."""
+    """`antiquewhite1`"""
 
     ANTIQUEWHITE2 = RGB(238, 223, 204)
-    """Key - `antiquewhite2`."""
+    """`antiquewhite2`"""
 
     ANTIQUEWHITE3 = RGB(205, 192, 176)
-    """Key - `antiquewhite3."""
+    """`antiquewhite3`"""
 
     ANTIQUEWHITE4 = RGB(139, 131, 120)
-    """Dictionary key: aliceblue."""
+    """`antiquewhite4`"""
 
     AQUA = RGB(0, 255, 255)
-    """Dictionary key: aliceblue."""
+    """`aqua`"""
 
     AQUAMARINE1 = RGB(127, 255, 212)
-    """Dictionary key: aliceblue."""
+    """`aquamarine1`"""
 
     AQUAMARINE2 = RGB(118, 238, 198)
-    """Dictionary key: aliceblue."""
+    """`aquamarine2`"""
 
     AQUAMARINE3 = RGB(102, 205, 170)
-    """Dictionary key: aliceblue."""
+    """`aquamarine3`"""
 
     AQUAMARINE4 = RGB(69, 139, 116)
-    """Dictionary key: aliceblue."""
+    """`aquamarine4`"""
 
     AZURE1 = RGB(240, 255, 255)
-    """Dictionary key: aliceblue."""
+    """`azure1`"""
 
     AZURE2 = RGB(224, 238, 238)
-    """Dictionary key: aliceblue."""
+    """`azure2`"""
 
     AZURE3 = RGB(193, 205, 205)
-    """Dictionary key: aliceblue."""
+    """`azure3`"""
 
     AZURE4 = RGB(131, 139, 139)
-    """Dictionary key: aliceblue."""
+    """`azure4`"""
 
     BANANA = RGB(227, 207, 87)
-    """Dictionary key: aliceblue."""
+    """`banana`"""
 
     BEIGE = RGB(245, 245, 220)
-    """Dictionary key: aliceblue."""
+    """`beige`"""
 
     BISQUE1 = RGB(255, 228, 196)
     """Dictionary key: aliceblue."""

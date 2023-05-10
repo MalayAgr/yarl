@@ -1,3 +1,5 @@
+"""This module defines the different types of entities available in the game."""
+
 from __future__ import annotations
 
 import copy

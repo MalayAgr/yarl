@@ -7,6 +7,8 @@ from .base_component import Component
 
 
 class Fighter(Component[ActiveEntity]):
+    """Component which adds combat abilities."""
+
     def __init__(
         self,
         max_hp: int,

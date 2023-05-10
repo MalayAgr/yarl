@@ -1,3 +1,5 @@
+"""This module defines the class which is used to initialize a game and run the game loop."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
