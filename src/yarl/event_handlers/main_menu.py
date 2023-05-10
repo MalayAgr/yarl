@@ -25,6 +25,8 @@ class MainMenuEventHandler(BaseEventHandler):
 
         self.engine = engine
 
+        self.background_image: Image.Image | None
+
         if background_image_path:
             img = Image.open(background_image_path)
             img = img.convert("RGB")
