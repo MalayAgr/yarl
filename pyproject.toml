@@ -38,7 +38,7 @@ mkdocs-section-index = "^0.3.5"
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
-addopts = "--cov=yarl/ --cov-report=xml:./coverage.xml --cov-report term-missing"
+addopts = "--cov=src/yarl/ --cov-report=xml:./coverage.xml --cov-report term-missing"
 
 [tool.mypy]
 python_version = "3.11"

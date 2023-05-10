@@ -58,7 +58,6 @@ plugins:
     scripts:
     - docs/gen_ref_pages.py
 - literate-nav:
-    nav_file: SUMMARY.md
 - section-index:
 - mkdocstrings:
     custom_templates: docs/_templates
@@ -86,7 +85,7 @@ plugins:
 
 watch:
   - mkdocs.yml
-  - yarl/
+  - src/yarl/
 
 extra_css:
   - stylesheets/custom.css
