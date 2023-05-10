@@ -65,10 +65,10 @@ class Equipment(Component[ActiveEntity]):
         """
         super().__init__(owner=owner)
 
-        if self.weapon is not None and self.weapon.equippable is None:
+        if weapon is not None and weapon.equippable is None:
             raise ValueError("weapon.equippable should not be None.")
 
-        if self.armor is not None and self.armor.equippable is None:
+        if armor is not None and armor.equippable is None:
             raise ValueError("armor.equippable should not be None.")
 
         self.weapon = weapon
