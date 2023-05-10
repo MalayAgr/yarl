@@ -93,10 +93,10 @@ class GameMap:
         return 0 <= x < self.width and 0 <= y < self.height
 
     def update_fov(self, pov: tuple[int, int]) -> None:
-        """Method to update the field-of-view (FOV) with respect to the player's location.
+        """Method to update the field-of-view (FOV) with respect to a location.
 
         Args:
-            player: Player with respect to whom the FOV should be updated.
+            pov: Location with respect to which the POV should be updated.
         """
         self.visible[:] = compute_fov(
             transparency=self.tiles["transparent"],
@@ -301,9 +301,9 @@ class GameMap:
             ``` pycon
             >>> from yarl.entity import Entity
             >>> from yarl.map import GameMap
-            >>> e1 = Entity(name="e1")
             >>> game_map = GameMap(width=10, height=10)
             >>> game_map.update_fov(pov=(0, 0))
+            >>> e1 = Entity(name="e1")
             >>> game_map.add_entity(entity=e1, x=0, y=0)
             >>> game_map.get_names_at_location(x=0, y=0)
             'E1'

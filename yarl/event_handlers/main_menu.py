@@ -20,18 +20,23 @@ if TYPE_CHECKING:
 
 
 class MainMenuEventHandler(BaseEventHandler):
-    def __init__(self, engine: Engine, background_image_path: str) -> None:
+    def __init__(self, engine: Engine, background_image_path: str = "") -> None:
         super().__init__()
 
         self.engine = engine
 
-        img = Image.open(background_image_path)
-        img = img.convert("RGB")
-        self.background_image = img
+        if background_image_path:
+            img = Image.open(background_image_path)
+            img = img.convert("RGB")
+            self.background_image = img
+        else:
+            self.background_image = None
 
     def on_render(self, console: tcod.Console) -> None:
-        """Render the main menu on a background image."""
-        console.draw_semigraphics(pixels=self.background_image, x=0, y=0)
+        """Render the main menu."""
+
+        if self.background_image is not None:
+            console.draw_semigraphics(pixels=self.background_image, x=0, y=0)
 
         console.print(
             console.width // 2,

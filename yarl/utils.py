@@ -45,11 +45,21 @@ class EquipmentType(Enum):
 
 
 def get_game_save_path() -> str:
+    """Function to get the absolute path of the directory where a game should be saved.
+
+    Returns:
+        Absolute path to the saved games directory.
+    """
     parent = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
     return os.path.join(parent, "saved_games")
 
 
 def save_game(engine: Engine) -> None:
+    """Function to save the game.
+
+    Args:
+        engine: Engine that represents the game.
+    """
     parent = get_game_save_path()
 
     if not os.path.isdir(parent):
@@ -64,6 +74,11 @@ def save_game(engine: Engine) -> None:
 
 
 def load_game() -> Engine:
+    """Function to load a saved game.
+
+    Returns:
+        Engine that represents the loaded game.
+    """
     parent = get_game_save_path()
     path = os.path.join(parent, GAME_SAVE_FILENAME)
 
@@ -75,6 +90,7 @@ def load_game() -> Engine:
 
 
 def clear_game() -> None:
+    """Function to remove a saved game."""
     path = os.path.join(get_game_save_path(), GAME_SAVE_FILENAME)
 
     if not os.path.exists(path):

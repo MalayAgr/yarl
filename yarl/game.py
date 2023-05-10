@@ -18,6 +18,28 @@ if TYPE_CHECKING:
 
 
 class Game:
+    """Class to represent a game.
+
+    Attributes:
+        map_width (int): Width of the game map.
+
+        map_height (int): Height of the game map.
+
+        room_min_size (int): Minimum size of each room in the game map.
+
+        player_max_hp (int): Initial maximum HP of the player.
+
+        player_defense (int): Initial defense of the player.
+
+        player_power (int): Initial power of the player.
+
+        player_movement_delay (int): Movement delay for the player.
+
+        player_attack_delay (int): Attack delay for the player.
+
+        player_inventory_capacity (int): Inventory capacity of the player.
+    """
+
     def __init__(
         self,
         map_width: int,
@@ -27,9 +49,30 @@ class Game:
         player_defense: int = 2,
         player_power: int = 5,
         player_movement_delay: int = 0,
-        player_attack_speed: int = 8,
+        player_attack_delay: int = 8,
         player_inventory_capacity: int = 26,
     ) -> None:
+        """Create a game.
+
+        Args:
+            map_width: Width of the game map.
+
+            map_height: Height of the game map.
+
+            room_min_size: Minimum size of each room in the game map.
+
+            player_max_hp: Initial maximum HP of the player.
+
+            player_defense: Initial defense of the player.
+
+            player_power: Initial power of the player.
+
+            player_movement_delay: Movement delay for the player.
+
+            player_attack_delay: Attack delay for the player.
+
+            player_inventory_capacity: Inventory capacity of the player.
+        """
         self.map_width = map_width
         self.map_height = map_height
         self.room_min_size = room_min_size
@@ -37,11 +80,18 @@ class Game:
         self.player_defense = player_defense
         self.player_power = player_power
         self.player_movement_delay = player_movement_delay
-        self.player_attack_speed = player_attack_speed
+        self.player_attack_delay = player_attack_delay
         self.player_inventory_capacity = player_inventory_capacity
 
     @classmethod
-    def fromdict(cls, params: dict[str, Any]) -> Game:
+    def fromdict(cls, params: dict[str, int]) -> Game:
+        """Method to create a game from a dictionary.
+
+        Args:
+            params: Parameters for initialization. It must have the keys
+                `map_width` and `map_height`. All other parameters are optional.
+        """
+
         expected = {
             "map_width",
             "map_height",
@@ -49,8 +99,8 @@ class Game:
             "player_max_hp",
             "player_defense",
             "player_power",
-            "player_speed",
-            "player_attack_speed",
+            "player_movement_delay",
+            "player_attack_delay",
             "player_inventory_capacity",
         }
 
@@ -59,12 +109,23 @@ class Game:
         return cls(**params)
 
     def get_engine(self) -> Engine:
+        """Method to initialize an [Engine][yarl.engine.Engine] instance that can be used
+        for the game.
+
+        It creates the [ActiveEntity][yarl.entity.ActiveEntity] instance that will
+        be the player, creates the [GameWorld][yarl.map.gameworld.GameWorld] instance
+        that will be used for floor generation, and then creates the engine with the
+        player and the game world.
+
+        Returns:
+            Engine that can be used for the game.
+        """
         player = player_factory(
             max_hp=self.player_max_hp,
             base_defense=self.player_defense,
             base_power=self.player_power,
             movement_delay=self.player_movement_delay,
-            attack_delay=self.player_attack_speed,
+            attack_delay=self.player_attack_delay,
             inventory_capacity=self.player_inventory_capacity,
         )
 
@@ -84,8 +145,18 @@ class Game:
         return engine
 
     def run(
-        self, console: Console, context: Context, main_menu_background_path: str
+        self, console: Console, context: Context, main_menu_background_path: str = ""
     ) -> None:
+        """Game loop.
+
+        Args:
+            console: Console that will be used throughout the loop for rendering.
+
+            context: Context that will be used throughout the loop.
+
+            main_menu_background_path: Optional path to the image that should be used as
+                the background of the main menu.
+        """
         engine = self.get_engine()
 
         handler: BaseEventHandler = MainMenuEventHandler(
