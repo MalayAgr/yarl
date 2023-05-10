@@ -7,6 +7,7 @@ can be used.
 """
 
 from .ai import AttackingAI, BaseAI
+from .base_component import Component
 from .consumable import (
     ConfusionSpell,
     Consumable,

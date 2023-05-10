@@ -33,7 +33,9 @@ class InventoryEventHandler(SelectItemEventHandler):
     def item_name(self, item: Item) -> str:
         player = self.engine.player
 
-        if player.equipment is not None and player.equipment.is_equipped(item=item):
+        if player.equipment is not None and player.equipment.is_item_equipped(
+            item=item
+        ):
             return f"{item.name} (E)"
 
         return super().item_name(item=item)
