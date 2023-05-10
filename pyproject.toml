@@ -4,6 +4,9 @@ version = "1.0.0"
 description = ""
 authors = ["Malay Agarwal <malay.agarwal261016@outlook.com>"]
 readme = "README.md"
+packages = [
+    { include = "yarl", from = "src" },
+]
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.12"
@@ -33,6 +36,7 @@ mkdocs-literate-nav = "^0.6.0"
 mkdocs-section-index = "^0.3.5"
 
 [tool.pytest.ini_options]
+pythonpath = ["src"]
 testpaths = ["tests"]
 addopts = "--cov=yarl/ --cov-report=xml:./coverage.xml --cov-report term-missing"
 
