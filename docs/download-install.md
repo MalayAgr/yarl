@@ -32,7 +32,7 @@
 
     > **Note**: Requires Windows 10 or above, and a 64-bit architecture.
 
-    [Download :fontawesome-solid-cloud-arrow-down:](https://github.com/MalayAgr/yarl/releases/latest/download/yarl-windows.x64.tar.gz){ .md-button .md-button--primary }
+    [Download :fontawesome-solid-cloud-arrow-down:](https://github.com/MalayAgr/yarl/releases/latest/download/yarl-windows.x64.zip){ .md-button .md-button--primary }
 
     - Unzip the file by right clicking on the downloaded archive and clicking on `Extract All`. On the window that appears, click `Extract`.
     - Double click on `yarl-windows.x64 > yarl` and then run `yarl.exe`.

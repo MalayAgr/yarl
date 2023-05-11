@@ -4,9 +4,9 @@ block_cipher = None
 PROJECT_NAME = "yarl"
 
 a = Analysis(
-    ["yarl/main.py"],
+    ["src/yarl/main.py"],
     binaries=[],
-    datas=[("yarl/assets", "assets")],  # Include all files in the 'assets' directory.
+    datas=[("src/yarl/assets", "assets")],  # Include all files in the 'assets' directory.
     hiddenimports=[],
     hookspath=[],
     runtime_hooks=[],

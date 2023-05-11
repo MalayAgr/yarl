@@ -45,7 +45,7 @@ jobs:
       - name: Type check code using mypy
         run: |
           source $VENV
-          mypy
+          mypy src/yarl
       - name: Test with pytest
         run: |
           source $VENV

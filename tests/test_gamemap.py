@@ -5,7 +5,8 @@ import pytest
 import tcod
 import yarl.tile_types as tiles
 from tcod.map import compute_fov
-from yarl.components import AttackingAI, Consumable, Fighter, Level
+from yarl.components import AttackingAI, Fighter, Level
+from yarl.components.consumables import Consumable
 from yarl.entity import ActiveEntity, Entity, Item
 from yarl.exceptions import CollisionWithEntityException
 from yarl.map import GameMap
@@ -15,7 +16,7 @@ from yarl.map import GameMap
 def active_entities() -> list[ActiveEntity]:
     return [
         ActiveEntity(
-            fighter=Fighter(max_hp=10, base_defense=1, base_power=1, attack_speed=1),
+            fighter=Fighter(max_hp=10, base_defense=1, base_power=1, attack_delay=1),
             level=Level(),
             x=i,
             y=i,
@@ -95,21 +96,21 @@ def test_inbounds(game_map: GameMap, x: int, y: int, expected: bool) -> None:
 
 
 def test_update_fov(game_map: GameMap) -> None:
-    player = Entity(x=50, y=22, char="@")
+    pov = (50, 22)
 
     map_tiles = np.full((100, 45), fill_value=tiles.wall, order="F")
     explored = np.full((100, 45), fill_value=False, order="F")
 
     expected = compute_fov(
         transparency=map_tiles["transparent"],
-        pov=(player.x, player.y),
+        pov=pov,
         radius=5,
         algorithm=tcod.FOV_BASIC,
     )
 
     explored |= expected
 
-    game_map.update_fov(player=player)
+    game_map.update_fov(pov=pov)
 
     assert np.all(game_map.visible == expected) == True
     assert np.all(game_map.explored == explored) == True

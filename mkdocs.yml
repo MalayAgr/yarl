@@ -1,15 +1,23 @@
 site_name: YARL - Yet Another RogueLike
 repo_url: https://github.com/MalayAgr/yarl
+edit_uri: "blob/master/docs/"
 
 theme:
   name: material
   features:
-    - navigation.tabs
-    - navigation.indexes
-    - navigation.tabs.sticky
-    - navigation.footer
-    - content.code.annotate
-    - content.code.copy
+  - announce.dismiss
+  - content.code.copy
+  - content.tooltips
+  - navigation.footer
+  - navigation.indexes
+  - navigation.sections
+  - navigation.tabs
+  - navigation.tabs.sticky
+  - navigation.top
+  - search.highlight
+  - search.suggest
+  - toc.follow
+  - toc.integrate
   palette:
   - media: "(prefers-color-scheme: light)"
     scheme: default
@@ -25,35 +33,47 @@ theme:
       name: Switch to light mode
 
 markdown_extensions:
-  - attr_list
-  - smarty
-  - pymdownx.emoji:
-      emoji_index: !!python/name:materialx.emoji.twemoji
-      emoji_generator: !!python/name:materialx.emoji.to_svg
-  - md_in_html
-  - admonition
-  - def_list
-  - meta
-
-  - toc:
-      permalink: true
-      baselevel: 1
-  - pymdownx.keys
-  - pymdownx.tasklist:
-      custom_checkbox: true
-  - pymdownx.highlight:
-      anchor_linenums: true
-  - pymdownx.inlinehilite
-  - pymdownx.superfences
-  - pymdownx.snippets
-  - pymdownx.tabbed:
-      alternate_style: true
+- attr_list
+- smarty
+- pymdownx.emoji:
+    emoji_index: !!python/name:materialx.emoji.twemoji
+    emoji_generator: !!python/name:materialx.emoji.to_svg
+- md_in_html
+- admonition
+- def_list
+- meta
+- toc:
+    baselevel: 1
+    permalink: true
+- pymdownx.keys
+- pymdownx.tabbed:
+    alternate_style: true
+    slugify: !!python/object/apply:pymdownx.slugs.slugify
+      kwds:
+        case: lower
+- pymdownx.tasklist:
+    custom_checkbox: true
+- pymdownx.highlight:
+    anchor_linenums: true
+    use_pygments: true
+    pygments_lang_class: true
+- pymdownx.details
+- pymdownx.magiclink
+- pymdownx.inlinehilite
+- pymdownx.superfences
+- pymdownx.snippets
 
 
 plugins:
-  search:
-  autorefs:
-  mkdocstrings:
+- search: {}
+- social:
+- gen-files:
+    scripts:
+    - docs/gen_ref_pages.py
+- literate-nav:
+    nav_file: SUMMARY.txt
+- section-index:
+- mkdocstrings:
     custom_templates: docs/_templates
     default_handler: python
     handlers:
@@ -63,6 +83,7 @@ plugins:
           - https://python-tcod.readthedocs.io/en/stable/objects.inv
           - https://numpy.org/doc/stable/objects.inv
         options:
+          members_order: source
           show_signature_annotations: false
           separate_signature: true
           merge_init_into_class: true
@@ -73,31 +94,21 @@ plugins:
             - "!^_"
             - "^__init__$"
             - "!^can_replace$"
+          line-length: 88
 
 
 watch:
   - mkdocs.yml
-  - yarl/
+  - src/yarl/
 
 extra_css:
   - stylesheets/custom.css
 
 
 nav:
- - Introduction: index.md
- - Download and Install: download-install.md
- - Reference:
-    - "reference.md"
-    - Map:
-      - "yarl/map/mapgen.md"
-      - "yarl/map/gamemap.md"
-    - Event handlers:
-      - "yarl/event_handlers/index.md"
-    - Interface:
-      - "yarl/interface/message_log.md"
-      - "yarl/interface/color.md"
-      - "yarl/interface/renderer.md"
-
+- Introduction: index.md
+- Download and Install: download-install.md
+- Code Reference: reference/
 
 extra:
   social:
