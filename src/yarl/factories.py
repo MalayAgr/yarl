@@ -2,14 +2,16 @@
 
 from yarl.components import (
     AttackingAI,
-    ConfusionSpell,
     Equipment,
     Equippable,
     Fighter,
-    FireballScroll,
-    HealingPotion,
     Inventory,
     Level,
+)
+from yarl.components.consumables import (
+    ConfusionSpell,
+    FireballScroll,
+    HealingPotion,
     LightningScroll,
 )
 from yarl.entity import ActiveEntity, Item

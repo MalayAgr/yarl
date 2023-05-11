@@ -8,13 +8,6 @@ can be used.
 
 from .ai import AttackingAI, BaseAI, ConfusionAI
 from .base_component import Component
-from .consumables import (
-    ConfusionSpell,
-    Consumable,
-    FireballScroll,
-    HealingPotion,
-    LightningScroll,
-)
 from .equipment import Equipment
 from .equippable import Equippable
 from .fighter import Fighter

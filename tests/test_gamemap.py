@@ -5,7 +5,8 @@ import pytest
 import tcod
 import yarl.tile_types as tiles
 from tcod.map import compute_fov
-from yarl.components import AttackingAI, Consumable, Fighter, Level
+from yarl.components import AttackingAI, Fighter, Level
+from yarl.components.consumables import Consumable
 from yarl.entity import ActiveEntity, Entity, Item
 from yarl.exceptions import CollisionWithEntityException
 from yarl.map import GameMap

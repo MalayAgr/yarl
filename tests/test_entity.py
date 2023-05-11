@@ -4,7 +4,8 @@ from typing import Iterable
 from unittest.mock import Mock
 
 import pytest
-from yarl.components import AttackingAI, Consumable, Fighter, Inventory, Level
+from yarl.components import AttackingAI, Fighter, Inventory, Level
+from yarl.components.consumables import Consumable
 from yarl.entity import ActiveEntity, Entity, Item
 from yarl.utils import RenderOrder
 

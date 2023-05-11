@@ -10,15 +10,8 @@ from typing import TYPE_CHECKING, Iterable, Type, TypeVar
 from yarl.utils import RenderOrder
 
 if TYPE_CHECKING:
-    from yarl.components import (
-        BaseAI,
-        Consumable,
-        Equipment,
-        Equippable,
-        Fighter,
-        Inventory,
-        Level,
-    )
+    from yarl.components import BaseAI, Equipment, Equippable, Fighter, Inventory, Level
+    from yarl.components.consumables import Consumable
 
 T = TypeVar("T", bound="Entity")
 """TypeVar to represent subclasses of [Entity][yarl.entity.Entity]."""
