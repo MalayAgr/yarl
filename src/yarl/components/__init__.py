@@ -6,7 +6,7 @@ component can be used and to enable AI controlling, a subclass of [`BaseAI`][yar
 can be used.
 """
 
-from .ai import AttackingAI, BaseAI, ConfusionAI
+from .AI import AttackingAI, BaseAI, ConfusionAI
 from .base_component import Component
 from .equipment import Equipment
 from .equippable import Equippable
