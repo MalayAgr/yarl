@@ -6,15 +6,13 @@ component can be used and to enable AI controlling, a subclass of [`BaseAI`][yar
 can be used.
 """
 
-from .ai import AttackingAI, BaseAI
+from .ai import AttackingAI, BaseAI, ConfusionAI
 from .base_component import Component
-from .consumable import (
-    ConfusionSpell,
-    Consumable,
-    FireballScroll,
-    HealingPotion,
-    LightningScroll,
-)
+from .consumables.base_consumable import Consumable
+from .consumables.confusion_spell import ConfusionSpell
+from .consumables.fireball_scroll import FireballScroll
+from .consumables.healing_potion import HealingPotion
+from .consumables.lightning_scroll import LightningScroll
 from .equipment import Equipment
 from .equippable import Equippable
 from .fighter import Fighter
