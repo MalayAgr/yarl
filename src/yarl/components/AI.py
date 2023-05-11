@@ -17,7 +17,25 @@ if TYPE_CHECKING:
 
 
 class BaseAI(Action):
+    """Base AI class for all AIs.
+
+    Subclasses should inherit from this method to introduce
+    new AIs that can be used to control enemies.
+
+    Attributes:
+        engine (Engine): Engine representing the current game.
+
+        entity (ActiveEntity): Entity which invoked this action.
+    """
+
     def __init__(self, engine: Engine, entity: ActiveEntity) -> None:
+        """Create a base AI.
+
+        Args:
+            engine: Engine representing the current game.
+
+            entity: Entity which invoked this action.
+        """
         super().__init__(engine=engine, entity=entity)
         self.entity: ActiveEntity
 
@@ -28,6 +46,17 @@ class BaseAI(Action):
         return self.__repr__()
 
     def get_path_to(self, dest_x: int, dest_y: int) -> deque[tuple[int, int]]:
+        """Method to get an A* path from the invoking entity's current location
+        to `(dest_x, dest_y)`.
+
+        Args:
+            dest_x: x-coordinate of the target location.
+
+            dest_y: y-coordinate of the target location.
+
+        Returns:
+            Path to `(dest_x, dest_y)`.
+        """
         engine = self.engine
 
         game_map = engine.game_map
@@ -51,12 +80,34 @@ class BaseAI(Action):
 
 
 class AttackingAI(BaseAI):
+    """AI with attacking and movement abilities.
+
+    Attributes:
+        engine (Engine): Engine representing the current game.
+
+        entity (ActiveEntity): Entity which invoked this action.
+
+        path (deque[tuple[int, int]]): Path to the player.
+    """
+
     def __init__(self, engine: Engine, entity: ActiveEntity) -> None:
+        """Create an attacking AI.
+
+        Args:
+            engine: Engine representing the current game.
+
+            entity: Entity which invoked this action.
+        """
         super().__init__(engine, entity)
         self.path: deque[tuple[int, int]] = deque()
         self.entity: ActiveEntity
 
     def perform(self) -> None:
+        """Method which performs the AI behavior for the invoking entity.
+
+        It essentially attacks the player if the entity is close enough
+        or moves towards the player via the A* path.
+        """
         engine, entity = self.engine, self.entity
 
         target = engine.player
@@ -90,16 +141,35 @@ class AttackingAI(BaseAI):
 
 
 class ConfusionAI(BaseAI):
+    """AI which mimics a confused entity.
+
+    The entity controlled by this AI starts moving randomly
+    and can attack other entities, including enemies.
+
+    Attributes:
+        engine (Engine): Engine representing the current game.
+
+        entity (ActiveEntity): Entity which invoked this action.
+
+        turns_remaining (int): Number of turns remaining before the
+            AI's effect has worn off.
+
+        previous_ai (BaseAI | None): AI that was previously controlling the
+            invoking entity. The AI has the ability to switch to this AI
+            once its effect has worn off.
+    """
+
     DIRECTIONS: list[tuple[int, int]] = [
-        (0, -1),
-        (1, -1),
-        (1, 0),
-        (1, 1),
-        (0, 1),
-        (-1, 1),
-        (-1, 0),
-        (-1, -1),
+        (0, -1),  # UP
+        (1, -1),  # UPPER RIGHT
+        (1, 0),  # RIGHT
+        (1, 1),  # LOWER RIGHT
+        (0, 1),  # DOWN
+        (-1, 1),  # LOWER LEFT
+        (-1, 0),  # LEFT
+        (-1, -1),  # UPPER LEFT
     ]
+    """Deviations for the eight neighbors of a cell."""
 
     def __init__(
         self,
@@ -108,6 +178,20 @@ class ConfusionAI(BaseAI):
         turns_remaining: int,
         previous_ai: BaseAI | None,
     ) -> None:
+        """Create a confused AI.
+
+        Args:
+            engine: Engine representing the current game.
+
+            entity: Entity which invoked this action.
+
+            turns_remaining: Number of turns remaining before the
+                AI's effect has worn off.
+
+            previous_ai: AI that was previously controlling the
+                invoking entity. The AI has the ability to switch to this AI
+                once its effect has worn off.
+        """
         super().__init__(engine, entity)
 
         self.previous_ai = previous_ai
@@ -117,6 +201,12 @@ class ConfusionAI(BaseAI):
         return f"{self.__class__.__name__}(turns_remaining={self.turns_remaining})"
 
     def perform(self) -> None:
+        """Method which performs the AI behavior for the invoking entity.
+
+        If the effect is still active, the AI randomly selects one of the
+        eight neighbors of the cell where the invoking entity is currently located at,
+        and either attacks the entity at the resultant cell or moves to that cell.
+        """
         if self.turns_remaining == 0:
             if self.previous_ai is not None:
                 self.entity.ai = self.previous_ai

@@ -28,7 +28,7 @@ class Bonus:
 
 
 class Equipment(Component[ActiveEntity]):
-    """Class to represent equipment.
+    """Component which adds equipment abilities.
 
     It expects an instance of [`ActiveEntity`][yarl.entity.ActiveEntity]
     as the owner.
