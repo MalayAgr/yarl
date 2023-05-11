@@ -138,12 +138,13 @@ jobs:
           PRODUCTION: "True"
           LOGGER_HOST: ${{ secrets.LOGGER_HOST }}
           LOGGER_PORT: ${{ secrets.LOGGER_PORT }}
+          ENV_FILEPATH: src/yarl/assets/.env
         run: |
-          touch yarl/assets/.env
-          echo PRODUCTION=${PRODUCTION} >> yarl/assets/.env
-          echo LOGGER_HOST=${LOGGER_HOST} >> yarl/assets/.env
-          echo LOGGER_PORT=${LOGGER_PORT} >> yarl/assets/.env
-          cat yarl/assets/.env
+          touch ${ENV_FILEPATH}
+          echo PRODUCTION=${PRODUCTION} >> ${ENV_FILEPATH}
+          echo LOGGER_HOST=${LOGGER_HOST} >> ${ENV_FILEPATH}
+          echo LOGGER_PORT=${LOGGER_PORT} >> ${ENV_FILEPATH}
+          cat ${ENV_FILEPATH}
       - name: Run PyInstaller
         env:
           PYTHONOPTIMIZE: 1
