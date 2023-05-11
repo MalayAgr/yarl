@@ -17,6 +17,7 @@ theme:
   - search.highlight
   - search.suggest
   - toc.follow
+  - toc.integrate
   palette:
   - media: "(prefers-color-scheme: light)"
     scheme: default
@@ -64,14 +65,15 @@ markdown_extensions:
 
 
 plugins:
-  search: {}
-  gen-files:
+- search: {}
+- social:
+- gen-files:
     scripts:
     - docs/gen_ref_pages.py
-  literate-nav:
+- literate-nav:
     nav_file: SUMMARY.txt
-  section-index:
-  mkdocstrings:
+- section-index:
+- mkdocstrings:
     custom_templates: docs/_templates
     default_handler: python
     handlers:
