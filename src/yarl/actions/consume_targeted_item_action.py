@@ -12,6 +12,19 @@ if TYPE_CHECKING:
 
 
 class ConsumeTargetedItemAction(Action):
+    """Action which handles consuming an **targeted** item if it is consumable with the
+    invoking entity as the consumer.
+
+    Attributes:
+        engine (Engine): Engine representing the current game.
+
+        entity (ActiveEntity): Entity that invoked this action.
+
+        target_location (tuple[int, int]): Location of the target.
+
+        item (Item | None): Item to consume.
+    """
+
     def __init__(
         self,
         engine: Engine,
@@ -19,6 +32,17 @@ class ConsumeTargetedItemAction(Action):
         target_location: tuple[int, int],
         item: Item | None = None,
     ) -> None:
+        """Create a consume targeted item action.
+
+        Args:
+            engine: Engine representing the current game.
+
+            entity: Entity that invoked this action.
+
+            target_location: Location of the target.
+
+            item: Item to consume.
+        """
         super().__init__(engine, entity)
         self.entity: ActiveEntity
         self.item = item
@@ -31,6 +55,12 @@ class ConsumeTargetedItemAction(Action):
         return self.__repr__()
 
     def perform(self) -> None:
+        """Method to consume the item with the invoking entity as the consumer.
+
+        Raises:
+            ImpossibleActionException: If `self.item` is `None` or `item.consumable`
+                is `None`.
+        """
         item = self.item
 
         if item is None:

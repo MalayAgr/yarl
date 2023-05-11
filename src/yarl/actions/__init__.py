@@ -1,3 +1,13 @@
+"""This package defines actions that can be used as an interface between components
+and event handlers.
+
+For example, [`PickupAction`][yarl.actions.PickupAction] can be used by an event handler
+to trigger picking up an item and adding it to an entity's inventory.
+
+Similarly, [`TakeStairsAction`][yarl.actions.TakeStairsAction] can be used by an event handler
+to trigger the generation of a new floor in the game.
+"""
+
 from .base_action import Action
 from .bump_action import BumpAction
 from .consume_item_action import ConsumeItemAction

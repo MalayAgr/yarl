@@ -2,7 +2,7 @@
 to add capabilities.
 
 For example, for combat capabilities, the [`Fighter`][yarl.components.fighter.Fighter]
-component can be used and to enable AI controlling, a subclass of [`BaseAI`][yarl.component.ai.BaseAI]
+component can be used and to enable AI controlling, a subclass of [`BaseAI`][yarl.components.AI.BaseAI]
 can be used.
 """
 

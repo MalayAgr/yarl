@@ -27,7 +27,7 @@ class Equippable(Component[Item]):
         self,
         equipment_type: EquipmentType = EquipmentType.WEAPON,
         power_bonus: int = 0,
-        defense_bonus=0,
+        defense_bonus: int = 0,
         owner: Item | None = None,
     ):
         """Create an equippable component.

@@ -11,12 +11,29 @@ if TYPE_CHECKING:
 
 
 class MeleeAction(DirectedAction):
+    """Action that performs a single attack on the entity that is at the destination
+    associated with the action.
+
+    Attributes:
+        engine (Engine): Engine representing the current game.
+
+        entity (ActiveEntity): Entity that invoked this action.
+
+        dx (int): Deviation in the x-direction from the invoking entity's current location.
+
+        dy (int): Deviation in the y-direction from the invoking entity's current location.
+    """
+
     @property
     def target(self) -> ActiveEntity | None:
+        """Target entity at the destination associated with the action."""
         x, y = self.destination
         return self.game_map.get_active_entity(x=x, y=y)
 
     def perform(self) -> None:
+        """Method to attack the target at the destination associated with the action
+        via the invoking entity's `fighter` instance.
+        """
         entity, target = self.entity, self.target
 
         if entity.fighter.is_waiting_to_attack or not target:

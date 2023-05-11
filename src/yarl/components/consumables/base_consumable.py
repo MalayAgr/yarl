@@ -43,7 +43,7 @@ class Consumable(Component[Item]):
         or event handler.
 
         By default, it returns an instance of
-        [`ConsumeItemAction`][yarl.actions.ConsumeSingleItem].
+        [`ConsumeItemAction`][yarl.actions.ConsumeItemAction].
 
         Args:
             entity: Entity consuming the consumable.
