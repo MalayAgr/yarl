@@ -12,9 +12,7 @@ class Fighter(Component[ActiveEntity]):
     It expects an instance of [`ActiveEntity`][yarl.entity.ActiveEntity]
     as the owner.
 
-
     Note:
-
         Some methods might seem unnecessary. For example,
         methods like `increase_max_hp()`, `increase_power()`, etc. But,
         using these methods allows subclasses to customize how the the
@@ -37,7 +35,7 @@ class Fighter(Component[ActiveEntity]):
         attack_wait (int): Current number of turns the entity needs to wait before
             attacking agin.
 
-        owner (ActiveEntity): ActiveEntity that owns the fighter.
+        owner (ActiveEntity | None): [`ActiveEntity`][yarl.entity.ActiveEntity] instance that owns the fighter.
     """
 
     def __init__(
@@ -48,6 +46,20 @@ class Fighter(Component[ActiveEntity]):
         attack_delay: int = 0,
         owner: ActiveEntity | None = None,
     ) -> None:
+        """Create a fighter.
+
+        Args:
+            max_hp: Maximum HP of the fighter.
+
+            base_defense: Base defense of the fighter.
+
+            base_power: Base power of the fighter.
+
+            attack_delay: Attack delay of the fighter. After attacking once,
+                the fighter will wait for `attack_delay` turns before attacking again.
+
+            owner: [`ActiveEntity`][yarl.entity.ActiveEntity] instance that owns the fighter.
+        """
         super().__init__(owner=owner)
         self.max_hp = max_hp
         self._hp = max_hp
@@ -200,11 +212,17 @@ class Fighter(Component[ActiveEntity]):
         return self.hp - old_hp
 
     def take_damage(self, damage: int) -> None:
-        """Method to inflict damage on the fighter."""
+        """Method to inflict damage on the fighter.
+
+        Args:
+            damage: Amount of damage to inflict.
+        """
         self.hp -= damage
 
     def die(self) -> None:
-        """Method to set the entity's state as dead.
+        """Method to set the fighter's owner's state as dead.
+
+        If no owner is set, it does nothing.
 
         After the method:
 
@@ -215,7 +233,7 @@ class Fighter(Component[ActiveEntity]):
         - `self.owner.render_order = RenderOrder.CORPSE`
         """
         if self.owner is None:
-            raise AttributeError("No active entity has been assigned to the fighter.")
+            return
 
         self.owner.char = "%"
         self.owner.color = (191, 0, 0)

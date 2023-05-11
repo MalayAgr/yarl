@@ -21,16 +21,13 @@ class LevelUpEventHandler(AskUserEventHandler):
 
         player = self.engine.player
 
-        if self.engine.player.x <= 30:
-            x = 40
-        else:
-            x = 0
+        x = 40 if player.x <= 30 else 0
 
         console.draw_frame(
             x=x,
             y=0,
             width=35,
-            height=8,
+            height=9,
             title="Level Up",
             clear=True,
             fg=(255, 255, 255),
@@ -56,14 +53,14 @@ class LevelUpEventHandler(AskUserEventHandler):
             string=f"c) Agility (+1 defense, from {player.fighter.base_defense})",
         )
 
-    def get_booster(
-        self, player: ActiveEntity, index: int
-    ) -> tuple[Callable[[int], None] | None, int]:
+        console.print(x=x + 1, y=7, string="d) Do nothing")
+
+    def get_booster(self, index: int) -> tuple[str, int]:
         return {
-            0: (player.level.increase_max_hp, 20),
-            1: (player.level.increase_power, 1),
-            2: (player.level.increase_power, 1),
-        }.get(index, (None, 0))
+            0: ("max_hp", 20),
+            1: ("power", 1),
+            2: ("defense", 1),
+        }.get(index, ("", 0))
 
     def ev_keydown(self, event: KeyDown) -> ActionOrHandlerType | None:
         player = self.engine.player
@@ -71,13 +68,20 @@ class LevelUpEventHandler(AskUserEventHandler):
 
         index = key - tcod.event.K_a
 
-        boost_func, amount = self.get_booster(player=player, index=index)
+        if index == 3:
+            self.engine.player.level.level_up()
+            self.engine.add_to_message_log(
+                text=f"You advanced to level {player.level.current_level}"
+            )
+            return super().ev_keydown(event=event)
 
-        if boost_func is None:
+        boost, amount = self.get_booster(index=index)
+
+        if not boost:
             self.engine.add_to_message_log(text="Invalid entry", fg=COLORS["yellow1"])
             return None
 
-        boost_func(amount)
+        self.engine.player.level.level_up_with_boost(boost=boost, amount=amount)
         self.engine.add_to_message_log(
             text=f"You advanced to level {player.level.current_level}"
         )

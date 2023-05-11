@@ -41,7 +41,7 @@ class Equipment(Component[ActiveEntity]):
         armor (Item | None): Item currently equipped in the armor slot.
             At the time, only one item can occupy the slot.
 
-        owner: [`ActiveEntity`][yarl.entity.ActiveEntity] instance that owns the equipment.
+        owner (ActiveEntity | None): [`ActiveEntity`][yarl.entity.ActiveEntity] instance that owns the equipment.
     """
 
     def __init__(

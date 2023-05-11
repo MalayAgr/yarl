@@ -148,9 +148,11 @@ class ConsumeItemAction(Action):
         if item is None:
             raise ImpossibleActionException("There is no item to consume.")
 
-        if item.consumable is not None:
-            item.consumable.activate(consumer=self.entity, engine=self.engine)
-            self.game_map.remove_entity(entity=item)
+        if item.consumable is None:
+            raise ImpossibleActionException(f"The item {item.name} is not consumable.")
+
+        item.consumable.activate(consumer=self.entity, engine=self.engine)
+        self.game_map.remove_entity(entity=item)
 
 
 class ConsumeTargetedItemAction(Action):
@@ -178,13 +180,15 @@ class ConsumeTargetedItemAction(Action):
         if item is None:
             raise ImpossibleActionException("There is no item to consume.")
 
-        if item.consumable is not None:
-            item.consumable.activate(
-                consumer=self.entity,
-                engine=self.engine,
-                target_location=self.target_location,
-            )
-            self.game_map.remove_entity(entity=item)
+        if item.consumable is None:
+            raise ImpossibleActionException(f"The item {item.name} is not consumable.")
+
+        item.consumable.activate(
+            consumer=self.entity,
+            engine=self.engine,
+            target_location=self.target_location,
+        )
+        self.game_map.remove_entity(entity=item)
 
 
 class PickupAction(Action):
