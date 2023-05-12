@@ -1,14 +1,17 @@
 # -*- mode: python ; coding: utf-8 -*-
-# https://pyinstaller.readthedocs.io/en/stable/spec-files.html
+
+
 block_cipher = None
 PROJECT_NAME = "yarl"
 
 a = Analysis(
-    ["src/yarl/main.py"],
+    ['src/yarl/main.py'],
+    pathex=[],
     binaries=[],
-    datas=[("src/yarl/assets", "assets")],  # Include all files in the 'assets' directory.
+    datas=[("src/yarl/assets", "assets")],
     hiddenimports=[],
     hookspath=[],
+    hooksconfig={},
     runtime_hooks=[],
     excludes=[],
     win_no_prefer_redirects=False,
@@ -17,17 +20,23 @@ a = Analysis(
     noarchive=False,
 )
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
+
 exe = EXE(
     pyz,
     a.scripts,
     [],
     exclude_binaries=True,
-    name=PROJECT_NAME,  # Name of the executable.
+    name=PROJECT_NAME,
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
-    console=True,  # Set to False to disable the Windows terminal.
+    console=False,
+    disable_windowed_traceback=False,
+    argv_emulation=False,
+    target_arch=None,
+    codesign_identity=None,
+    entitlements_file=None,
 )
 coll = COLLECT(
     exe,
@@ -37,5 +46,5 @@ coll = COLLECT(
     strip=False,
     upx=True,
     upx_exclude=[],
-    name=PROJECT_NAME,  # Name of the distribution directory.
+    name=PROJECT_NAME,
 )
