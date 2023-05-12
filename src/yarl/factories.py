@@ -70,7 +70,7 @@ def player_factory(
 
 ENEMIES = {
     "orc": ActiveEntity(
-        fighter=Fighter(max_hp=10, base_defense=0, base_power=3, attack_delay=10),
+        fighter=Fighter(max_hp=10, base_defense=1, base_power=3, attack_delay=10),
         level=Level(xp_given=35),
         char="O",
         color=(63, 127, 63),
@@ -78,7 +78,7 @@ ENEMIES = {
         ai_cls=AttackingAI,
     ),
     "troll": ActiveEntity(
-        fighter=Fighter(max_hp=16, base_defense=1, base_power=4, attack_delay=10),
+        fighter=Fighter(max_hp=16, base_defense=3, base_power=10, attack_delay=10),
         level=Level(xp_given=200),
         char="T",
         color=(0, 127, 0),

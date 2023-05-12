@@ -58,7 +58,7 @@ class GameWorld:
 
         self._enemies_floor_factories = {
             0: {ENEMIES["orc"]: 0.43},
-            3: {ENEMIES["troll"]: 0.08},
+            3: {ENEMIES["orc"]: 0.23, ENEMIES["troll"]: 0.08},
             5: {ENEMIES["troll"]: 0.15},
             7: {ENEMIES["troll"]: 0.32},
         }
@@ -68,10 +68,12 @@ class GameWorld:
         self._items_floor_factories = {
             0: {
                 CONSUMABLE_ITEMS["healing_potion"]: 0.26,
+            },
+            2: {
+                CONSUMABLE_ITEMS["confusion_spell"]: 0.07,
                 EQUIPPABLE_ITEMS["dagger"]: 0.04,
                 EQUIPPABLE_ITEMS["leather_armor"]: 0.11,
             },
-            2: {CONSUMABLE_ITEMS["confusion_spell"]: 0.07},
             4: {
                 CONSUMABLE_ITEMS["lightning_scroll"]: 0.18,
                 EQUIPPABLE_ITEMS["sword"]: 0.04,
@@ -137,7 +139,7 @@ class GameWorld:
 
             {
                 0: {ENEMIES["orc"]: 0.43},
-                3: {ENEMIES["troll"]: 0.08},
+                3: {ENEMIES["orc"]: 0.23, ENEMIES["troll"]: 0.08},
                 5: {ENEMIES["troll"]: 0.15},
                 7: {ENEMIES["troll"]: 0.32},
             }
@@ -300,7 +302,7 @@ class GameWorld:
             >>> floor_factories = game_world.enemies_floor_factories
             >>> game_world.get_factory_by_floor(floor_factories=floor_factories)
             {
-                ActiveEntity(x=0, y=0, name="Orc", char="O"): 0.43,
+                ActiveEntity(x=0, y=0, name="Orc", char="O"): 0.23,
                 ActiveEntity(x=0, y=0, name="Troll", char="T"): 0.08,
             }
             ```
@@ -311,7 +313,7 @@ class GameWorld:
             >>> floor_factories = game_world.enemies_floor_factories
             >>> game_world.get_factory_by_floor(floor_factories=floor_factories)
             {
-                ActiveEntity(x=0, y=0, name="Orc", char="O"): 0.43,
+                ActiveEntity(x=0, y=0, name="Orc", char="O"): 0.23,
                 ActiveEntity(x=0, y=0, name="Troll", char="T"): 0.32,
             }
             ```
@@ -323,11 +325,7 @@ class GameWorld:
             >>> game_world = GameWorld(map_width=10, map_height=10)
             >>> floor_factories = game_world.items_floor_factories
             >>> game_world.get_factory_by_floor(floor_factories=floor_factories)
-            {
-                Item(x=0, y=0, name="Healing Potion", char="!"): 0.26,
-                Item(x=0, y=0, name="Dagger", char="/"): 0.04,
-                Item(x=0, y=0, name="Leather Armor", char="["): 0.11,
-            }
+            {Item(x=0, y=0, name='Healing Potion', char='!'): 0.26}
             ```
 
             ``` pycon
@@ -337,9 +335,9 @@ class GameWorld:
             >>> game_world.get_factory_by_floor(floor_factories=floor_factories)
             {
                 Item(x=0, y=0, name="Healing Potion", char="!"): 0.26,
+                Item(x=0, y=0, name="Confusion Spell", char="~"): 0.07,
                 Item(x=0, y=0, name="Dagger", char="/"): 0.04,
                 Item(x=0, y=0, name="Leather Armor", char="["): 0.11,
-                Item(x=0, y=0, name="Confusion Spell", char="~"): 0.07,
                 Item(x=0, y=0, name="Lightning Scroll", char="~"): 0.18,
                 Item(x=0, y=0, name="Sword", char="/"): 0.04,
             }

@@ -149,77 +149,150 @@ def test_get_active_entity_no_entity(
     assert game_map_with_entities.get_active_entity(x=21, y=21) is None
 
 
+@pytest.mark.parametrize(["x", "y"], [[50, 22], [10, 5], [6, 8]])
 def test_move_entity(
-    game_map_with_entities: GameMap, entities: list[ActiveEntity | Item]
+    game_map_with_entities: GameMap, entities: list[ActiveEntity | Item], x: int, y: int
 ) -> None:
     entity = entities[0]
 
-    game_map_with_entities.move_entity(entity=entity, x=50, y=22)
+    game_map_with_entities.tiles[x, y] = tiles.floor
+
+    game_map_with_entities.move_entity(entity=entity, x=x, y=y)
 
     assert entity in game_map_with_entities.entities
     assert len(game_map_with_entities._entity_map[(0, 0)]) == 0
-    assert (50, 22) in game_map_with_entities._entity_map
-    assert entity in game_map_with_entities._entity_map[(50, 22)]
-    assert entity.x == 50 and entity.y == 22
+    assert (x, y) in game_map_with_entities._entity_map
+    assert entity in game_map_with_entities._entity_map[(x, y)]
+    assert entity.x == x and entity.y == y
 
 
-def test_add_entity(game_map: GameMap) -> None:
-    entities = [Entity() for _ in range(10)]
-    locations = [(i, i) for i in range(1, 11)]
+@pytest.mark.parametrize(
+    ["x", "y"], [[50, 22], [10, 5], [6, 8], [100, 45], [10, 45], [100, 22], [-1, -2]]
+)
+def test_move_entity_indexerror(
+    game_map_with_entities: GameMap, entities: list[ActiveEntity | Item], x: int, y: int
+):
+    entity = entities[0]
 
-    for entity, (x, y) in zip(entities, locations):
-        game_map.add_entity(entity=entity, x=x, y=y)
-
-    assert len(game_map.entities) == 10
-    assert len(game_map._entity_map) == 10
-
-    assert all(
-        entity.x == x and entity.y == y for entity, (x, y) in zip(entities, locations)
-    )
-
-    assert all(entity in game_map.entities for entity in entities)
-    assert all(location in game_map._entity_map for location in locations)
-
-    assert all(
-        entity in game_map._entity_map[location]
-        for location, entity in zip(locations, entities)
-    )
+    with pytest.raises(IndexError) as _:
+        game_map_with_entities.move_entity(entity=entity, x=x, y=y)
 
 
-def test_add_entity_error(game_map: GameMap) -> None:
-    assert game_map.get_blocking_entity(x=50, y=45) is None
+@pytest.mark.parametrize(["x", "y"], [[50, 22], [10, 5], [6, 8]])
+def test_move_entity_collision(
+    game_map_with_entities: GameMap, entities: list[ActiveEntity | Item], x: int, y: int
+):
+    game_map_with_entities.tiles[x, y] = tiles.floor
+
+    assert game_map_with_entities.get_blocking_entity(x=x, y=y) is None
 
     blocking_entity = Entity(blocking=True)
 
-    game_map.add_entity(entity=blocking_entity, x=50, y=45)
+    game_map_with_entities.add_entity(entity=blocking_entity, x=x, y=y)
 
-    assert game_map.get_blocking_entity(x=50, y=45) is blocking_entity
+    assert game_map_with_entities.get_blocking_entity(x=x, y=y) is blocking_entity
+
+    entity = entities[0]
+
+    with pytest.raises(CollisionWithEntityException) as _:
+        game_map_with_entities.move_entity(entity=entity, x=x, y=y)
+
+
+@pytest.mark.parametrize(["x", "y"], [[50, 22], [10, 5], [6, 8]])
+def test_move_entity_no_blocking_check(
+    game_map_with_entities: GameMap, entities: list[ActiveEntity | Item], x: int, y: int
+):
+    game_map_with_entities.tiles[x, y] = tiles.floor
+
+    assert game_map_with_entities.get_blocking_entity(x=x, y=y) is None
+
+    blocking_entity = Entity(blocking=True)
+
+    game_map_with_entities.add_entity(entity=blocking_entity, x=x, y=y)
+
+    assert game_map_with_entities.get_blocking_entity(x=x, y=y) is blocking_entity
+
+    entity = entities[0]
+
+    game_map_with_entities.move_entity(entity=entity, x=x, y=y, check_blocking=False)
+
+    assert entity in game_map_with_entities.entities
+    assert len(game_map_with_entities._entity_map[(0, 0)]) == 0
+    assert (x, y) in game_map_with_entities._entity_map
+
+    assert (
+        blocking_entity in game_map_with_entities._entity_map[(x, y)]
+        and entity in game_map_with_entities._entity_map[(x, y)]
+    )
+    assert entity.x == x and entity.y == y
+
+
+@pytest.mark.parametrize(["x", "y"], [[0, 0], [1, 4], [50, 22], [10, 5], [6, 8]])
+def test_add_entity(game_map: GameMap, x: int, y: int) -> None:
+    game_map.tiles[x, y] = tiles.floor
+
+    entity = Entity()
+    game_map.add_entity(entity=entity, x=x, y=y)
+
+    assert entity.x == x and entity.y == y
+
+    assert entity in game_map.entities
+    assert (x, y) in game_map._entity_map
+
+    assert entity in game_map._entity_map[(x, y)]
+
+
+@pytest.mark.parametrize(
+    ["x", "y"], [[50, 22], [10, 5], [6, 8], [100, 45], [10, 45], [100, 22]]
+)
+def test_add_entity_indexerror(game_map: GameMap, x: int, y: int) -> None:
+    entity = Entity()
+
+    with pytest.raises(IndexError) as _:
+        game_map.add_entity(entity=entity, x=x, y=y)
+
+
+@pytest.mark.parametrize(["x", "y"], [[50, 22], [10, 5], [6, 8]])
+def test_add_entity_collision(game_map: GameMap, x: int, y: int) -> None:
+    game_map.tiles[x, y] = tiles.floor
+
+    assert game_map.get_blocking_entity(x=x, y=y) is None
+
+    blocking_entity = Entity(blocking=True)
+
+    game_map.add_entity(entity=blocking_entity, x=x, y=y)
+
+    assert game_map.get_blocking_entity(x=x, y=y) is blocking_entity
 
     entity = Entity()
 
     with pytest.raises(CollisionWithEntityException) as _:
-        game_map.add_entity(entity=entity, x=50, y=45)
+        game_map.add_entity(entity=entity, x=x, y=y)
 
 
-def test_add_entity_no_blocking_check(game_map: GameMap) -> None:
+@pytest.mark.parametrize(["x", "y"], [[50, 22], [10, 5], [6, 8]])
+def test_add_entity_no_blocking_check(game_map: GameMap, x: int, y: int) -> None:
+    game_map.tiles[x, y] = tiles.floor
+
     blocking_entity = Entity(blocking=True)
 
-    game_map.add_entity(entity=blocking_entity, x=50, y=45)
+    game_map.add_entity(entity=blocking_entity, x=x, y=y)
 
-    assert game_map.get_blocking_entity(x=50, y=45) is blocking_entity
+    assert game_map.get_blocking_entity(x=x, y=y) is blocking_entity
 
     entity = Entity()
 
-    game_map.add_entity(entity=entity, x=50, y=45, check_blocking=False)
+    game_map.add_entity(entity=entity, x=x, y=y, check_blocking=False)
 
     assert entity in game_map.entities and blocking_entity in game_map.entities
-    assert game_map._entity_map[(50, 45)] == {blocking_entity, entity}
+    assert game_map._entity_map[(x, y)] == {blocking_entity, entity}
 
 
 def test_get_names_at_location(game_map: GameMap) -> None:
     entity1 = Entity(name="entity 1")
     entity2 = Entity(name="entity 2")
 
+    game_map.tiles[0, 0] = tiles.floor
     game_map.visible[0, 0] = True
 
     game_map.add_entity(entity=entity1, x=0, y=0)
@@ -234,6 +307,8 @@ def test_get_names_at_location(game_map: GameMap) -> None:
 
 
 def test_get_names_at_location_invisible(game_map: GameMap) -> None:
+    game_map.tiles[0, 0] = tiles.floor
+
     entity = Entity(name="entity")
 
     game_map.add_entity(entity=entity, x=0, y=0)
@@ -253,14 +328,18 @@ def test_get_items_empty(game_map: GameMap) -> None:
 
 
 def test_get_items_single_item(game_map: GameMap) -> None:
+    game_map.tiles[50, 22] = tiles.floor
+
     item = Item(consumable=Consumable)
 
-    game_map.add_entity(entity=item, x=50, y=40)
+    game_map.add_entity(entity=item, x=50, y=22)
 
-    assert game_map.get_items(x=50, y=40) == {item}
+    assert game_map.get_items(x=50, y=22) == {item}
 
 
 def test_get_items_multiple_items(game_map: GameMap) -> None:
+    game_map.tiles[50, 22] = tiles.floor
+
     item1 = Item(consumable=Consumable)
     item2 = Item(consumable=Consumable)
 
