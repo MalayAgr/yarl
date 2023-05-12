@@ -12,7 +12,10 @@ ActionOrHandlerType = Union[Action, "BaseEventHandler"]
 
 
 class BaseEventHandler(tcod.event.EventDispatch[ActionOrHandlerType]):
+    """Base event handler class for all event handlers."""
+
     def post_events(self, context: Context) -> BaseEventHandler:
+        """Method which can be used to do things after all events have been processed."""
         return self
 
     def handle_event(self, event: Event) -> BaseEventHandler:
