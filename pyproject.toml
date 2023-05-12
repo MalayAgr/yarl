@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "yarl"
-version = "1.1.1"
+version = "1.1.2"
 description = ""
 authors = ["Malay Agarwal <malay.agarwal261016@outlook.com>"]
 readme = "README.md"
