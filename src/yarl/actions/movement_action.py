@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from yarl.exceptions import ImpossibleActionException
+from yarl.exceptions import CollisionWithEntityException, ImpossibleActionException
 
 from .directed_action import DirectedAction
 
@@ -29,11 +29,7 @@ class MovementAction(DirectedAction):
 
         dest_x, dest_y = self.destination
 
-        if not (
-            self.game_map.in_bounds(x=dest_x, y=dest_y)
-            and self.game_map.tiles["walkable"][dest_x, dest_y]
-            and self.blocking_entity is None
-        ):
+        try:
+            self.game_map.move_entity(entity=self.entity, x=dest_x, y=dest_y)
+        except (CollisionWithEntityException, IndexError):
             raise ImpossibleActionException("That way is blocked.")
-
-        self.game_map.move_entity(entity=self.entity, x=dest_x, y=dest_y)

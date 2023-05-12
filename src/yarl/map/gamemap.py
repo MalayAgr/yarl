@@ -209,14 +209,34 @@ class GameMap:
 
         return None
 
-    def move_entity(self, entity: Entity, x: int, y: int) -> None:
+    def move_entity(
+        self, entity: Entity, x: int, y: int, *, check_blocking: bool = True
+    ) -> None:
         """Method to move an entity to a new location.
 
         Args:
             entity: Entity to be moved.
+
             x: x-coordinate of the new location.
+
             y: y-coordinate of the new location.
+
+        Raises:
+            IndexError: If `(x, y)` is out of bounds or the tile at `(x, y)` is not walkable.
+
+            CollisionWithEntityException: When `check_blocking` is `True` and there is
+                a blocking entity at `(x, y)`.
         """
+        if not self.in_bounds(x=x, y=y) or not self.tiles["walkable"][x, y]:
+            raise IndexError(
+                f"({x}, {y}) is out of bounds or the tile is not walkable."
+            )
+
+        if check_blocking is True and self.get_blocking_entity(x, y) is not None:
+            raise CollisionWithEntityException(
+                f"A blocking entity already exists at ({x}, {y})"
+            )
+
         entities = self.get_entities(x=entity.x, y=entity.y)
 
         if entities:
@@ -245,15 +265,22 @@ class GameMap:
             check_blocking: Indicates if a check for a blocking entity should be performed.
 
         Raises:
+            IndexError: If `(x, y)` is out of bounds or the tile at `(x, y)` is not walkable.
+
             CollisionWithEntityException: When `check_blocking` is `True` and there is
                 a blocking entity at `(x, y)`.
         """
         x = x if x != -1 else entity.x
         y = y if y != -1 else entity.y
 
+        if not self.in_bounds(x=x, y=y) or not self.tiles["walkable"][x, y]:
+            raise IndexError(
+                f"({x}, {y}) is out of bounds or the tile is not walkable."
+            )
+
         if check_blocking is True and self.get_blocking_entity(x, y) is not None:
             raise CollisionWithEntityException(
-                f"An entity already exists at ({x}, {y})"
+                f"A blocking entity already exists at ({x}, {y})"
             )
 
         entity.place(x=x, y=y)

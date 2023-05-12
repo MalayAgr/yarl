@@ -321,7 +321,7 @@ class MapGenerator:
             try:
                 entity = ActiveEntity.fromentity(other=enemy)
                 self.game_map.add_entity(entity=entity, x=x, y=y)
-            except CollisionWithEntityException:
+            except (CollisionWithEntityException, IndexError):
                 pass
 
         items = random.choices(
@@ -337,7 +337,7 @@ class MapGenerator:
             try:
                 item = Item.fromentity(other=item)
                 self.game_map.add_entity(entity=item, x=x, y=y)
-            except CollisionWithEntityException:
+            except (CollisionWithEntityException, IndexError):
                 pass
 
     def generate_map(
