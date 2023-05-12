@@ -113,6 +113,26 @@ class TestMapGenerator:
         for x, y in coordinates:
             assert map_generator.game_map.tiles[x, y] == tiles.floor
 
+    def test_game_map_default(self, map_generator: MapGenerator) -> None:
+        assert map_generator._game_map is None
+
+        game_map = map_generator.game_map
+
+        assert map_generator._game_map is game_map
+
+    def test_game_map_valid_assignment(self, map_generator: MapGenerator) -> None:
+        game_map = GameMap(width=100, height=45)
+        map_generator.game_map = game_map
+
+        assert map_generator._game_map is game_map
+        assert map_generator.game_map is game_map
+
+    def test_game_map_error(self, map_generator: MapGenerator) -> None:
+        game_map = GameMap(width=10, height=10)
+
+        with pytest.raises(ValueError) as _:
+            map_generator.game_map = game_map
+
     def test_connect_rooms_vertical(
         self, map_generator: MapGenerator, monkeypatch: MonkeyPatch
     ) -> None:

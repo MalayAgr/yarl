@@ -1,10 +1,8 @@
 import math
-from collections import deque
-from typing import Iterable
 from unittest.mock import Mock
 
 import pytest
-from yarl.components import AttackingAI, Fighter, Inventory, Level
+from yarl.components import AttackingAI, Equipment, Fighter, Inventory, Level
 from yarl.components.consumables import Consumable
 from yarl.entity import ActiveEntity, Entity, Item
 from yarl.utils import RenderOrder
@@ -81,6 +79,7 @@ class TestActiveEntity:
             color=(255, 255, 255),
             name="Active Entity",
             movement_delay=8,
+            equipment=Equipment(),
         )
 
     def test_initialization(self, entity: ActiveEntity) -> None:
